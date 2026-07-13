@@ -244,6 +244,7 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [activeTopic, setActiveTopic] = useState<TopicKey>('overview');
   const [activeTitle, setActiveTitle] = useState('命格');
   const messagesRef = useRef<Message[]>([]); // always-current copy for closures
@@ -441,6 +442,18 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
     sendMessage(input, { title: '追问解读' });
   };
 
+  const handleCopy = async () => {
+    const answer = [...messages].reverse().find(message => message.role === 'assistant' && message.content.trim());
+    if (!answer) return;
+    try {
+      await navigator.clipboard.writeText(answer.content);
+      setCopied(true);
+      window.setTimeout(() => setCopied(false), 1800);
+    } catch {
+      setCopied(false);
+    }
+  };
+
   return (
     <div className="flex flex-col h-full rounded-xl overflow-hidden card-glass">
 
@@ -462,6 +475,9 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
             );
           })}
         </div>
+        <button type="button" className="insight-copy-button" onClick={handleCopy} disabled={loading || !messages.some(message => message.role === 'assistant' && message.content.trim())}>
+          {copied ? '已复制' : '复制解读'}
+        </button>
       </div>
 
       {/* ── Messages ── */}

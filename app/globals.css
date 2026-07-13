@@ -1860,6 +1860,33 @@ body {
   animation: pulse 1s ease-in-out infinite;
 }
 
+.insight-topic-bar {
+  position: relative;
+}
+
+.insight-copy-button {
+  position: absolute;
+  right: 12px;
+  bottom: 10px;
+  padding: 5px 8px;
+  color: var(--t-text2);
+  background: transparent;
+  border: 1px solid var(--t-border);
+  border-radius: 6px;
+  font-size: 10px;
+  cursor: pointer;
+}
+
+.insight-copy-button:hover:not(:disabled) {
+  color: var(--t-gold);
+  border-color: rgba(212, 168, 67, 0.4);
+}
+
+.insight-copy-button:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
 .insight-scroll {
   background: #f8fafc;
 }

@@ -81,10 +81,9 @@ export default function HomePage() {
           <a href="/chart">起盘</a>
           <a href="/heming">合盘</a>
           <a href="/login">登录</a>
-          <button type="button">中</button>
-          <button type="button" className="muted">EN</button>
-          <button type="button" className="pill">专业版</button>
-          <button type="button" className="menu" aria-label="菜单">☰</button>
+          <span aria-current="true">中</span>
+          <span className="muted" title="英文版即将支持">EN</span>
+          <a className="pill" href="/login">专业版</a>
         </nav>
       </header>
 

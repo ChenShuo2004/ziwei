@@ -7,10 +7,30 @@ import ChartBoard from '@/components/ChartBoard';
 import InsightPanel from '@/components/InsightPanel';
 import { generateChart } from '@/lib/ziwei/algorithm';
 import type { BirthInfo, Palace, ZiweiChart } from '@/lib/ziwei/types';
+import type { BirthFormState } from '@/components/BirthForm';
+import ShareModal from '@/components/ShareModal';
 
 export default function ChartPage() {
   const [chart, setChart] = useState<ZiweiChart | null>(null);
   const [selectedPalace, setSelectedPalace] = useState<Palace | null>(null);
+  const [birthData, setBirthData] = useState<BirthFormState | null>(null);
+  const [shareOpen, setShareOpen] = useState(false);
+
+  useEffect(() => {
+    const serialized = new URLSearchParams(window.location.search).get('birth');
+    if (!serialized) return;
+    try {
+      const info = JSON.parse(serialized) as BirthInfo;
+      setChart(generateChart(info));
+        setBirthData({
+          name: info.name ?? '', year: String(info.year), month: String(info.month), day: String(info.day),
+          clockHour: '8', clockMinute: '0', unknownTime: false, province: info.province ?? '',
+          city: info.city ?? '', longitude: info.longitude ?? 120, gender: info.gender,
+        });
+    } catch {
+      window.history.replaceState({}, '', '/chart');
+    }
+  }, []);
 
   useEffect(() => {
     if (chart) window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -28,7 +48,15 @@ export default function ChartPage() {
         </section>
 
         <section className="white-form-wrap" aria-label="起紫微命盘">
-          <BirthForm onSubmit={(info: BirthInfo) => setChart(generateChart(info))} submitLabel="立即起盘" />
+          <BirthForm
+            onSubmit={(info: BirthInfo) => {
+              setChart(generateChart(info));
+              const encoded = encodeURIComponent(JSON.stringify(info));
+              window.history.replaceState({}, '', `/chart?birth=${encoded}`);
+            }}
+            onFormSave={setBirthData}
+            submitLabel="立即起盘"
+          />
         </section>
       </main>
     );
@@ -50,6 +78,14 @@ export default function ChartPage() {
         >
           重新起盘
         </button>
+        <button
+          type="button"
+          className="white-secondary-button"
+          onClick={() => setShareOpen(true)}
+          disabled={!birthData}
+        >
+          分享命盘
+        </button>
       </section>
 
       <section className="white-result-grid">
@@ -60,6 +96,23 @@ export default function ChartPage() {
           <InsightPanel chart={chart} selectedPalace={selectedPalace} />
         </div>
       </section>
+      {birthData && (
+        <ShareModal
+          open={shareOpen}
+          onClose={() => setShareOpen(false)}
+          shareUrl={window.location.href}
+          chart={chart}
+          birth={{
+            year: birthData.year,
+            month: birthData.month,
+            day: birthData.day,
+            hour: birthData.clockHour,
+            minute: birthData.clockMinute,
+            gender: birthData.gender,
+            city: birthData.city,
+          }}
+        />
+      )}
     </main>
   );
 }

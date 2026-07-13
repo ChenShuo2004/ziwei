@@ -475,14 +475,16 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
             );
           })}
         </div>
-        <button type="button" className="insight-copy-button" onClick={handleCopy} disabled={loading || !messages.some(message => message.role === 'assistant' && message.content.trim())}>
-          {copied ? '已复制' : '复制解读'}
-        </button>
       </div>
 
       {/* ── Messages ── */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0 insight-scroll">
-        <TopicIntro title={activeTitle} loading={loading} />
+        <div className="insight-intro-row">
+          <TopicIntro title={activeTitle} loading={loading} />
+          <button type="button" className="insight-copy-button" onClick={handleCopy} disabled={loading || !messages.some(message => message.role === 'assistant' && message.content.trim())}>
+            {copied ? '已复制' : '复制解读'}
+          </button>
+        </div>
 
         {/* Loading state before first message */}
         {messages.length === 0 && (

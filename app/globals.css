@@ -1860,20 +1860,17 @@ body {
   animation: pulse 1s ease-in-out infinite;
 }
 
-.insight-topic-bar {
-  position: relative;
-}
-
 .insight-copy-button {
-  position: absolute;
-  right: 12px;
-  bottom: 10px;
+  flex: 0 0 auto;
+  align-self: flex-start;
+  height: 34px;
   padding: 5px 8px;
   color: var(--t-text2);
-  background: transparent;
+  background: #ffffff;
   border: 1px solid var(--t-border);
-  border-radius: 6px;
+  border-radius: 999px;
   font-size: 10px;
+  font-weight: 800;
   cursor: pointer;
 }
 
@@ -1889,6 +1886,17 @@ body {
 
 .insight-scroll {
   background: #f8fafc;
+}
+
+.insight-intro-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.insight-intro-row .insight-topic-intro {
+  flex: 1 1 auto;
+  min-width: 0;
 }
 
 .insight-topic-intro {
@@ -2348,6 +2356,14 @@ body {
 
   .white-question-row {
     grid-template-columns: 1fr;
+  }
+
+  .insight-intro-row {
+    flex-direction: column;
+  }
+
+  .insight-copy-button {
+    align-self: flex-end;
   }
 }
 

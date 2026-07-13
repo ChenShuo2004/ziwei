@@ -1,4 +1,6 @@
 import type { Palace, Star, ZiweiChart } from './types';
+import { STAR_DESCRIPTIONS } from './constants';
+import { HEMING_SCORE_CRITERIA, STAR_IN_FUQI_GU, SIHUA_IN_FUQI_GU } from './heming-knowledge';
 
 type Topic = 'overview' | 'love' | 'career' | 'wealth' | 'health' | 'personality';
 
@@ -41,6 +43,16 @@ function starNames(palace?: Palace, type?: Star['type']): string {
     return `空宫，借${palace.borrowedFromName ?? '对宫'} ${palace.borrowedStars.join('、')}`;
   }
   return '无主星';
+}
+
+function starKnowledge(palace?: Palace): string {
+  const majorStars = starsOf(palace, 'major');
+  if (!majorStars.length) return '当前宫位没有主星描述，需结合借宫和三方四正判断。';
+  return majorStars.map(star => {
+    const description = STAR_DESCRIPTIONS[star.name];
+    if (!description) return `${star.name}：项目知识库暂无该主星的详细描述。`;
+    return `${star.name}（${description.keywords}，${description.nature}，五行属${description.element}）`;
+  }).join('；');
 }
 
 function siHuaSummary(chart: ZiweiChart): string {
@@ -86,7 +98,7 @@ function selectedTopicText(chart: ZiweiChart, topic: Topic): string {
       `命宫落在${ming?.name ?? '命宫'}，主星为${starNames(ming, 'major')}。这类结构的重点，是先看命宫气质，再用财帛、官禄、迁移三方来判断人如何把能力落实到现实。`,
       ``,
       `**【主星解读】**`,
-      `命宫主星代表做事的底层惯性。若主星偏稳，宜长期积累；若主星偏动，宜在变化、项目、外部机会中打开局面。辅曜与煞曜同看，可以判断阻力来自人际、资源、节奏还是情绪。`,
+      `${starKnowledge(ming)}。主星代表做事的底层惯性；辅曜、煞曜与四化同看，可以判断阻力来自人际、资源、节奏还是情绪。`,
       ``,
       `**【三方四正】**`,
       `财帛宫为${starNames(wealth, 'major')}，官禄宫为${starNames(career, 'major')}，迁移宫为${starNames(moving, 'major')}。三方组合显示：财富、职业与外部环境需要一起读，单看某一宫容易失真。`,
@@ -105,7 +117,7 @@ function selectedTopicText(chart: ZiweiChart, topic: Topic): string {
       `夫妻宫主星为${starNames(spouse, 'major')}。感情判断不只看桃花，也要看命宫的自我模式与福德宫的内在需求是否能承接亲密关系。`,
       ``,
       `**【夫妻宫分析】**`,
-      `夫妻宫显示亲密关系中的期待、互动方式与容易反复出现的课题。若有化禄、化权，多见吸引与主导；若有化忌或煞曜，则更需要把边界、沟通和现实压力说清楚。`,
+      `${starKnowledge(spouse)}。${spouse?.stars.find(star => star.siHua)?.siHua ? `夫妻宫见${spouse.stars.find(star => star.siHua)?.siHua}，需把关系中的投入、主导和压力说清楚。` : '若有化禄、化权，多见吸引与主导；若有化忌或煞曜，则更需要把边界、沟通和现实压力说清楚。'}`,
       ``,
       `**【三方联动】**`,
       `命宫为${starNames(ming, 'major')}，福德宫为${starNames(fortune, 'major')}。感情能否稳定，关键在于自我节奏与内在安全感能不能同步。`,
@@ -119,7 +131,7 @@ function selectedTopicText(chart: ZiweiChart, topic: Topic): string {
       `官禄宫主星为${starNames(career, 'major')}，命宫为${starNames(ming, 'major')}。事业上既要看适合做什么，也要看能不能长期维持同一种工作节奏。`,
       ``,
       `**【官禄宫分析】**`,
-      `官禄宫代表社会角色、职业路径和成就方式。主星偏管理者，宜制度、组织和资源整合；主星偏技术或谋略，宜专业积累、顾问、研究、产品和策略类工作。`,
+      `${starKnowledge(career)}。官禄宫代表社会角色、职业路径和成就方式，具体职业仍需结合能力、经验和现实机会验证。`,
       ``,
       `**【财帛联动】**`,
       `财帛宫为${starNames(wealth, 'major')}。收入模式与职业选择要一致：若财帛宫偏动，适合项目制和多渠道；若偏守，适合稳定现金流与长期资产。`,
@@ -135,7 +147,7 @@ function selectedTopicText(chart: ZiweiChart, topic: Topic): string {
       `财帛宫主星为${starNames(wealth, 'major')}。财运不是单纯“有钱或没钱”，而是看钱从哪里来、能不能守住、是否容易因选择失误而流失。`,
       ``,
       `**【财帛宫分析】**`,
-      `财帛宫有力时，适合主动建立收入系统；财帛宫受煞或化忌影响时，宜先控风险，再谈扩张。`,
+      `${starKnowledge(wealth)}。财帛宫有力时，适合主动建立收入系统；受煞或化忌影响时，宜先控风险，再谈扩张。`,
       ``,
       `**【田宅宫】**`,
       `田宅宫为${starNames(palaceByName(chart, '田宅'), 'major')}，代表积累、家宅、不动产和长期安全感。它和财帛宫共同决定“赚到的钱能不能留下来”。`,
@@ -149,7 +161,7 @@ function selectedTopicText(chart: ZiweiChart, topic: Topic): string {
       `疾厄宫主星为${starNames(health, 'major')}。疾厄宫在命理里看的是体质倾向、压力模式和容易失衡的生活节奏。`,
       ``,
       `**【主要风险】**`,
-      `若疾厄宫见煞曜或化忌，通常提示压力、作息、急躁或长期消耗需要被认真管理；若吉曜较多，则更适合通过稳定习惯保持状态。`,
+      `${starKnowledge(health)}若见煞曜或化忌，通常提示压力、作息、急躁或长期消耗需要被认真管理；若吉曜较多，则更适合通过稳定习惯保持状态。`,
       ``,
       `**【大限健康走势】**`,
       dxRange
@@ -162,7 +174,7 @@ function selectedTopicText(chart: ZiweiChart, topic: Topic): string {
 
     personality: [
       `**【命宫主星性格】**`,
-      `命宫主星为${starNames(ming, 'major')}。它代表第一反应、决策风格和面对压力时最容易采用的策略。`,
+      `${starKnowledge(ming)}。命宫主星代表第一反应、决策风格和面对压力时最容易采用的策略。`,
       ``,
       `**【三方性格综合】**`,
       `财帛宫${starNames(wealth, 'major')}、官禄宫${starNames(career, 'major')}、迁移宫${starNames(moving, 'major')}共同显示：性格不是静态标签，而是在资源、职业和外部环境里被不断触发的行为模式。`,
@@ -186,7 +198,7 @@ export function buildChartInterpretation(chart: ZiweiChart, prompt = ''): string
       `${focused.name}主星为${starNames(focused, 'major')}，辅煞星为${starNames(focused).replace(starNames(focused, 'major'), '').replace(/^、/, '') || '无明显辅煞'}。该宫需要结合命宫与三方四正一同判断。`,
       ``,
       `**【主星解读】**`,
-      `主星决定这个宫位事务的处理方式：是主动开创、稳定累积、借外部机会，还是需要先化解压力与反复。`,
+      `${starKnowledge(focused)}主星决定这个宫位事务的处理方式：是主动开创、稳定累积、借外部机会，还是需要先化解压力与反复。`,
       ``,
       `**【三方四正联动】**`,
       `若该宫与命、财、官、迁形成呼应，事情容易落实；若见空宫、煞曜或化忌，则更适合先做结构性安排，不宜只凭一时感觉推进。`,
@@ -223,16 +235,35 @@ export function buildHemingInterpretation(chartA: ZiweiChart, chartB: ZiweiChart
     `A 的命宫主星为${starNames(aMing, 'major')}；B 的命宫主星为${starNames(bMing, 'major')}。命宫显示两个人遇事时的第一反应，差异越大，越需要提前约定沟通方式。`,
     ``,
     `**【夫妻宫互看】**`,
-    `A 的夫妻宫为${starNames(aSpouse, 'major')}；B 的夫妻宫为${starNames(bSpouse, 'major')}。夫妻宫代表对亲密关系的默认期待，若一方要稳定、一方要空间，就要把边界和承诺讲清楚。`,
+    `A 的夫妻宫为${starNames(aSpouse, 'major')}；B 的夫妻宫为${starNames(bSpouse, 'major')}。A 方依据：${starKnowledge(aSpouse)} B 方依据：${starKnowledge(bSpouse)}。夫妻宫代表对亲密关系的默认期待，若一方要稳定、一方要空间，就要把边界和承诺讲清楚。`,
     ``,
     `**【内在需求】**`,
     `A 的福德宫为${starNames(aFortune, 'major')}；B 的福德宫为${starNames(bFortune, 'major')}。福德宫越能互相照顾，关系越不容易只停留在表面配合。`,
+    ``,
+    `**【知识库判断】**`,
+    buildHemingKnowledgeNote(aSpouse, bSpouse),
     ``,
     `**【相处建议】**`,
     question
       ? `针对“${question}”：建议先看现实协作，再看情绪投射。把钱、时间、家庭边界和长期目标写清楚，比反复猜测对方心意更有效。`
       : `建议先建立固定沟通节奏，尤其是金钱、时间安排、家庭边界和未来规划。合盘能提示关系结构，但真正能改善关系的是清楚表达和稳定行动。`,
   ].join('\n');
+}
+
+function buildHemingKnowledgeNote(aSpouse?: Palace, bSpouse?: Palace): string {
+  const aMajor = starsOf(aSpouse, 'major')[0]?.name;
+  const bMajor = starsOf(bSpouse, 'major')[0]?.name;
+  const aRule = aMajor ? STAR_IN_FUQI_GU[aMajor] : undefined;
+  const bRule = bMajor ? STAR_IN_FUQI_GU[bMajor] : undefined;
+  const aSihua = aSpouse?.stars.find(star => star.siHua)?.siHua;
+  const bSihua = bSpouse?.stars.find(star => star.siHua)?.siHua;
+  const notes = [
+    aRule ? `A 方${aMajor}在夫妻宫：${aRule.summary}。` : 'A 方夫妻宫主星暂无专项断语。',
+    bRule ? `B 方${bMajor}在夫妻宫：${bRule.summary}。` : 'B 方夫妻宫主星暂无专项断语。',
+    aSihua ? `A 方夫妻宫见${aSihua}：${SIHUA_IN_FUQI_GU[`化${aSihua}` as keyof typeof SIHUA_IN_FUQI_GU] ?? '需结合全盘判断'}。` : '',
+    bSihua ? `B 方夫妻宫见${bSihua}：${SIHUA_IN_FUQI_GU[`化${bSihua}` as keyof typeof SIHUA_IN_FUQI_GU] ?? '需结合全盘判断'}。` : '',
+  ].filter(Boolean);
+  return `${notes.join(' ')} 本地合盘评分口径：${HEMING_SCORE_CRITERIA['三星']}。`;
 }
 
 export function streamText(text: string): ReadableStream<Uint8Array> {

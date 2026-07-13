@@ -888,6 +888,151 @@ body {
   font-weight: 900;
 }
 
+.pro-page {
+  background:
+    linear-gradient(180deg, #ffffff 0%, #fbfaf7 54%, #ffffff 100%);
+}
+
+.pro-page .simple-back {
+  color: #111827;
+  text-decoration: none;
+}
+
+.simple-metis-page .pro-hero,
+.simple-metis-page .pro-benefits,
+.simple-metis-page .pro-launch-plan {
+  width: min(100%, 920px);
+  margin: 42px auto 0;
+  padding: 42px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid #e7e3da;
+  border-radius: 24px;
+  box-shadow: 0 18px 54px rgba(17, 24, 39, 0.055);
+}
+
+.simple-metis-page .pro-hero {
+  margin-top: 34px;
+}
+
+.simple-metis-page .pro-hero > p:first-child,
+.simple-metis-page .pro-section-head p,
+.simple-metis-page .pro-launch-plan > div > p {
+  margin: 0 0 14px;
+  color: #9a7a42;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: 0.28em;
+}
+
+.simple-metis-page .pro-hero h1 {
+  max-width: 760px;
+  margin-bottom: 18px;
+}
+
+.pro-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 30px;
+}
+
+.pro-secondary-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 52px;
+  padding: 0 26px;
+  border: 1px solid #d8d2c5;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #17181c !important;
+  font-size: 16px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.pro-section-head {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+
+.pro-section-head h2,
+.pro-launch-plan h2 {
+  max-width: 620px;
+  margin: 0;
+  color: #17181c;
+  font-size: clamp(26px, 4vw, 42px);
+  line-height: 1.12;
+  font-weight: 900;
+  letter-spacing: 0;
+}
+
+.pro-benefit-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.pro-benefit-item {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 14px;
+  min-height: 92px;
+  padding: 18px;
+  border: 1px solid #ebe7df;
+  border-radius: 18px;
+  background: #fff;
+}
+
+.pro-benefit-item span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid rgba(154, 122, 66, 0.26);
+  border-radius: 999px;
+  color: #9a7a42;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.pro-benefit-item p {
+  margin: 0;
+  color: #343b47;
+  font-size: 15px;
+  line-height: 1.72;
+}
+
+.simple-metis-page .pro-launch-plan {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(280px, 0.7fr);
+  gap: 28px;
+  margin-bottom: 80px;
+}
+
+.pro-launch-plan ul {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.pro-launch-plan li {
+  padding: 14px 16px;
+  border: 1px solid #ebe7df;
+  border-radius: 14px;
+  background: #fff;
+  color: #4a5568;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
 .simple-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1294,6 +1439,38 @@ body {
   }
 
   .simple-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .simple-metis-page .pro-hero,
+  .simple-metis-page .pro-benefits,
+  .simple-metis-page .pro-launch-plan {
+    padding: 24px 20px;
+    border-radius: 18px;
+  }
+
+  .pro-section-head,
+  .simple-metis-page .pro-launch-plan {
+    grid-template-columns: 1fr;
+  }
+
+  .pro-section-head {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .pro-benefit-list {
+    grid-template-columns: 1fr;
+  }
+
+  .pro-benefit-item {
+    grid-template-columns: 36px minmax(0, 1fr);
+    min-height: auto;
+    padding: 16px;
+  }
+
+  .pro-actions {
+    display: grid;
     grid-template-columns: 1fr;
   }
 }

@@ -72,12 +72,12 @@ function focusedPalaceFromText(chart: ZiweiChart, text: string): Palace | undefi
 }
 
 function detectTopic(text: string): Topic {
-  if (text.includes('命格总观') || text.includes('命格') || text.includes('总观')) return 'overview';
   if (text.includes('感情') || text.includes('婚') || text.includes('夫妻')) return 'love';
   if (text.includes('事业') || text.includes('工作') || text.includes('官禄')) return 'career';
   if (text.includes('财') || text.includes('财富') || text.includes('田宅')) return 'wealth';
   if (text.includes('健康') || text.includes('疾厄') || text.includes('身体')) return 'health';
   if (text.includes('性格') || text.includes('人格') || text.includes('气质')) return 'personality';
+  if (text.includes('命格总观') || text.includes('总观') || text.includes('命宫')) return 'overview';
   return 'overview';
 }
 

@@ -195,7 +195,7 @@ export default function BirthForm({
           <label>出生日期（公历）</label>
           <div className="white-calendar-toggle" aria-label="历法">
             <button type="button" className="is-active">公历</button>
-            <button type="button" disabled title="农历转换即将支持">农历</button>
+            <span className="is-coming-soon" title="农历转换即将支持">农历即将支持</span>
           </div>
         </div>
         <div className="white-grid white-grid-3">

@@ -640,6 +640,30 @@ body {
   color: rgba(255, 255, 255, 0.86);
 }
 
+.module-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: fit-content;
+  margin-top: 22px;
+  padding: 8px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 999px;
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1;
+  text-shadow: none;
+  background: rgba(0, 0, 0, 0.24);
+  transition: background 0.18s ease, border-color 0.18s ease;
+}
+
+.module-card:hover .module-cta,
+.module-card:focus-visible .module-cta {
+  border-color: #ffffff;
+  background: rgba(0, 0, 0, 0.48);
+}
+
 .module-selection-frame {
   display: none;
 }
@@ -723,8 +747,15 @@ body {
     font-size: 12px;
   }
 
-  .top-links > a,
-  .top-links > button:not(.pill):not(.menu) {
+  .top-links > a[href="/chart"],
+  .top-links > a[href="/heming"],
+  .top-links > span[aria-current="true"] {
+    display: inline-flex;
+  }
+
+  .top-links > a[href="/login"],
+  .top-links > span.muted,
+  .top-links .pill {
     display: none;
   }
 
@@ -732,13 +763,8 @@ body {
     gap: 14px;
   }
 
-  .top-links .menu {
-    display: inline-flex;
-  }
-
-  .top-links .pill {
-    padding: 8px 13px;
-    font-size: 12px;
+  .top-links a {
+    padding: 4px 0;
   }
 
   .module-list {
@@ -1886,6 +1912,17 @@ body {
   cursor: pointer;
 }
 
+.white-calendar-toggle .is-coming-soon {
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 0 10px;
+  color: #9aa2ad;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 .insight-copy-button:hover:not(:disabled) {
   color: var(--t-gold);
   border-color: rgba(212, 168, 67, 0.4);
@@ -2314,7 +2351,17 @@ body {
   }
 
   .white-form-card {
-    padding: 24px 20px;
+    padding: 24px 20px 88px;
+  }
+
+  .white-form-card > .white-submit {
+    position: fixed;
+    left: 16px;
+    right: 16px;
+    bottom: 14px;
+    z-index: 40;
+    width: auto;
+    box-shadow: 0 12px 26px rgba(17, 24, 39, 0.18);
   }
 
   .white-grid-3 {

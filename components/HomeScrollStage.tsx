@@ -175,6 +175,7 @@ export default function HomeScrollStage({ modules }: HomeScrollStageProps) {
                 <span className="eyebrow">{item.no} / {item.eyebrow}</span>
                 <strong>{item.title}</strong>
                 <span className="description">{item.description}</span>
+                <span className="module-cta">进入功能 <span aria-hidden="true">→</span></span>
               </span>
             </a>
           );

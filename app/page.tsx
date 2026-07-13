@@ -14,7 +14,6 @@ const content: Record<Locale, {
     knowledge: string;
     library: string;
     login: string;
-    pro: string;
   };
   skip: string;
   srTitle: string;
@@ -32,7 +31,6 @@ const content: Record<Locale, {
       knowledge: '知识库',
       library: '古籍库',
       login: '登录',
-      pro: '专业版',
     },
     skip: '跳转到主要内容',
     srTitle: 'Metis 紫微斗数在线排盘 · AI 命盘解读 · 合盘 · 命运双胞胎',
@@ -112,7 +110,6 @@ const content: Record<Locale, {
       knowledge: 'Knowledge',
       library: 'Classics',
       login: 'Login',
-      pro: 'Pro',
     },
     skip: 'Skip to main content',
     srTitle: 'Metis Zi Wei Dou Shu charting · AI interpretation · synastry · chart twins',
@@ -213,7 +210,6 @@ export default async function HomePage({ searchParams }: HomePageProps) {
             <span>/</span>
             <a className={locale === 'en' ? 'is-active' : ''} href="/?lang=en" aria-current={locale === 'en' ? 'page' : undefined}>EN</a>
           </span>
-          <a className="pill" href="/login">{t.nav.pro}</a>
         </nav>
       </header>
 

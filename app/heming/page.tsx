@@ -233,7 +233,6 @@ function WhiteHeader({ active }: { active?: 'chart' | 'heming' }) {
         <Link className={active === 'heming' ? 'is-active' : ''} href="/heming">合盘</Link>
         <Link href="/knowledge">知识库</Link>
         <Link href="/library">古籍库</Link>
-        <Link className="white-nav-pill" href="/login">专业版</Link>
       </nav>
     </header>
   );

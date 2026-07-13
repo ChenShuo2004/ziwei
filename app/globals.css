@@ -755,10 +755,6 @@ body {
 
   .top-links > a[href="/login"],
   .top-links > span.muted,
-  .top-links .pill {
-    display: none;
-  }
-
   .top-links {
     gap: 14px;
   }
@@ -1400,12 +1396,6 @@ body {
 
 .white-nav > span {
   color: #d5d8dd;
-}
-
-.white-nav-pill {
-  padding: 8px 16px;
-  border: 1px solid #d6d9de;
-  border-radius: 999px;
 }
 
 .white-hero {
@@ -2329,10 +2319,6 @@ body {
     display: none;
   }
 
-  .white-nav-pill {
-    padding: 7px 11px;
-  }
-
   .white-hero {
     padding: 36px 16px 28px;
   }
@@ -2427,10 +2413,6 @@ body {
 }
 
 @media (max-width: 420px) {
-  .white-nav-pill {
-    display: none;
-  }
-
   .white-grid-2 {
     grid-template-columns: 1fr;
   }

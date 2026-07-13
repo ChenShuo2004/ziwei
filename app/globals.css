@@ -511,7 +511,7 @@ body {
 .top-links {
   display: flex;
   align-items: center;
-  gap: 22px;
+  gap: 18px;
   font-size: 12px;
   font-weight: 700;
 }
@@ -529,6 +529,21 @@ body {
 
 .top-links .muted {
   color: #b4b4b4;
+}
+
+.language-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #b4b4b4;
+}
+
+.language-switch a {
+  color: #9a9a9a;
+}
+
+.language-switch a.is-active {
+  color: #050505;
 }
 
 .top-links .pill {
@@ -956,30 +971,22 @@ body {
     top: 33px;
     right: 32px;
     margin: 0;
-    gap: 6px;
+    gap: 4px;
     font-size: 13px;
   }
 
-  .top-links a[href="/login"] {
+  .top-links > a:not(.pill)[href="/login"] {
     display: none;
   }
 
-  .top-links a[href="/chart"]::after {
-    content: "\00b7";
-    display: inline-block;
-    margin-left: 16px;
-    color: #d4d4d4;
-    font-size: 14px;
-    font-weight: 400;
-  }
-
   .top-links a {
-    padding: 4px 10px;
+    padding: 4px 8px;
   }
 
-  .top-links .muted::before {
-    content: "/ ";
-    color: #bcbcbc;
+  .language-switch {
+    margin-left: 4px;
+    padding-left: 6px;
+    border-left: 1px solid #e0e0e0;
   }
 
   .top-links .pill {
@@ -994,10 +1001,10 @@ body {
   .desktop-stage {
     position: relative;
     display: grid;
-    grid-template-columns: minmax(280px, 360px) minmax(168px, 1fr);
-    column-gap: clamp(34px, 6vw, 92px);
+    grid-template-columns: minmax(280px, 360px);
+    justify-content: center;
     align-items: start;
-    width: min(100% - 64px, 760px);
+    width: min(100% - 64px, 720px);
     min-height: auto;
     margin: 0 auto;
     padding: 68px 0 76px;
@@ -1100,7 +1107,7 @@ body {
     display: inline-block;
     grid-column: 1;
     grid-row: 1;
-    justify-self: center;
+    justify-self: start;
     margin-top: 4px;
     color: #dedede;
     font-size: 16px;
@@ -1111,7 +1118,7 @@ body {
     position: sticky;
     top: 150px;
     display: inline-flex;
-    grid-column: 2;
+    grid-column: 1;
     grid-row: 1;
     justify-self: end;
     gap: 22px;
@@ -1132,7 +1139,7 @@ body {
     grid-row: 1;
     width: 100%;
     max-width: 360px;
-    margin: 0;
+    margin: 0 auto;
     padding: 70px 0 0;
     transform: none;
   }
@@ -1815,12 +1822,17 @@ body {
 
 .insight-topic-bar {
   flex-shrink: 0;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
   padding: 12px;
   border-bottom: 1px solid #e8ebef;
   background: #ffffff;
 }
 
 .insight-topic-grid {
+  flex: 1 1 0;
+  min-width: 0;
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
   gap: 8px;

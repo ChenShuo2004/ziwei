@@ -994,28 +994,28 @@ body {
   .desktop-stage {
     position: relative;
     display: grid;
-    grid-template-columns: minmax(168px, 228px) minmax(280px, 360px) minmax(168px, 1fr);
+    grid-template-columns: minmax(280px, 360px) minmax(168px, 1fr);
     column-gap: clamp(34px, 6vw, 92px);
     align-items: start;
-    width: min(100% - 64px, 1180px);
+    width: min(100% - 64px, 760px);
     min-height: auto;
     margin: 0 auto;
     padding: 68px 0 76px;
   }
 
   .desktop-rail {
-    position: sticky;
-    top: 150px;
+    position: fixed;
+    top: 50%;
+    left: clamp(24px, 4vw, 64px);
     z-index: 4;
     display: flex;
     flex-direction: column;
     gap: 12px;
-    grid-column: 1;
-    grid-row: 1;
     color: #b7b7b7;
     font-size: 15px;
     font-weight: 800;
     line-height: 1;
+    transform: translateY(-50%);
   }
 
   .desktop-rail::before {
@@ -1098,7 +1098,7 @@ body {
     position: sticky;
     top: 150px;
     display: inline-block;
-    grid-column: 2;
+    grid-column: 1;
     grid-row: 1;
     justify-self: center;
     margin-top: 4px;
@@ -1111,7 +1111,7 @@ body {
     position: sticky;
     top: 150px;
     display: inline-flex;
-    grid-column: 3;
+    grid-column: 2;
     grid-row: 1;
     justify-self: end;
     gap: 22px;
@@ -1128,7 +1128,7 @@ body {
   .desktop-stage .module-list {
     position: relative;
     z-index: 2;
-    grid-column: 2;
+    grid-column: 1;
     grid-row: 1;
     width: 100%;
     max-width: 360px;

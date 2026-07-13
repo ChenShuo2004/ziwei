@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: '/favicon.svg',
+    apple: '/favicon.svg',
   },
   openGraph: {
     title: 'Metis紫薇（Metis Ziwei）— 紫微斗数文化研究平台',

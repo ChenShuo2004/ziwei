@@ -8,6 +8,7 @@ interface Message {
   role: 'user' | 'assistant';
   content: string;
   hidden?: boolean; // don't show user bubble for auto/topic messages
+  title?: string;
 }
 
 interface SelectedSiHua {
@@ -30,6 +31,8 @@ const TOPICS = [
   { key: 'health',      label: '健康' },
   { key: 'personality', label: '性格' },
 ] as const;
+
+type TopicKey = (typeof TOPICS)[number]['key'];
 
 const TOPIC_PROMPTS: Record<string, string> = {
   overview: `请生成命格总览，按以下结构输出：
@@ -146,39 +149,94 @@ const PALACE_ROLES: Record<string, string> = {
 
 /** Render AI markdown: **【Title】** → gold header, **bold** → strong */
 function AiContent({ text, streaming }: { text: string; streaming?: boolean }) {
-  const lines = text.split('\n');
+  const sections: { title: string; lines: string[] }[] = [];
+  let current: { title: string; lines: string[] } = { title: '核心解读', lines: [] };
+
+  text.split('\n').forEach((line) => {
+    const sectionMatch = line.trim().match(/^\*\*【(.+?)】\*\*$/);
+    if (sectionMatch) {
+      if (current.lines.some(item => item.trim())) sections.push(current);
+      current = { title: sectionMatch[1], lines: [] };
+      return;
+    }
+    current.lines.push(line);
+  });
+
+  if (current.lines.some(item => item.trim()) || sections.length === 0) sections.push(current);
+
+  const renderInline = (line: string) => {
+    const parts = line.replace(/^[-*]\s+/, '').split(/\*\*(.+?)\*\*/);
+    return parts.map((part, j) =>
+      j % 2 === 0
+        ? part
+        : <strong key={j} className="font-semibold text-slate-950">{part}</strong>
+    );
+  };
+
   return (
-    <div className="space-y-0.5">
-      {lines.map((line, i) => {
-        const sectionMatch = line.match(/^\*\*【(.+?)】\*\*$/);
-        if (sectionMatch) {
-          return (
-            <div key={i} className="pt-3 pb-0.5 first:pt-0">
-              <span className="text-[11px] font-semibold tracking-wide" style={{ color: 'var(--t-gold)' }}>
-                【{sectionMatch[1]}】
-              </span>
-            </div>
-          );
-        }
-        if (line.trim() === '') return <div key={i} className="h-1" />;
-        const parts = line.split(/\*\*(.+?)\*\*/);
-        return (
-          <div key={i} className="text-[11px] leading-relaxed" style={{ color: 'var(--t-text2)' }}>
-            {parts.map((part, j) =>
-              j % 2 === 0
-                ? part
-                : <strong key={j} className="font-medium" style={{ color: 'var(--t-text)' }}>{part}</strong>
+    <div className="insight-section-stack">
+      {sections.map((section, sectionIndex) => (
+        <section key={`${section.title}-${sectionIndex}`} className="insight-section-card">
+          <h3>{section.title}</h3>
+          <div className="insight-section-body">
+            {section.lines.map((line, lineIndex) => {
+              if (line.trim() === '') return null;
+              return (
+                <p key={lineIndex}>
+                  {renderInline(line.trim())}
+                </p>
+              );
+            })}
+            {streaming && sectionIndex === sections.length - 1 && (
+              <span className="insight-stream-cursor" />
             )}
           </div>
-        );
-      })}
-      {streaming && (
-        <span
-          className="inline-block w-1.5 h-3 ml-0.5 animate-pulse rounded-sm align-middle"
-          style={{ background: 'var(--t-gold)', opacity: 0.6 }}
-        />
+        </section>
+      ))}
+      {streaming && sections.length === 0 && (
+        <span className="insight-stream-cursor" />
       )}
     </div>
+  );
+}
+
+function TopicIntro({ title, loading }: { title: string; loading: boolean }) {
+  return (
+    <div className="insight-topic-intro">
+      <span>{title}</span>
+      <strong>{title}解读</strong>
+      <p>{loading ? '正在生成结构化解读…' : '点击上方主题可切换不同维度，内容会按小节分开展示。'}</p>
+    </div>
+  );
+}
+
+function UserMessage({ content }: { content: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 6 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="flex justify-end"
+    >
+      <div className="max-w-[85%] rounded-xl px-3 py-2 text-[11px] bg-amber-50 text-amber-800 ring-1 ring-amber-200">
+        {content}
+      </div>
+    </motion.div>
+  );
+}
+
+function AssistantMessage({ msg, streaming }: { msg: Message; streaming: boolean }) {
+  return (
+    <motion.article
+      initial={{ opacity: 0, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
+      className="insight-answer-card"
+    >
+      <div className="insight-answer-head">
+        <span>✦</span>
+        <strong>{msg.title ?? '命理解读'}</strong>
+      </div>
+      <AiContent text={msg.content} streaming={streaming} />
+    </motion.article>
   );
 }
 
@@ -186,12 +244,15 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
-  const [activeTopic, setActiveTopic] = useState<string>('overview');
+  const [activeTopic, setActiveTopic] = useState<TopicKey>('overview');
+  const [activeTitle, setActiveTitle] = useState('命格');
   const messagesRef = useRef<Message[]>([]); // always-current copy for closures
   const loadingRef = useRef(false);
   const autoLoaded = useRef(false);
   const lastPalaceBranch = useRef<number | undefined>(undefined);
   const lastSiHuaKey = useRef<string | undefined>(undefined);
+  const abortRef = useRef<AbortController | null>(null);
+  const requestIdRef = useRef(0);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Keep refs in sync
@@ -209,13 +270,14 @@ export default function InsightPanel({ chart, selectedPalace, selectedSiHua }: I
   useEffect(() => {
     if (autoLoaded.current) return;
     autoLoaded.current = true;
-    sendMessage(TOPIC_PROMPTS.overview, true);
+    sendMessage(TOPIC_PROMPTS.overview, { hidden: true, reset: true, title: '命格解读' });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Inject palace analysis when palace selected
   useEffect(() => {
     if (!selectedPalace || selectedPalace.branch === lastPalaceBranch.current) return;
     lastPalaceBranch.current = selectedPalace.branch;
+    setActiveTitle(selectedPalace.name);
 
     const majorStars = selectedPalace.stars.filter(s => s.type === 'major');
     const starDesc = majorStars.length > 0
@@ -237,7 +299,7 @@ ${selectedPalace.name}在命盘中的意义，以及这种星曜配置的整体�
 **【实际建议】**
 基于此宫的具体建议。`;
 
-    sendMessage(prompt, true);
+    sendMessage(prompt, { hidden: true, reset: true, title: `${selectedPalace.name}解读` });
   }, [selectedPalace]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // 注入四化飞化分析
@@ -253,6 +315,7 @@ ${selectedPalace.name}在命盘中的意义，以及这种星曜配置的整体�
     );
     const palaceName = palaceOfStar?.name ?? '未知宫位';
     const viewLabel = selectedSiHua.view === 'daxian' ? '大限' : '流年';
+    setActiveTitle(`${viewLabel}四化`);
 
     const prompt = `请分析【${viewLabel}${selectedSiHua.starName}化${selectedSiHua.siHua}】的飞化影响，按以下结构输出：
 
@@ -271,19 +334,23 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
 **【实际建议】**
 基于此四化的具体可操作建议。`;
 
-    sendMessage(prompt, true);
+    sendMessage(prompt, { hidden: true, reset: true, title: `${viewLabel}四化解读` });
   }, [selectedSiHua]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const streamResponse = async (apiMessages: { role: 'user' | 'assistant'; content: string }[]) => {
+  const streamResponse = async (
+    apiMessages: { role: 'user' | 'assistant'; content: string }[],
+    options: { title: string; requestId: number; signal: AbortSignal },
+  ) => {
     let assistantText = '';
 
-    setMessages(prev => [...prev, { role: 'assistant', content: '' }]);
+    setMessages(prev => [...prev, { role: 'assistant', content: '', title: options.title }]);
 
     try {
       const res = await fetch('/api/interpret', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ chart, messages: apiMessages }),
+        signal: options.signal,
       });
       if (!res.ok) throw new Error('请求失败');
       if (!res.body) throw new Error('无响应流');
@@ -307,69 +374,90 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
             const delta = JSON.parse(data).delta?.text ?? '';
             assistantText += delta;
             setMessages(prev => {
+              if (options.requestId !== requestIdRef.current) return prev;
               const updated = [...prev];
-              updated[updated.length - 1] = { role: 'assistant', content: assistantText };
+              updated[updated.length - 1] = { role: 'assistant', content: assistantText, title: options.title };
               return updated;
             });
           } catch { /* skip */ }
         }
       }
-    } catch {
-      setMessages(prev => [...prev, { role: 'assistant', content: '解读失败，请稍后重试。' }]);
+    } catch (error) {
+      if (options.signal.aborted || options.requestId !== requestIdRef.current) return;
+      setMessages(prev => [...prev, { role: 'assistant', content: '解读失败，请稍后重试。', title: options.title }]);
     } finally {
-      setLoading(false);
-      loadingRef.current = false;
+      if (options.requestId === requestIdRef.current) {
+        setLoading(false);
+        loadingRef.current = false;
+        abortRef.current = null;
+      }
     }
   };
 
-  const sendMessage = (text: string, hidden = false) => {
-    if (!text.trim() || loadingRef.current) return;
+  const sendMessage = (
+    text: string,
+    options: { hidden?: boolean; reset?: boolean; title?: string } = {},
+  ) => {
+    if (!text.trim()) return;
+
+    abortRef.current?.abort();
+    const requestId = requestIdRef.current + 1;
+    requestIdRef.current = requestId;
+    const controller = new AbortController();
+    abortRef.current = controller;
+
     loadingRef.current = true;
     setLoading(true);
 
-    const userMsg: Message = { role: 'user', content: text, hidden };
+    const userMsg: Message = { role: 'user', content: text, hidden: options.hidden };
     // Capture current messages synchronously via ref (avoids stale closure)
-    const apiMessages = [...messagesRef.current, userMsg].map(m => ({
+    const sourceMessages = options.reset ? [userMsg] : [...messagesRef.current, userMsg];
+    const apiMessages = sourceMessages.map(m => ({
       role: m.role,
       content: m.content,
     }));
 
-    setMessages(prev => [...prev, userMsg]);
+    setMessages(prev => options.reset ? [userMsg] : [...prev, userMsg]);
     setInput('');
-    streamResponse(apiMessages);
+    streamResponse(apiMessages, {
+      title: options.title ?? '命理解读',
+      requestId,
+      signal: controller.signal,
+    });
   };
 
-  const handleTopicClick = (topicKey: string) => {
-    if (loadingRef.current) return;
+  const handleTopicClick = (topicKey: TopicKey) => {
     setActiveTopic(topicKey);
-    sendMessage(TOPIC_PROMPTS[topicKey], true);
+    const topic = TOPICS.find(item => item.key === topicKey) ?? TOPICS[0];
+    setActiveTitle(topic.label);
+    sendMessage(TOPIC_PROMPTS[topicKey], {
+      hidden: true,
+      reset: true,
+      title: `${topic.label}解读`,
+    });
   };
 
   const handleSend = () => {
-    sendMessage(input);
+    sendMessage(input, { title: '追问解读' });
   };
 
   return (
     <div className="flex flex-col h-full rounded-xl overflow-hidden card-glass">
 
       {/* ── Topic buttons ── */}
-      <div className="flex-shrink-0 px-2 pt-2.5 pb-2" style={{ borderBottom: '1px solid var(--t-border)' }}>
-        <div className="grid grid-cols-6 gap-1">
+      <div className="insight-topic-bar">
+        <div className="insight-topic-grid">
           {TOPICS.map(t => {
             const isActive = activeTopic === t.key;
             return (
               <button
                 key={t.key}
                 onClick={() => handleTopicClick(t.key)}
-                disabled={loading}
-                className="py-1.5 text-[10px] font-medium rounded-lg transition-all duration-150 disabled:opacity-40"
-                style={{
-                  background: isActive ? 'rgba(212,168,67,0.12)' : 'transparent',
-                  border: `1px solid ${isActive ? 'rgba(212,168,67,0.3)' : 'var(--t-border)'}`,
-                  color: isActive ? 'var(--t-gold)' : 'var(--t-faint)',
-                }}
+                className={isActive ? 'is-active' : ''}
+                type="button"
               >
                 {t.label}
+                {loading && isActive && <i aria-hidden="true" />}
               </button>
             );
           })}
@@ -377,7 +465,8 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
       </div>
 
       {/* ── Messages ── */}
-      <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0 insight-scroll">
+        <TopicIntro title={activeTitle} loading={loading} />
 
         {/* Loading state before first message */}
         {messages.length === 0 && (
@@ -392,45 +481,12 @@ ${selectedSiHua.starName}化${selectedSiHua.siHua}落在【${palaceName}】，�
             if (msg.role === 'user' && msg.hidden) return null;
 
             if (msg.role === 'user') {
-              return (
-                <motion.div
-                  key={i}
-                  initial={{ opacity: 0, y: 6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="flex justify-end"
-                >
-                  <div
-                    className="max-w-[85%] rounded-xl px-3 py-2 text-[11px]"
-                    style={{
-                      background: 'rgba(212,168,67,0.08)',
-                      border: '1px solid rgba(212,168,67,0.18)',
-                      color: 'var(--t-gold)',
-                    }}
-                  >
-                    {msg.content}
-                  </div>
-                </motion.div>
-              );
+              return <UserMessage key={i} content={msg.content} />;
             }
 
             // Assistant message
             const isLastMsg = i === messages.length - 1;
-            return (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 6 }}
-                animate={{ opacity: 1, y: 0 }}
-              >
-                <div
-                  className="text-[9px] tracking-widest mb-2 flex items-center gap-1.5"
-                  style={{ color: 'var(--t-faint)' }}
-                >
-                  <span style={{ color: 'var(--t-gold)', opacity: 0.4 }}>✦</span>
-                  命理解读
-                </div>
-                <AiContent text={msg.content} streaming={loading && isLastMsg} />
-              </motion.div>
-            );
+            return <AssistantMessage key={i} msg={msg} streaming={loading && isLastMsg} />;
           })}
         </AnimatePresence>
       </div>

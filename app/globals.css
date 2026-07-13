@@ -1809,6 +1809,164 @@ body {
   min-height: 720px;
 }
 
+.white-insight-panel > div {
+  height: 100%;
+}
+
+.insight-topic-bar {
+  flex-shrink: 0;
+  padding: 12px;
+  border-bottom: 1px solid #e8ebef;
+  background: #ffffff;
+}
+
+.insight-topic-grid {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.insight-topic-grid button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 34px;
+  padding: 0 8px;
+  border: 1px solid #dfe4ea;
+  border-radius: 999px;
+  background: #f8fafc;
+  color: #536071;
+  font-size: 12px;
+  font-weight: 800;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.insight-topic-grid button:hover,
+.insight-topic-grid button.is-active {
+  border-color: #111827;
+  background: #111827;
+  color: #ffffff;
+  box-shadow: 0 10px 24px rgba(17, 24, 39, 0.12);
+}
+
+.insight-topic-grid button i {
+  width: 5px;
+  height: 5px;
+  margin-left: 6px;
+  border-radius: 999px;
+  background: currentColor;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+.insight-scroll {
+  background: #f8fafc;
+}
+
+.insight-topic-intro {
+  display: grid;
+  gap: 5px;
+  padding: 16px;
+  border: 1px solid #e5e9ef;
+  border-radius: 14px;
+  background: #ffffff;
+}
+
+.insight-topic-intro span {
+  color: #b08a22;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+}
+
+.insight-topic-intro strong {
+  color: #111827;
+  font-size: 18px;
+  line-height: 1.25;
+}
+
+.insight-topic-intro p {
+  margin: 0;
+  color: #667085;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.insight-answer-card {
+  padding: 16px;
+  border: 1px solid #e1e6ed;
+  border-radius: 16px;
+  background: #ffffff;
+  box-shadow: 0 14px 34px rgba(17, 24, 39, 0.045);
+}
+
+.insight-answer-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  color: #111827;
+}
+
+.insight-answer-head span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: #f4efe2;
+  color: #b08a22;
+  font-size: 12px;
+}
+
+.insight-answer-head strong {
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.insight-section-stack {
+  display: grid;
+  gap: 12px;
+}
+
+.insight-section-card {
+  padding: 14px 14px 13px;
+  border: 1px solid #e7ebf0;
+  border-radius: 13px;
+  background: #fbfcfd;
+}
+
+.insight-section-card h3 {
+  margin: 0 0 8px;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.insight-section-body {
+  display: grid;
+  gap: 7px;
+}
+
+.insight-section-body p {
+  margin: 0;
+  color: #3f4652;
+  font-size: 13px;
+  line-height: 1.85;
+}
+
+.insight-stream-cursor {
+  display: inline-block;
+  width: 7px;
+  height: 14px;
+  border-radius: 2px;
+  background: #111827;
+  animation: pulse 1s ease-in-out infinite;
+}
+
 .white-page .card-glass {
   background: #ffffff;
   border: 1px solid var(--white-line);

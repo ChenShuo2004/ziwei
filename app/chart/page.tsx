@@ -245,6 +245,7 @@ export default function ChartPage() {
       <section className="pro-chart-shell">
         <div className="pro-chart-toolbar" aria-label="命盘工具栏">
           <div className="pro-chart-toolbar-left">
+            <Link className="pro-chart-brand" href="/">ziwei</Link>
             <button type="button" className="pro-back-button" onClick={() => window.history.back()}>
               <span>‹</span> 返回
             </button>

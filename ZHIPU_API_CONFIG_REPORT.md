@@ -23,7 +23,7 @@ ZHIPU_MODEL=glm-4.6v
 - `.env.local`、`.env.example`、`lib/ai/zhipu.ts` 的默认模型均已同步为 `glm-4.6v`。
 - 直连智谱 `glm-4.6v` 的最小对话请求已返回成功。
 - `npm.cmd run build` 已通过，Next.js 构建时加载 `.env.local`。
-- 本地开发服务已启动并通过首页访问检查：`http://127.0.0.1:3000` 返回 `200`。
+- 本地开发服务已启动并通过首页访问检查：`http://127.0.0.1:3001` 返回 `200`。
 
 ## 处理建议
 
@@ -31,5 +31,5 @@ ZHIPU_MODEL=glm-4.6v
 
 ```bash
 npm run build
-npm start -- --hostname 127.0.0.1 --port 3000
+npm start
 ```

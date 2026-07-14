@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   title: 'ziwei — 紫微斗数文化研究平台',
   description: 'ziwei 提供紫微斗数在线排盘、AI 命盘解读、合盘分析、命理学双子与天地人三纪文化研究入口。',
   keywords: 'ziwei, 紫微斗数, 紫微斗数排盘, AI命盘解读, 合盘, 命理学双子, 天纪, 地纪, 人纪',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001'),
   alternates: {
     canonical: '/',
   },

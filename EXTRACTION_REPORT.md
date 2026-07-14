@@ -10,7 +10,7 @@
 - HEAD：`88194a404242bfe5c6d5cc512e4117e3e245cdd5`
 - 安装：`npm.cmd install` 已完成，生成 `package-lock.json`
 - 构建：`npm.cmd run build` 通过
-- 本地生产服务：`http://127.0.0.1:3000`
+- 本地生产服务：`http://127.0.0.1:3001`
 
 ## 本地修整
 

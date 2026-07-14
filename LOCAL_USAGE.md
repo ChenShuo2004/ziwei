@@ -14,16 +14,16 @@
 cd "D:\coding\1.算命\ziwei-doushu-latest"
 npm.cmd install
 npm.cmd run build
-npm.cmd run start -- --hostname 127.0.0.1 --port 3000
+npm.cmd run start
 ```
 
 打开：
 
 ```text
-http://127.0.0.1:3000
+http://127.0.0.1:3001
 ```
 
-当前这台机器上已经启动了生产服务，端口是 `3000`。
+当前这台机器上已经启动了生产服务，端口是 `3001`。
 
 ## 已补齐的本地可用功能
 

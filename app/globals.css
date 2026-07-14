@@ -2868,10 +2868,12 @@ body {
 /* Unified button interaction system */
 :root {
   --btn-ease: cubic-bezier(0.22, 1, 0.36, 1);
-  --btn-shadow: 0 8px 20px rgba(17, 24, 39, 0.10), 0 1px 2px rgba(255, 255, 255, 0.45) inset;
-  --btn-shadow-hover: 0 12px 28px rgba(17, 24, 39, 0.14), 0 1px 2px rgba(255, 255, 255, 0.55) inset;
-  --btn-shadow-press: 0 4px 12px rgba(17, 24, 39, 0.10), 0 1px 1px rgba(0, 0, 0, 0.05) inset;
-  --btn-ring: 0 0 0 3px rgba(184, 146, 42, 0.24);
+  --btn-shadow: 0 14px 30px rgba(17, 24, 39, 0.18), 0 5px 12px rgba(17, 24, 39, 0.10), 0 1px 1px rgba(255, 255, 255, 0.28) inset;
+  --btn-shadow-hover: 0 20px 44px rgba(17, 24, 39, 0.24), 0 8px 18px rgba(17, 24, 39, 0.13), 0 1px 1px rgba(255, 255, 255, 0.34) inset;
+  --btn-shadow-press: 0 6px 14px rgba(17, 24, 39, 0.16), 0 2px 6px rgba(17, 24, 39, 0.10), 0 1px 2px rgba(0, 0, 0, 0.12) inset;
+  --btn-soft-shadow: 0 5px 14px rgba(17, 24, 39, 0.09), 0 1px 2px rgba(17, 24, 39, 0.05);
+  --btn-soft-shadow-hover: 0 10px 24px rgba(17, 24, 39, 0.14), 0 3px 8px rgba(17, 24, 39, 0.08);
+  --btn-ring: 0 0 0 4px rgba(184, 146, 42, 0.26);
 }
 
 :where(
@@ -2921,17 +2923,22 @@ body {
 }
 
 :where(.btn-primary, .white-submit, .beam-button, .ui-button-primary) {
-  border: 1px solid rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.20);
   box-shadow: var(--btn-shadow);
 }
 
+:where(.btn-primary, .white-submit, .beam-button) {
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.10), rgba(0, 0, 0, 0.12));
+  background-blend-mode: soft-light;
+}
+
 :where(.btn-accent, .module-cta) {
-  border-color: rgba(255, 255, 255, 0.58);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18), 0 1px 1px rgba(255, 255, 255, 0.22) inset;
+  border-color: rgba(255, 255, 255, 0.68);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.24), 0 4px 10px rgba(0, 0, 0, 0.14), 0 1px 1px rgba(255, 255, 255, 0.24) inset;
 }
 
 :where(.btn-ghost, .white-secondary-button, .white-chip-row button, .ui-button-outline, .ui-button-ghost) {
-  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.05);
+  box-shadow: var(--btn-soft-shadow);
 }
 
 :where(.ui-icon-button) {
@@ -2965,12 +2972,22 @@ body {
     .ui-icon-button
   ):hover:not(:disabled):not([aria-disabled="true"]) {
     transform: translateY(-2px);
+    box-shadow: var(--btn-soft-shadow-hover) !important;
+  }
+
+  :where(
+    .btn-primary,
+    .btn-accent,
+    .beam-button,
+    .white-submit,
+    .ui-button-primary
+  ):hover:not(:disabled):not([aria-disabled="true"]) {
     box-shadow: var(--btn-shadow-hover) !important;
   }
 
   :where(.module-card:hover .module-cta, .module-card:focus-visible .module-cta) {
     transform: translateY(-2px);
-    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22) !important;
+    box-shadow: 0 18px 42px rgba(0, 0, 0, 0.28), 0 6px 16px rgba(0, 0, 0, 0.16) !important;
   }
 
   :where(.pro-back-button:hover span) {
@@ -3080,6 +3097,7 @@ body {
   opacity: 0.92 !important;
   color: transparent !important;
   pointer-events: none;
+  box-shadow: var(--btn-shadow) !important;
 }
 
 :where(.is-loading)::after {

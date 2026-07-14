@@ -92,6 +92,7 @@ export default function AnnouncementModal() {
               </h2>
               <button
                 onClick={close}
+                className="ui-icon-button"
                 aria-label="关闭"
                 style={{
                   position: 'absolute', top: '14px', right: '16px',
@@ -184,6 +185,7 @@ export default function AnnouncementModal() {
             }}>
               <button
                 onClick={close}
+                className="ui-button-primary"
                 style={{
                   padding: '10px 24px',
                   background: 'linear-gradient(135deg, #b8922a 0%, #9a7a20 100%)',

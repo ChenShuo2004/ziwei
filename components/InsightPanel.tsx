@@ -409,7 +409,8 @@ export default function InsightPanel({ chart, selectedPalace, onExportReport }: 
           <button
             onClick={handleSend}
             disabled={loading || !input.trim()}
-            className="px-3 py-2 rounded-lg text-[12px] font-medium transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+            aria-busy={loading}
+            className={`ui-button-primary px-3 py-2 rounded-lg text-[12px] font-medium transition-all disabled:opacity-30 disabled:cursor-not-allowed ${loading ? 'is-loading' : ''}`}
             style={{
               background: 'rgba(212,168,67,0.15)',
               border: '1px solid rgba(212,168,67,0.25)',

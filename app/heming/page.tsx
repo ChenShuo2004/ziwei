@@ -210,7 +210,13 @@ export default function HemingPage() {
               placeholder="继续追问，如：哪几年是两人感情关键期？"
               disabled={analyzing}
             />
-            <button type="button" disabled={analyzing} onClick={() => runAnalysis(question || undefined)}>
+            <button
+              type="button"
+              className={analyzing ? 'is-loading' : ''}
+              disabled={analyzing}
+              aria-busy={analyzing}
+              onClick={() => runAnalysis(question || undefined)}
+            >
               {analyzing ? '分析中...' : '继续追问'}
             </button>
           </div>

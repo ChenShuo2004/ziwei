@@ -2864,3 +2864,314 @@ body {
     flex-direction: column;
   }
 }
+
+/* Unified button interaction system */
+:root {
+  --btn-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --btn-shadow: 0 8px 20px rgba(17, 24, 39, 0.10), 0 1px 2px rgba(255, 255, 255, 0.45) inset;
+  --btn-shadow-hover: 0 12px 28px rgba(17, 24, 39, 0.14), 0 1px 2px rgba(255, 255, 255, 0.55) inset;
+  --btn-shadow-press: 0 4px 12px rgba(17, 24, 39, 0.10), 0 1px 1px rgba(0, 0, 0, 0.05) inset;
+  --btn-ring: 0 0 0 3px rgba(184, 146, 42, 0.24);
+}
+
+:where(
+  .btn-primary,
+  .btn-accent,
+  .btn-ghost,
+  .beam-button,
+  .module-cta,
+  .white-submit,
+  .white-secondary-button,
+  .white-calendar-toggle button,
+  .white-segmented button,
+  .white-question-row button,
+  .white-chip-row button,
+  .pro-back-button,
+  .pro-mode-tabs button,
+  .pro-chart-toolbar-actions button,
+  .pro-chart-notice button,
+  .insight-mode-bar button,
+  .insight-topic-grid button,
+  .insight-copy-button,
+  .scroll-intro-light__skip,
+  .top-links .pill,
+  .ui-button-primary,
+  .ui-button-outline,
+  .ui-button-ghost,
+  .ui-icon-button
+) {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 36px;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  outline: 0;
+  will-change: transform;
+  transition:
+    transform 190ms var(--btn-ease),
+    box-shadow 190ms var(--btn-ease),
+    background 190ms var(--btn-ease),
+    border-color 190ms var(--btn-ease),
+    color 190ms var(--btn-ease),
+    opacity 190ms var(--btn-ease);
+}
+
+:where(.btn-primary, .white-submit, .beam-button, .ui-button-primary) {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: var(--btn-shadow);
+}
+
+:where(.btn-accent, .module-cta) {
+  border-color: rgba(255, 255, 255, 0.58);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18), 0 1px 1px rgba(255, 255, 255, 0.22) inset;
+}
+
+:where(.btn-ghost, .white-secondary-button, .white-chip-row button, .ui-button-outline, .ui-button-ghost) {
+  box-shadow: 0 1px 2px rgba(17, 24, 39, 0.05);
+}
+
+:where(.ui-icon-button) {
+  min-width: 32px;
+  min-height: 32px;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  :where(
+    .btn-primary,
+    .btn-accent,
+    .btn-ghost,
+    .beam-button,
+    .white-submit,
+    .white-secondary-button,
+    .white-calendar-toggle button,
+    .white-segmented button,
+    .white-question-row button,
+    .white-chip-row button,
+    .pro-back-button,
+    .pro-mode-tabs button,
+    .pro-chart-toolbar-actions button,
+    .insight-mode-bar button,
+    .insight-topic-grid button,
+    .insight-copy-button,
+    .scroll-intro-light__skip,
+    .top-links .pill,
+    .ui-button-primary,
+    .ui-button-outline,
+    .ui-button-ghost,
+    .ui-icon-button
+  ):hover:not(:disabled):not([aria-disabled="true"]) {
+    transform: translateY(-2px);
+    box-shadow: var(--btn-shadow-hover) !important;
+  }
+
+  :where(.module-card:hover .module-cta, .module-card:focus-visible .module-cta) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22) !important;
+  }
+
+  :where(.pro-back-button:hover span) {
+    transform: translateX(-3px);
+  }
+
+  :where(.module-card:hover .module-cta span:last-child, .beam-button:hover span:last-child) {
+    transform: translateX(3px);
+  }
+}
+
+:where(
+  .btn-primary,
+  .btn-accent,
+  .btn-ghost,
+  .beam-button,
+  .module-cta,
+  .white-submit,
+  .white-secondary-button,
+  .white-calendar-toggle button,
+  .white-segmented button,
+  .white-question-row button,
+  .white-chip-row button,
+  .pro-back-button,
+  .pro-mode-tabs button,
+  .pro-chart-toolbar-actions button,
+  .pro-chart-notice button,
+  .insight-mode-bar button,
+  .insight-topic-grid button,
+  .insight-copy-button,
+  .scroll-intro-light__skip,
+  .top-links .pill,
+  .ui-button-primary,
+  .ui-button-outline,
+  .ui-button-ghost,
+  .ui-icon-button
+):active:not(:disabled):not([aria-disabled="true"]) {
+  transform: translateY(0) scale(0.985);
+  box-shadow: var(--btn-shadow-press) !important;
+}
+
+:where(
+  .btn-primary,
+  .btn-accent,
+  .btn-ghost,
+  .beam-button,
+  .module-card,
+  .white-submit,
+  .white-secondary-button,
+  .white-calendar-toggle button,
+  .white-segmented button,
+  .white-question-row button,
+  .white-chip-row button,
+  .pro-back-button,
+  .pro-mode-tabs button,
+  .pro-chart-toolbar-actions button,
+  .pro-chart-notice button,
+  .insight-mode-bar button,
+  .insight-topic-grid button,
+  .insight-copy-button,
+  .scroll-intro-light__skip,
+  .top-links a,
+  .ui-button-primary,
+  .ui-button-outline,
+  .ui-button-ghost,
+  .ui-icon-button
+):focus-visible {
+  outline: 2px solid rgba(184, 146, 42, 0.72);
+  outline-offset: 3px;
+  box-shadow: var(--btn-ring), var(--btn-shadow) !important;
+}
+
+:where(
+  .btn-primary,
+  .btn-accent,
+  .btn-ghost,
+  .beam-button,
+  .white-submit,
+  .white-secondary-button,
+  .white-calendar-toggle button,
+  .white-segmented button,
+  .white-question-row button,
+  .white-chip-row button,
+  .pro-back-button,
+  .pro-mode-tabs button,
+  .pro-chart-toolbar-actions button,
+  .pro-chart-notice button,
+  .insight-mode-bar button,
+  .insight-topic-grid button,
+  .insight-copy-button,
+  .scroll-intro-light__skip,
+  .ui-button-primary,
+  .ui-button-outline,
+  .ui-button-ghost,
+  .ui-icon-button
+):disabled,
+:where([aria-disabled="true"]) {
+  opacity: 0.48;
+  cursor: not-allowed;
+  filter: saturate(0.72);
+  transform: none !important;
+  box-shadow: none !important;
+}
+
+:where(.is-loading) {
+  cursor: wait !important;
+  opacity: 0.92 !important;
+  color: transparent !important;
+  pointer-events: none;
+}
+
+:where(.is-loading)::after {
+  position: absolute;
+  inset: 50% auto auto 50%;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 999px;
+  color: #ffffff;
+  content: "";
+  animation: button-spin 720ms linear infinite;
+}
+
+:where(.ui-button-outline.is-loading, .ui-button-ghost.is-loading, .white-secondary-button.is-loading)::after {
+  color: var(--white-ink, var(--tx-0));
+}
+
+:where(.pro-back-button span, .module-cta span:last-child, .beam-button span:last-child) {
+  display: inline-flex;
+  transition: transform 190ms var(--btn-ease);
+}
+
+:where(.beam-button, .white-form-card > .white-submit, .white-empty-state .white-submit) {
+  animation: button-enter 420ms var(--btn-ease) 160ms both;
+}
+
+@keyframes button-enter {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes button-spin {
+  to { transform: rotate(360deg); }
+}
+
+@media (max-width: 720px) {
+  :where(
+    .btn-primary,
+    .btn-accent,
+    .btn-ghost,
+    .beam-button,
+    .white-submit,
+    .white-secondary-button,
+    .white-question-row button,
+    .white-chip-row button,
+    .pro-back-button,
+    .pro-mode-tabs button,
+    .pro-chart-toolbar-actions button,
+    .insight-mode-bar button,
+    .insight-topic-grid button,
+    .scroll-intro-light__skip,
+    .ui-button-primary,
+    .ui-button-outline,
+    .ui-button-ghost,
+    .ui-icon-button
+  ) {
+    min-height: 44px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :where(
+    .btn-primary,
+    .btn-accent,
+    .btn-ghost,
+    .beam-button,
+    .module-cta,
+    .white-submit,
+    .white-secondary-button,
+    .white-calendar-toggle button,
+    .white-segmented button,
+    .white-question-row button,
+    .white-chip-row button,
+    .pro-back-button,
+    .pro-mode-tabs button,
+    .pro-chart-toolbar-actions button,
+    .pro-chart-notice button,
+    .insight-mode-bar button,
+    .insight-topic-grid button,
+    .insight-copy-button,
+    .scroll-intro-light__skip,
+    .top-links .pill,
+    .ui-button-primary,
+    .ui-button-outline,
+    .ui-button-ghost,
+    .ui-icon-button
+  ) {
+    animation: none !important;
+    transition-duration: 1ms !important;
+    transform: none !important;
+  }
+}

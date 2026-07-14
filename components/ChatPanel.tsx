@@ -156,7 +156,7 @@ export default function ChatPanel({ chart }: ChatPanelProps) {
                 key={i}
                 onClick={() => sendMessage(q)}
                 disabled={loading}
-                className="text-left text-[10px] rounded-lg px-2.5 py-2 transition-all line-clamp-2"
+                className="ui-button-ghost text-left text-[10px] rounded-lg px-2.5 py-2 transition-all line-clamp-2"
                 style={{
                   color: 'var(--t-text2)',
                   border: '1px solid var(--t-border)',
@@ -198,7 +198,8 @@ export default function ChatPanel({ chart }: ChatPanelProps) {
           <button
             onClick={() => sendMessage(input)}
             disabled={loading || !input.trim()}
-            className="px-3 py-2 rounded-lg text-xs font-medium transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+            aria-busy={loading}
+            className={`ui-button-primary px-3 py-2 rounded-lg text-xs font-medium transition-all disabled:opacity-30 disabled:cursor-not-allowed ${loading ? 'is-loading' : ''}`}
             style={{
               background: 'rgba(212,168,67,0.15)',
               border: '1px solid rgba(212,168,67,0.25)',

@@ -371,7 +371,12 @@ export default function BirthForm({
       )}
 
       {!hideSubmit && (
-        <button className="white-submit" type="submit" disabled={loading}>
+        <button
+          className={`white-submit ${loading ? 'is-loading' : ''}`}
+          type="submit"
+          disabled={loading}
+          aria-busy={loading}
+        >
           {loading ? '紫微起盘中...' : submitLabel}
         </button>
       )}

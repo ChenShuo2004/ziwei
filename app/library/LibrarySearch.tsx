@@ -50,6 +50,8 @@ export default function LibrarySearch() {
       <button
         onClick={submit}
         disabled={isPending || !q.trim()}
+        className={`ui-button-primary ${isPending ? 'is-loading' : ''}`}
+        aria-busy={isPending}
         style={{
           padding: '10px 22px',
           borderRadius: '8px',

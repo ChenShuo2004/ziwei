@@ -85,6 +85,8 @@ export default function ShareModal({ open, onClose, shareUrl, chart, birth, high
                 ✦ 分享命盘
               </div>
               <button onClick={onClose}
+                className="ui-icon-button"
+                aria-label="Close"
                 style={{
                   width: '28px', height: '28px', borderRadius: '50%', border: 'none',
                   background: 'rgba(0,0,0,0.05)', color: '#666', fontSize: '16px',
@@ -107,6 +109,8 @@ export default function ShareModal({ open, onClose, shareUrl, chart, birth, high
             {/* 操作区 */}
             <div style={{ padding: '0 20px 20px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
               <button onClick={downloadImage} disabled={downloading}
+                className={`ui-button-primary ${downloading ? 'is-loading' : ''}`}
+                aria-busy={downloading}
                 style={{
                   padding: '14px', borderRadius: '10px', border: 'none',
                   background: 'linear-gradient(135deg, #d4a948 0%, #b8922a 100%)',
@@ -120,6 +124,7 @@ export default function ShareModal({ open, onClose, shareUrl, chart, birth, high
               </button>
 
               <button onClick={copyLink}
+                className="ui-button-outline"
                 style={{
                   padding: '14px', borderRadius: '10px',
                   border: '1px solid rgba(184,146,42,0.4)', background: 'white',

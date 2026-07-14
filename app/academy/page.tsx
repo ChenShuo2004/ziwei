@@ -1,5 +1,5 @@
 export const metadata = {
-  title: '学术中心 · Metis紫薇',
+  title: '学术中心 · ziwei',
   description: '14 主星、13 宫位与古籍原典入口。',
 };
 
@@ -12,8 +12,8 @@ const links = [
 
 export default function AcademyPage() {
   return (
-    <main className="simple-metis-page">
-      <a className="simple-back" href="/">METIS</a>
+    <main className="simple-ziwei-page">
+      <a className="simple-back" href="/">ziwei</a>
       <section>
         <p>07 / ACADEMY</p>
         <h1>学术中心</h1>

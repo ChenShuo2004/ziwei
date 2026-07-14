@@ -40,7 +40,7 @@ export default function ScrollIntro({ onComplete, skipLabel = '跳过' }: Scroll
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.55, ease: 'easeOut' }}
           >
-            <span className="scroll-intro-light__kicker">METIS ZIWEI</span>
+            <span className="scroll-intro-light__kicker">ziwei</span>
             <strong>紫微命盘</strong>
             <p>以白色研究平台风格进入排盘</p>
           </motion.div>

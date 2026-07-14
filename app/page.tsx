@@ -33,8 +33,8 @@ const content: Record<Locale, {
       login: '登录',
     },
     skip: '跳转到主要内容',
-    srTitle: 'Metis 紫微斗数在线排盘 · AI 命盘解读 · 合盘 · 命运双胞胎',
-    beamLabel: 'METIS 紫微斗数文化研究平台',
+    srTitle: 'ziwei 紫微斗数在线排盘 · AI 命盘解读 · 合盘 · 命运双胞胎',
+    beamLabel: 'ziwei 紫微斗数文化研究平台',
     beamTitle: '以命盘为入口，进入天 · 地 · 人三纪体系',
     beamButton: '查看命盘',
     footer: [
@@ -112,8 +112,8 @@ const content: Record<Locale, {
       login: 'Login',
     },
     skip: 'Skip to main content',
-    srTitle: 'Metis Zi Wei Dou Shu charting · AI interpretation · synastry · chart twins',
-    beamLabel: 'METIS ZI WEI RESEARCH PLATFORM',
+    srTitle: 'ziwei charting · AI interpretation · synastry · chart twins',
+    beamLabel: 'ziwei RESEARCH PLATFORM',
     beamTitle: 'Use the chart as the doorway into Heaven, Earth, and Human systems',
     beamButton: 'Open Chart',
     footer: [
@@ -190,12 +190,12 @@ export default async function HomePage({ searchParams }: HomePageProps) {
   const t = content[locale];
 
   return (
-    <main className="metis-home">
+    <main className="ziwei-home">
       <a className="skip-link" href="#main-content">{t.skip}</a>
 
-      <header className="metis-header" aria-label="主导航">
-        <a className="brand" href={locale === 'en' ? '/?lang=en' : '/'} aria-label="Metis 首页">
-          <span>METIS</span>
+      <header className="ziwei-header" aria-label="主导航">
+        <a className="brand" href={locale === 'en' ? '/?lang=en' : '/'} aria-label="ziwei 首页">
+          <span>ziwei</span>
           <small>{t.brandSubtitle}</small>
         </a>
 
@@ -223,7 +223,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
         <a className="beam-button" href="/chart">{t.beamButton}</a>
       </section>
 
-      <footer className="metis-footer">
+      <footer className="ziwei-footer">
         <nav aria-label="页脚导航">
           {t.footer.map((link) => <a href={link.href} key={link.href}>{link.text}</a>)}
         </nav>

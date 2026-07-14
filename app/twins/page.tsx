@@ -1,12 +1,12 @@
 export const metadata = {
-  title: '命理学双子 · Metis紫薇',
+  title: '命理学双子 · ziwei',
   description: '匹配同命盘配置，研究相同星曜与宫位组合的数据样本。',
 };
 
 export default function TwinsPage() {
   return (
-    <main className="simple-metis-page">
-      <a className="simple-back" href="/">METIS</a>
+    <main className="simple-ziwei-page">
+      <a className="simple-back" href="/">ziwei</a>
       <section>
         <p>03 / CHART TWINS</p>
         <h1>命理学双子</h1>

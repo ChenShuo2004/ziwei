@@ -1,14 +1,14 @@
 import { TIANJI_MODULES } from '@/lib/nihai';
 
 export const metadata = {
-  title: '天纪 · 命理 · Metis紫薇',
+  title: '天纪 · 命理 · ziwei',
   description: '上知天文：紫微斗数、易经、堪舆、推命、面相、测字。',
 };
 
 export default function TianjiPage() {
   return (
-    <main className="simple-metis-page">
-      <a className="simple-back" href="/">METIS</a>
+    <main className="simple-ziwei-page">
+      <a className="simple-back" href="/">ziwei</a>
       <section>
         <p>04 / TIAN JI</p>
         <h1>天纪 · 命理</h1>

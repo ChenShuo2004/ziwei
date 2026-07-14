@@ -16,14 +16,14 @@ const roadmap = [
 ];
 
 export const metadata = {
-  title: '功能路线图 · Metis紫薇',
-  description: 'Metis紫薇功能路线图：完整排盘、AI 解读、报告下载、三纪内容库和本地化隐私。',
+  title: '功能路线图 · ziwei',
+  description: 'ziwei 功能路线图：完整排盘、AI 解读、报告下载、三纪内容库和本地化隐私。',
 };
 
 export default function LoginPage() {
   return (
-    <main className="simple-metis-page pro-page">
-      <a className="simple-back" href="/">METIS</a>
+    <main className="simple-ziwei-page pro-page">
+      <a className="simple-back" href="/">ziwei</a>
 
       <section className="pro-hero">
         <p>05 / ROADMAP</p>
@@ -34,7 +34,7 @@ export default function LoginPage() {
 
         <div className="pro-actions">
           <a className="simple-button" href="/chart">立即排盘</a>
-          <a className="pro-secondary-button" href="mailto:feedback@wdyziweidoushu666.com?subject=Metis%E7%B4%AB%E8%96%87%E5%8A%9F%E8%83%BD%E5%BB%BA%E8%AE%AE">反馈建议</a>
+          <a className="pro-secondary-button" href="mailto:feedback@wdyziweidoushu666.com?subject=ziwei%E5%8A%9F%E8%83%BD%E5%BB%BA%E8%AE%AE">反馈建议</a>
         </div>
       </section>
 

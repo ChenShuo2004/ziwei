@@ -126,7 +126,7 @@ export default function HomeScrollStage({ modules }: HomeScrollStageProps) {
   }, [frameRect]);
 
   return (
-    <section id="main-content" className="desktop-stage" aria-label="Metis 功能入口">
+    <section id="main-content" className="desktop-stage" aria-label="ziwei 功能入口">
       <aside className="desktop-rail" aria-label="功能目录">
         {modules.map((item, index) => {
           const isActive = activeIndex === index;

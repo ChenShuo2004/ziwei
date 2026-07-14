@@ -2,7 +2,7 @@ import Link from 'next/link';
 
 export default function PreviewPage() {
   return (
-    <main className="simple-metis-page">
+    <main className="simple-ziwei-page">
       <section>
         <p>PREVIEW</p>
         <h1>预览页已并入白色主视觉</h1>

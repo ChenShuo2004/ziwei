@@ -430,8 +430,8 @@ body {
   @page { margin: 1.2cm; size: A4 landscape; }
 }
 
-/* ─── Metis public home, mirrored from metisziwei.com ───── */
-.metis-home {
+/* ─── ziwei public home ───── */
+.ziwei-home {
   min-height: 100vh;
   background: #fff;
   color: #050505;
@@ -439,13 +439,13 @@ body {
   letter-spacing: 0;
 }
 
-.metis-home *,
-.metis-home *::before,
-.metis-home *::after {
+.ziwei-home *,
+.ziwei-home *::before,
+.ziwei-home *::after {
   box-sizing: border-box;
 }
 
-.metis-home a {
+.ziwei-home a {
   color: inherit;
   text-decoration: none;
 }
@@ -477,7 +477,7 @@ body {
   border: 0;
 }
 
-.metis-header {
+.ziwei-header {
   position: sticky;
   top: 0;
   z-index: 100;
@@ -708,33 +708,33 @@ body {
   font-weight: 900;
 }
 
-.metis-footer {
+.ziwei-footer {
   padding: 38px 30px 52px;
   border-top: 1px solid #e9e9e9;
 }
 
-.metis-footer nav,
-.metis-footer .legal {
+.ziwei-footer nav,
+.ziwei-footer .legal {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
 }
 
-.metis-footer nav {
+.ziwei-footer nav {
   gap: 28px;
   margin-bottom: 22px;
   font-size: 13px;
   font-weight: 800;
 }
 
-.metis-footer .legal {
+.ziwei-footer .legal {
   gap: 12px 20px;
   color: #6f6f6f;
   font-size: 12px;
 }
 
 @media (max-width: 767px) {
-  .metis-header {
+  .ziwei-header {
     min-height: 82px;
     padding: 12px 18px 13px;
   }
@@ -823,7 +823,7 @@ body {
   }
 }
 
-.simple-metis-page {
+.simple-ziwei-page {
   min-height: 100vh;
   padding: 28px;
   background: #fff;
@@ -831,7 +831,7 @@ body {
   font-family: Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
 }
 
-.simple-metis-page section {
+.simple-ziwei-page section {
   width: min(100%, 820px);
   margin: 42px auto 80px;
 }
@@ -844,7 +844,7 @@ body {
   line-height: 1;
 }
 
-.simple-metis-page section > p:first-child {
+.simple-ziwei-page section > p:first-child {
   margin: 0 0 18px;
   color: #777;
   font-size: 13px;
@@ -852,7 +852,7 @@ body {
   letter-spacing: 0.28em;
 }
 
-.simple-metis-page h1 {
+.simple-ziwei-page h1 {
   margin: 0 0 24px;
   font-size: clamp(42px, 8vw, 82px);
   line-height: 1;
@@ -867,7 +867,7 @@ body {
   background-size: cover;
 }
 
-.simple-metis-page .lead {
+.simple-ziwei-page .lead {
   max-width: 720px;
   margin: 0 0 28px;
   color: #333;
@@ -1117,7 +1117,7 @@ body {
 }
 
 @media (min-width: 768px) {
-  .metis-header {
+  .ziwei-header {
     min-height: 112px;
     padding: 24px 32px 16px;
     border-bottom: 0;
@@ -1430,11 +1430,11 @@ body {
 }
 
 @media (max-width: 640px) {
-  .simple-metis-page {
+  .simple-ziwei-page {
     padding: 18px;
   }
 
-  .simple-metis-page section {
+  .simple-ziwei-page section {
     margin-top: 34px;
   }
 
@@ -2547,27 +2547,27 @@ body {
   font-weight: 800;
 }
 
-.simple-metis-page {
+.simple-ziwei-page {
   min-height: 100vh;
   background: #ffffff;
   color: var(--white-ink);
   font-family: Inter, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", Arial, sans-serif;
 }
 
-.simple-metis-page section {
+.simple-ziwei-page section {
   background: #ffffff;
   border: 1px solid var(--white-line);
   box-shadow: 0 10px 34px rgba(17, 24, 39, 0.035);
 }
 
-.simple-metis-page h1 {
+.simple-ziwei-page h1 {
   color: var(--white-ink);
   letter-spacing: 0;
 }
 
-.simple-metis-page .lead,
-.simple-metis-page p,
-.simple-metis-page a {
+.simple-ziwei-page .lead,
+.simple-ziwei-page p,
+.simple-ziwei-page a {
   letter-spacing: 0;
 }
 

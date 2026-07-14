@@ -1,14 +1,14 @@
 import { RENJI_MODULES } from '@/lib/nihai';
 
 export const metadata = {
-  title: '人纪 · 中医 · Metis紫薇',
+  title: '人纪 · 中医 · ziwei',
   description: '中知人事：黄帝内经、针灸、神农本草经、伤寒论与金匮要略。',
 };
 
 export default function RenjiPage() {
   return (
-    <main className="simple-metis-page">
-      <a className="simple-back" href="/">METIS</a>
+    <main className="simple-ziwei-page">
+      <a className="simple-back" href="/">ziwei</a>
       <section>
         <p>06 / REN JI</p>
         <h1>人纪 · 中医</h1>

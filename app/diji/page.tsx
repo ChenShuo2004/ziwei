@@ -1,14 +1,14 @@
 import { DIJI_MODULES } from '@/lib/nihai';
 
 export const metadata = {
-  title: '地纪 · 堪舆 · Metis紫薇',
+  title: '地纪 · 堪舆 · ziwei',
   description: '下知地理：风水堪舆经典与倪师地纪构想整理。',
 };
 
 export default function DijiPage() {
   return (
-    <main className="simple-metis-page">
-      <a className="simple-back" href="/">METIS</a>
+    <main className="simple-ziwei-page">
+      <a className="simple-back" href="/">ziwei</a>
       <section>
         <p>05 / DI JI</p>
         <h1>地纪 · 堪舆</h1>

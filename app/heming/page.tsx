@@ -224,7 +224,7 @@ function WhiteHeader({ active }: { active?: 'chart' | 'heming' }) {
   return (
     <header className="white-header">
       <Link className="white-brand" href="/">
-        <strong>METIS</strong>
+        <strong>ziwei</strong>
         <span>紫微斗数 · 三纪</span>
       </Link>
       <nav className="white-nav" aria-label="主导航">

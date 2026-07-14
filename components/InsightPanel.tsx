@@ -18,19 +18,19 @@ interface InsightPanelProps {
 }
 
 const TOPICS = [
-  { key: 'overview', label: '命格总览', pro: false },
-  { key: 'wealth', label: '财运', pro: false },
-  { key: 'career', label: '事业', pro: false },
-  { key: 'love', label: '感情', pro: false },
-  { key: 'personality', label: '性格', pro: false },
-  { key: 'health', label: '健康', pro: false },
-  { key: 'siblings', label: '兄弟合伙', pro: true },
-  { key: 'children', label: '子女', pro: true },
-  { key: 'travel', label: '迁移外出', pro: true },
-  { key: 'network', label: '人际贵人', pro: true },
-  { key: 'property', label: '田宅', pro: true },
-  { key: 'fortune', label: '福德', pro: true },
-  { key: 'parents', label: '父母长辈', pro: true },
+  { key: 'overview', label: '命格总览' },
+  { key: 'wealth', label: '财运' },
+  { key: 'career', label: '事业' },
+  { key: 'love', label: '感情' },
+  { key: 'personality', label: '性格' },
+  { key: 'health', label: '健康' },
+  { key: 'siblings', label: '兄弟合伙' },
+  { key: 'children', label: '子女' },
+  { key: 'travel', label: '迁移外出' },
+  { key: 'network', label: '人际贵人' },
+  { key: 'property', label: '田宅' },
+  { key: 'fortune', label: '福德' },
+  { key: 'parents', label: '父母长辈' },
 ] as const;
 
 type TopicKey = (typeof TOPICS)[number]['key'];
@@ -352,7 +352,6 @@ export default function InsightPanel({ chart, selectedPalace, onExportReport }: 
                   type="button"
                 >
                   {topic.label}
-                  {topic.pro && <span className="pro-dot">PRO</span>}
                   {loading && isActive && <i aria-hidden="true" />}
                 </button>
               );

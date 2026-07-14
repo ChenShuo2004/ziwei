@@ -139,7 +139,7 @@ ${sihua.length ? sihua.join('\n') : '本盘未识别到明显四化标记。'}
 
 ## 5. 现实建议
 
-这份报告先作为 MVP 版本，重点用于保存命盘结构、十二宫信息和后续 AI 深度解读。正式专业版会继续补充大限、流年、专题分析、古籍依据和可下载 PDF。
+这份报告先作为 MVP 版本，重点用于保存命盘结构、十二宫信息和后续 AI 深度解读。后续会继续补充大限、流年、专题分析、古籍依据和可下载 PDF。
 
 ## 6. 免责声明
 
@@ -196,7 +196,7 @@ export default function ChartPage() {
   const handleModeClick = (next: ChartMode) => {
     setMode(next);
     if (next === 'liuyue' || next === 'liuri' || next === 'liushi') {
-      setNotice(`${MODE_LABELS[next]}属于专业版精细盘，当前先开放入口，算法接入后会同步命盘与解读。`);
+      setNotice(`${MODE_LABELS[next]}精细盘正在接入中，完成后会同步命盘与解读。`);
       return;
     }
     setNotice('');
@@ -262,10 +262,9 @@ export default function ChartPage() {
             </div>
           </div>
           <div className="pro-chart-toolbar-actions">
-            <Link className="pro-upgrade-button" href="/login">升级专业版</Link>
-            <button type="button" onClick={() => setNotice('流派切换会作为专业版配置项接入，当前采用默认紫微斗数体系。')}>流派</button>
+            <button type="button" onClick={() => setNotice('流派切换正在接入中，当前采用默认紫微斗数体系。')}>流派</button>
             <button type="button" onClick={() => setNotice('历史命盘会优先保存在本机，下一步接入本地历史列表。')}>历史</button>
-            <button type="button" onClick={() => setNotice('反馈入口会接入表单，当前可先记录到专业版待办。')}>反馈</button>
+            <button type="button" onClick={() => setNotice('反馈入口会接入表单，当前可先记录到功能待办。')}>反馈</button>
           </div>
         </div>
 

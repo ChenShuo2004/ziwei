@@ -2037,8 +2037,7 @@ body {
 
 .pro-back-button,
 .pro-mode-tabs button,
-.pro-chart-toolbar-actions button,
-.pro-upgrade-button {
+.pro-chart-toolbar-actions button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -2082,21 +2081,6 @@ body {
   border-color: #111827;
   background: #111827;
   color: #fff;
-}
-
-.pro-upgrade-button {
-  padding: 0 14px;
-  border-color: rgba(180, 130, 32, 0.28);
-  background: #fff8e6;
-  color: #9a6a12;
-  text-decoration: none;
-}
-
-.pro-upgrade-button:hover {
-  border-color: rgba(180, 130, 32, 0.5);
-  background: #f5e2ae;
-  color: #5f420b;
-  box-shadow: 0 10px 22px rgba(180, 130, 32, 0.16);
 }
 
 .pro-chart-toolbar-actions button {
@@ -2258,22 +2242,6 @@ body {
   border-radius: 999px;
   background: currentColor;
   animation: pulse 1s ease-in-out infinite;
-}
-
-.insight-topic-grid .pro-dot {
-  margin-left: 5px;
-  padding: 1px 4px;
-  border-radius: 999px;
-  background: rgba(180, 130, 32, 0.12);
-  color: #9a6a12;
-  font-size: 8px;
-  letter-spacing: 0.02em;
-}
-
-.insight-topic-grid button.is-active .pro-dot,
-.insight-topic-grid button:hover .pro-dot {
-  background: rgba(255, 255, 255, 0.18);
-  color: #fff;
 }
 
 .insight-copy-button {

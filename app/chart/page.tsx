@@ -70,6 +70,8 @@ function parseChartUrl(): BirthInfo | null {
 function birthToFormState(info: BirthInfo): BirthFormState {
   return {
     name: info.name ?? '',
+    calendar: 'solar',
+    isLeapMonth: false,
     year: String(info.year),
     month: String(info.month),
     day: String(info.day),

@@ -2271,17 +2271,6 @@ body {
   cursor: pointer;
 }
 
-.white-calendar-toggle .is-coming-soon {
-  display: inline-flex;
-  align-items: center;
-  min-height: 30px;
-  padding: 0 10px;
-  color: #9aa2ad;
-  font-size: 12px;
-  font-weight: 700;
-  white-space: nowrap;
-}
-
 .insight-copy-button:hover:not(:disabled) {
   color: var(--t-gold);
   border-color: rgba(212, 168, 67, 0.4);

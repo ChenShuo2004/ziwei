@@ -1,5 +1,6 @@
 import type { BirthFormState } from '@/components/BirthForm';
 import type { BirthInfo } from './types';
+import { birthDateToSolarDate } from './birth-date';
 
 /** 根据北京时间 + 经度计算真太阳时时辰支 (0-11) */
 export function calcTrueSolarBranch(clockHour: number, clockMinute: number, longitude: number): number {
@@ -18,9 +19,10 @@ export function calcTrueSolarBranch(clockHour: number, clockMinute: number, long
  * 这与「时辰支同为子(0)」并不冲突——子时分早晚两段，需要在日期上区分。
  */
 export function formToBirthInfo(form: BirthFormState): BirthInfo {
-  let y = parseInt(form.year) || 0;
-  let m = parseInt(form.month) || 0;
-  let d = parseInt(form.day) || 0;
+  const solarDate = birthDateToSolarDate(form);
+  let y = solarDate?.year ?? (parseInt(form.year) || 0);
+  let m = solarDate?.month ?? (parseInt(form.month) || 0);
+  let d = solarDate?.day ?? (parseInt(form.day) || 0);
 
   // 晚子时（23:00-23:59）按次日处理：用 Date 对象自动处理月末/年末进位
   if (!form.unknownTime) {
@@ -51,6 +53,8 @@ export function formToBirthInfo(form: BirthFormState): BirthInfo {
 export function formToSearchParams(form: BirthFormState): URLSearchParams {
   const p = new URLSearchParams();
   if (form.name) p.set('n', form.name);
+  if (form.calendar === 'lunar') p.set('cal', 'lunar');
+  if (form.isLeapMonth) p.set('leap', '1');
   p.set('y', form.year);
   p.set('m', form.month);
   p.set('d', form.day);
@@ -75,6 +79,8 @@ export function searchParamsToForm(params: URLSearchParams): Partial<BirthFormSt
   if (!year || !month || !day) return null;
   return {
     name: params.get('n') || '',
+    calendar: params.get('cal') === 'lunar' ? 'lunar' : 'solar',
+    isLeapMonth: params.get('leap') === '1',
     year,
     month,
     day,

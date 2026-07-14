@@ -4,9 +4,12 @@ import { useEffect, useMemo, useState } from 'react';
 import type { BirthInfo } from '@/lib/ziwei/types';
 import { SHICHEN } from '@/lib/ziwei/constants';
 import { PROVINCES } from '@/lib/ziwei/cities';
+import { birthDateToSolarDate, isValidSolarDate, type CalendarType } from '@/lib/ziwei/birth-date';
 
 export interface BirthFormState {
   name: string;
+  calendar: CalendarType;
+  isLeapMonth: boolean;
   year: string;
   month: string;
   day: string;
@@ -41,12 +44,6 @@ function calcTrueSolarBranch(clockHour: number, clockMinute: number, longitude: 
   return Math.floor((solar - 60) / 120) + 1;
 }
 
-function isValidDate(y: number, m: number, d: number): boolean {
-  if (!y || !m || !d) return false;
-  const date = new Date(y, m - 1, d);
-  return date.getFullYear() === y && date.getMonth() === m - 1 && date.getDate() === d;
-}
-
 export default function BirthForm({
   onSubmit,
   loading,
@@ -60,6 +57,8 @@ export default function BirthForm({
 }: BirthFormProps) {
   const [form, setForm] = useState<BirthFormState>({
     name: initialData?.name ?? '',
+    calendar: initialData?.calendar ?? 'solar',
+    isLeapMonth: initialData?.isLeapMonth ?? false,
     year: initialData?.year ?? '',
     month: initialData?.month ?? '',
     day: initialData?.day ?? '',
@@ -96,6 +95,7 @@ export default function BirthForm({
   const y = parseInt(form.year) || 0;
   const m = parseInt(form.month) || 0;
   const d = parseInt(form.day) || 0;
+  const solarDate = birthDateToSolarDate(form);
   const offsetMin = Math.round((form.longitude - 120) * 4);
   const shichenInfo = SHICHEN[branch];
 
@@ -104,9 +104,11 @@ export default function BirthForm({
     month: !form.month ? '请选择月份' : '',
     day: !form.day
       ? '请选择日期'
-      : form.year && form.month && !isValidDate(y, m, d)
+      : form.calendar === 'solar' && form.year && form.month && !isValidSolarDate(y, m, d)
         ? `${m}月没有${d}日`
-        : '',
+        : form.calendar === 'lunar' && form.year && form.month && !solarDate
+          ? '农历日期不存在'
+          : '',
     location: !form.province || !form.city ? '请选择出生地点' : '',
   };
   const hasError = Object.values(errors).some(Boolean);
@@ -152,10 +154,12 @@ export default function BirthForm({
     setTouched({ year: true, month: true, day: true, location: true });
     if (hasError) return;
     onFormSave?.({ ...form });
+    const finalDate = birthDateToSolarDate(form);
+    if (!finalDate) return;
     onSubmit({
-      year: y,
-      month: m,
-      day: d,
+      year: finalDate.year,
+      month: finalDate.month,
+      day: finalDate.day,
       hour: branch,
       gender: form.gender,
       name: form.name || undefined,
@@ -192,12 +196,34 @@ export default function BirthForm({
 
       <div className="white-field">
         <div className="white-field-row">
-          <label>出生日期（公历）</label>
+          <label>出生日期（{form.calendar === 'lunar' ? '农历' : '公历'}）</label>
           <div className="white-calendar-toggle" aria-label="历法">
-            <button type="button" className="is-active">公历</button>
-            <span className="is-coming-soon" title="农历转换即将支持">农历即将支持</span>
+            <button
+              type="button"
+              className={form.calendar === 'solar' ? 'is-active' : ''}
+              onClick={() => setForm({ ...form, calendar: 'solar', isLeapMonth: false })}
+            >
+              公历
+            </button>
+            <button
+              type="button"
+              className={form.calendar === 'lunar' ? 'is-active' : ''}
+              onClick={() => setForm({ ...form, calendar: 'lunar' })}
+            >
+              农历
+            </button>
           </div>
         </div>
+        {form.calendar === 'lunar' && (
+          <label className="white-checkbox">
+            <input
+              type="checkbox"
+              checked={form.isLeapMonth}
+              onChange={e => setForm({ ...form, isLeapMonth: e.target.checked })}
+            />
+            <span>闰月</span>
+          </label>
+        )}
         <div className="white-grid white-grid-3">
           <div>
             <select

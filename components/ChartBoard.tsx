@@ -1,16 +1,18 @@
 'use client';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import type { ZiweiChart, Palace, Star } from '@/lib/ziwei/types';
 import { BRANCHES, STEMS } from '@/lib/ziwei/constants';
 import PalaceCell from './PalaceCell';
-import TimeNav, { type TimeView, getYearStemIndex, buildSiHuaOverlay } from './TimeNav';
+import TimeNav, { type TimeView, type TimeContext, getYearStemIndex, buildSiHuaOverlay } from './TimeNav';
 
 interface ChartBoardProps {
   chart: ZiweiChart;
   onStarSelect?: (star: Star, palace: Palace) => void;
   onPalaceSelect?: (palace: Palace) => void;
   onSiHuaClick?: (starName: string, siHua: string, view: TimeView) => void;
+  onTimeContextChange?: (context: TimeContext) => void;
+  requestedView?: TimeView;
   compact?: boolean;
 }
 
@@ -53,10 +55,18 @@ function getSanFangSiZheng(branch: number): [number, number, number, number] {
 
 const ANIMATION_ORDER = [5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4];
 
-export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHuaClick, compact = false }: ChartBoardProps) {
+export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHuaClick, onTimeContextChange, requestedView, compact = false }: ChartBoardProps) {
   const [selectedBranch, setSelectedBranch] = useState<number | null>(null);
   const [timeView, setTimeView] = useState<TimeView>('mingpan');
   const [liunianYear, setLiunianYear] = useState<number>(new Date().getFullYear());
+  const [liuyueMonth, setLiuyueMonth] = useState(1);
+  const [liuriDay, setLiuriDay] = useState(1);
+  const [liushiHour, setLiushiHour] = useState(0);
+
+  useEffect(() => {
+    if (!requestedView || requestedView === timeView) return;
+    handleTimeViewChange(requestedView);
+  }, [requestedView]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const palaceMap: Record<number, Palace> = {};
   chart.palaces.forEach(p => { palaceMap[p.branch] = p; });
@@ -71,9 +81,31 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
     if (timeView === 'liunian') {
       return buildSiHuaOverlay(getYearStemIndex(liunianYear));
     }
+    if (timeView === 'liuyue') {
+      const yearStem = getYearStemIndex(liunianYear);
+      const startStem = [2, 4, 6, 8, 0][yearStem % 5];
+      return buildSiHuaOverlay((startStem + liuyueMonth - 1) % 10);
+    }
     return {};
   })();
   const overlayLabel = timeView === 'daxian' ? '限' : timeView === 'liunian' ? '年' : undefined;
+
+  const activeOverlayLabel = timeView === 'liuyue' ? '\u6708' : overlayLabel;
+
+  const handleTimeViewChange = (view: TimeView) => {
+    setTimeView(view);
+    onTimeContextChange?.({ view, year: liunianYear, month: liuyueMonth, day: liuriDay, hour: liushiHour, daXianIndex: chart.currentDaXianIndex });
+  };
+
+  const handleTimeValueChange = (patch: Partial<TimeContext>) => {
+    const context: TimeContext = { view: timeView, year: liunianYear, month: liuyueMonth, day: liuriDay, hour: liushiHour, daXianIndex: chart.currentDaXianIndex, ...patch };
+    if (patch.year !== undefined) setLiunianYear(patch.year);
+    if (patch.month !== undefined) setLiuyueMonth(patch.month);
+    if (patch.day !== undefined) setLiuriDay(patch.day);
+    if (patch.hour !== undefined) setLiushiHour(patch.hour);
+    if (patch.view !== undefined) setTimeView(patch.view);
+    onTimeContextChange?.(context);
+  };
 
   const handlePalaceClick = (branch: number) => {
     const isDeselecting = selectedBranch === branch;
@@ -91,13 +123,6 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
   return (
     <div className={`w-full select-none chart-board ${compact ? 'is-compact' : ''}`}>
       {/* 时间导航轴 */}
-      <TimeNav
-        chart={chart}
-        view={timeView}
-        liunianYear={liunianYear}
-        onViewChange={setTimeView}
-        onYearChange={setLiunianYear}
-      />
 
       {/* 命盘标题 */}
       <motion.div
@@ -140,7 +165,7 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
                 isSanFang={!!(sanFangSet?.has(branch) && selectedBranch !== branch)}
                 delay={i * 0.04}
                 overlayStarSiHua={Object.keys(overlayData).length > 0 ? overlayData : undefined}
-                overlayLabel={overlayLabel}
+                overlayLabel={activeOverlayLabel}
                 onSiHuaClick={(starName, siHua) => onSiHuaClick?.(starName, siHua, timeView)}
               />
             </div>
@@ -262,6 +287,20 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
           )}
         </AnimatePresence>
       </div>
+
+      <TimeNav
+        chart={chart}
+        view={timeView}
+        liunianYear={liunianYear}
+        liuyueMonth={liuyueMonth}
+        liuriDay={liuriDay}
+        liushiHour={liushiHour}
+        onViewChange={handleTimeViewChange}
+        onYearChange={year => handleTimeValueChange({ year, view: 'liunian' })}
+        onMonthChange={month => handleTimeValueChange({ month, view: 'liuyue' })}
+        onDayChange={day => handleTimeValueChange({ day, view: 'liuri' })}
+        onHourChange={hour => handleTimeValueChange({ hour, view: 'liushi' })}
+      />
 
       {/* 图例 */}
       <motion.div

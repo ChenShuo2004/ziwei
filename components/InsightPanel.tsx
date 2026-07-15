@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { Palace, ZiweiChart } from '@/lib/ziwei/types';
+import type { TimeContext } from './TimeNav';
 import styles from './InsightPanel.module.css';
 
 interface Message {
@@ -15,6 +16,7 @@ interface Message {
 interface InsightPanelProps {
   chart: ZiweiChart;
   selectedPalace?: Palace | null;
+  timeContext?: TimeContext | null;
   onExportReport?: () => void;
 }
 
@@ -35,7 +37,7 @@ const TOPICS = [
 ] as const;
 
 type TopicKey = (typeof TOPICS)[number]['key'];
-type PanelMode = 'analysis';
+type PanelMode = 'analysis' | 'chat';
 
 const TOPIC_PROMPTS: Record<TopicKey, string> = {
   overview: '请生成命格总览，包含命盘标签、主标题、命格总览、命盘推演、三方四正联动、风险提醒、针对你的命盘、现实建议。',
@@ -69,6 +71,13 @@ const PALACE_ROLES: Record<string, string> = {
 };
 
 const RADAR_AXES = ['综合', '事业', '财运', '感情', '性格', '健康'] as const;
+
+const CHAT_EXAMPLES = [
+  '今年适合换工作吗？',
+  '我的财运风险主要在哪里？',
+  '感情关系里需要注意什么？',
+  '接下来三个月适合做什么决定？',
+];
 
 function chartBrief(chart: ZiweiChart) {
   const ming = chart.palaces.find(palace => palace.branch === chart.mingGongBranch);
@@ -358,6 +367,38 @@ function UserMessage({ content }: { content: string }) {
   );
 }
 
+function ChatEmptyState({ onExampleClick }: { onExampleClick: (question: string) => void }) {
+  return (
+    <div className={styles.chatEmptyState}>
+      <strong>直接问 AI</strong>
+      <p>围绕当前命盘问一个具体问题，AI 会结合命盘摘要、宫位、四化和当前上下文回答。</p>
+      <div className={styles.chatExamples}>
+        {CHAT_EXAMPLES.map(question => (
+          <button key={question} type="button" onClick={() => onExampleClick(question)}>
+            {question}
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function ChatMessageBubble({ message, streaming }: { message: Message; streaming?: boolean }) {
+  if (message.role === 'user') {
+    return (
+      <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className={styles.chatUserRow}>
+        <div className={styles.chatUserBubble}>{message.content}</div>
+      </motion.div>
+    );
+  }
+
+  return (
+    <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className={styles.chatAssistantBubble}>
+      <ReportContent text={message.content} streaming={streaming} />
+    </motion.div>
+  );
+}
+
 function AssistantMessage({
   chart,
   msg,
@@ -377,25 +418,30 @@ function AssistantMessage({
   );
 }
 
-export default function InsightPanel({ chart, selectedPalace, onExportReport }: InsightPanelProps) {
+export default function InsightPanel({ chart, selectedPalace, timeContext, onExportReport }: InsightPanelProps) {
   const [mode, setMode] = useState<PanelMode>('analysis');
   const [messages, setMessages] = useState<Message[]>([]);
+  const [chatMessages, setChatMessages] = useState<Message[]>([]);
+  const [chatInput, setChatInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [activeTopic, setActiveTopic] = useState<TopicKey>('overview');
   const [activeTitle, setActiveTitle] = useState('命格总览');
   const messagesRef = useRef<Message[]>([]);
+  const chatMessagesRef = useRef<Message[]>([]);
   const autoLoaded = useRef(false);
   const lastPalaceBranch = useRef<number | undefined>(undefined);
   const abortRef = useRef<AbortController | null>(null);
   const requestIdRef = useRef(0);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const lastTimeContext = useRef<string>('');
 
   useEffect(() => { messagesRef.current = messages; }, [messages]);
+  useEffect(() => { chatMessagesRef.current = chatMessages; }, [chatMessages]);
 
   useEffect(() => {
     if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
-  }, [messages]);
+  }, [messages, chatMessages, mode]);
 
   useEffect(() => {
     if (autoLoaded.current) return;
@@ -415,6 +461,27 @@ export default function InsightPanel({ chart, selectedPalace, onExportReport }: 
       { hidden: true, reset: true, title: `${selectedPalace.name}解读` },
     );
   }, [selectedPalace]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    if (!timeContext || timeContext.view === 'mingpan') return;
+    const key = `${timeContext.view}:${timeContext.year}:${timeContext.month}:${timeContext.day}:${timeContext.hour}`;
+    if (lastTimeContext.current === key) return;
+    lastTimeContext.current = key;
+    const labels = {
+      daxian: '\u5927\u9650',
+      liunian: '\u6d41\u5e74',
+      liuyue: '\u6d41\u6708',
+      liuri: '\u6d41\u65e5',
+      liushi: '\u6d41\u65f6',
+    } as const;
+    const label = labels[timeContext.view];
+    setMode('analysis');
+    setActiveTitle(`${label}\u5206\u6790`);
+    sendMessage(
+      `\u8bf7\u5206\u6790${timeContext.year}\u5e74${timeContext.month}\u6708${timeContext.day}\u65e5\u5b50\u65f6\u7684${label}\u8fd0\u52bf\uff0c\u7ed3\u5408\u5f53\u524d\u547d\u76d8\u3001\u56db\u5316\u3001\u4e09\u65b9\u56db\u6b63\u548c\u77e5\u8bc6\u5e93\u8fdb\u884c\u5206\u6790\uff0c\u660e\u786e\u8fd9\u4e00\u65f6\u95f4\u5c42\u7684\u4e3b\u9898\u3001\u98ce\u9669\u548c\u73b0\u5b9e\u5efa\u8bae\u3002`,
+      { hidden: true, reset: true, title: `${label}\u5206\u6790` },
+    );
+  }, [timeContext]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const streamResponse = async (
     apiMessages: { role: 'user' | 'assistant'; content: string }[],
@@ -507,6 +574,89 @@ export default function InsightPanel({ chart, selectedPalace, onExportReport }: 
     });
   };
 
+  const sendChatMessage = (question: string) => {
+    const text = question.trim();
+    if (!text) return;
+
+    abortRef.current?.abort();
+    const requestId = requestIdRef.current + 1;
+    requestIdRef.current = requestId;
+    const controller = new AbortController();
+    abortRef.current = controller;
+    setLoading(true);
+    setMode('chat');
+    setChatInput('');
+
+    const prompt = `${text}\n\n当前命盘摘要：${chartBrief(chart)}\n请用中文直接回答用户问题，结合当前命盘、宫位、四化和大限信息。回答要像对话，不要写成完整报告；先给结论，再给2-4条理由和现实建议，避免绝对化判断。`;
+    const visibleUserMsg: Message = { role: 'user', content: text };
+    const apiUserMsg: Message = { role: 'user', content: prompt };
+    const sourceMessages = [...chatMessagesRef.current, apiUserMsg];
+    const apiMessages = sourceMessages.map(message => ({ role: message.role, content: message.content }));
+
+    setChatMessages(prev => [...prev, visibleUserMsg, { role: 'assistant', content: '', title: 'AI 对话' }]);
+
+    void (async () => {
+      let assistantText = '';
+
+      try {
+        const res = await fetch('/api/interpret', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chart, messages: apiMessages }),
+          signal: controller.signal,
+        });
+        if (!res.ok || !res.body) throw new Error('AI chat request failed');
+
+        const reader = res.body.getReader();
+        const decoder = new TextDecoder();
+        let buffer = '';
+
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          buffer += decoder.decode(value, { stream: true });
+          const lines = buffer.split('\n');
+          buffer = lines.pop() ?? '';
+
+          for (const line of lines) {
+            if (!line.startsWith('data: ')) continue;
+            const data = line.slice(6);
+            if (data === '[DONE]') break;
+            try {
+              const parsed = JSON.parse(data);
+              const delta = parsed.delta?.text ?? parsed.delta ?? '';
+              assistantText += delta;
+              setChatMessages(prev => {
+                if (requestId !== requestIdRef.current) return prev;
+                const updated = [...prev];
+                updated[updated.length - 1] = { role: 'assistant', content: assistantText, title: 'AI 对话' };
+                return updated;
+              });
+            } catch {
+              // Ignore malformed stream chunks.
+            }
+          }
+        }
+      } catch {
+        if (controller.signal.aborted || requestId !== requestIdRef.current) return;
+        setChatMessages(prev => {
+          const updated = [...prev];
+          updated[updated.length - 1] = {
+            role: 'assistant',
+            content: '这次 AI 暂时没有连上。我先建议你把问题缩小到一个具体场景，例如工作、感情、财务或未来三个月，再重新问一次。',
+            title: 'AI 对话',
+          };
+          return updated;
+        });
+      } finally {
+        if (requestId === requestIdRef.current) {
+          setLoading(false);
+          abortRef.current = null;
+        }
+      }
+    })();
+  };
+
   const handleTopicClick = (topicKey: TopicKey) => {
     const topic = TOPICS.find(item => item.key === topicKey) ?? TOPICS[0];
     setMode('analysis');
@@ -536,6 +686,9 @@ export default function InsightPanel({ chart, selectedPalace, onExportReport }: 
       <div className="insight-mode-bar">
         <button type="button" className={mode === 'analysis' ? 'is-active' : ''} onClick={() => setMode('analysis')}>
           命盘分析
+        </button>
+        <button type="button" className={mode === 'chat' ? 'is-active' : ''} onClick={() => setMode('chat')}>
+          AI 对话
         </button>
         <button
           type="button"
@@ -573,35 +726,69 @@ export default function InsightPanel({ chart, selectedPalace, onExportReport }: 
       )}
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0 insight-scroll" aria-live="polite" aria-busy={loading}>
-        <div className="insight-intro-row">
-          <TopicIntro title={activeTitle} />
-          <button
-            type="button"
-            className="insight-copy-button"
-            onClick={handleCopy}
-            disabled={loading || !messages.some(message => message.role === 'assistant' && message.content.trim())}
-          >
-            {copied ? '已复制' : '复制解读'}
-          </button>
-        </div>
+        {mode === 'analysis' ? (
+          <>
+            <div className="insight-intro-row">
+              <TopicIntro title={activeTitle} />
+              <button
+                type="button"
+                className="insight-copy-button"
+                onClick={handleCopy}
+                disabled={loading || !messages.some(message => message.role === 'assistant' && message.content.trim())}
+              >
+                {copied ? '已复制' : '复制解读'}
+              </button>
+            </div>
 
-        {messages.length === 0 && (
-          <div className="flex flex-col items-center justify-center h-full text-center">
-            <div className="text-4xl mb-3 text-amber-500/20">✦</div>
-            <p className="text-[12px] animate-pulse text-slate-500">命格解读生成中...</p>
+            {messages.length === 0 && (
+              <div className="flex flex-col items-center justify-center h-full text-center">
+                <div className="text-4xl mb-3 text-amber-500/20">✦</div>
+                <p className="text-[12px] animate-pulse text-slate-500">命格解读生成中...</p>
+              </div>
+            )}
+
+            <AnimatePresence initial={false}>
+              {messages.map((msg, index) => {
+                if (msg.role === 'user' && msg.hidden) return null;
+                if (msg.role === 'user') return <UserMessage key={index} content={msg.content} />;
+                const isLast = index === messages.length - 1;
+                return <AssistantMessage key={index} chart={chart} msg={msg} streaming={loading && isLast} />;
+              })}
+            </AnimatePresence>
+          </>
+        ) : (
+          <div className={styles.chatPanel}>
+            {chatMessages.length === 0 && <ChatEmptyState onExampleClick={sendChatMessage} />}
+            <AnimatePresence initial={false}>
+              {chatMessages.map((message, index) => {
+                const isLast = index === chatMessages.length - 1;
+                return <ChatMessageBubble key={index} message={message} streaming={loading && isLast} />;
+              })}
+            </AnimatePresence>
           </div>
         )}
-
-        <AnimatePresence initial={false}>
-          {messages.map((msg, index) => {
-            if (msg.role === 'user' && msg.hidden) return null;
-            if (msg.role === 'user') return <UserMessage key={index} content={msg.content} />;
-            const isLast = index === messages.length - 1;
-            return <AssistantMessage key={index} chart={chart} msg={msg} streaming={loading && isLast} />;
-          })}
-        </AnimatePresence>
       </div>
 
+      {mode === 'chat' && (
+        <form
+          className={styles.chatComposer}
+          onSubmit={event => {
+            event.preventDefault();
+            sendChatMessage(chatInput);
+          }}
+        >
+          <input
+            type="text"
+            value={chatInput}
+            onChange={event => setChatInput(event.target.value)}
+            placeholder="直接问 AI，例如：今年适合换工作吗？"
+            disabled={loading}
+          />
+          <button type="submit" disabled={loading || !chatInput.trim()}>
+            {loading ? '思考中' : '发送'}
+          </button>
+        </form>
+      )}
     </div>
   );
 }

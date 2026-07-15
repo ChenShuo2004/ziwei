@@ -538,8 +538,20 @@ function detectTopic(text: string): Topic {
 
 export function buildChartInterpretation(chart: ZiweiChart, prompt = ''): string {
   const focused = focusedPalaceFromText(chart, prompt);
-  if (focused) return buildFocusedPalaceReport(chart, focused);
-  return buildTopicReport(chart, detectTopic(prompt));
+  const report = focused ? buildFocusedPalaceReport(chart, focused) : buildTopicReport(chart, detectTopic(prompt));
+  const period = detectTimePeriod(prompt);
+  if (!period) return report;
+  return report.replace(/^# ([^\n]+)/, `# ${period} · $1\n> 当前报告已切换到${period}层，结合本命盘结构、四化路径与知识库规则判断。`);
+}
+
+function detectTimePeriod(prompt: string): string | null {
+  const normalized = prompt.replace(/\s+/g, '');
+  if (normalized.includes('\u6d41\u65f6')) return '\u6d41\u65f6';
+  if (normalized.includes('\u6d41\u65e5')) return '\u6d41\u65e5';
+  if (normalized.includes('\u6d41\u6708')) return '\u6d41\u6708';
+  if (normalized.includes('\u6d41\u5e74')) return '\u6d41\u5e74';
+  if (normalized.includes('\u5927\u9650')) return '\u5927\u9650';
+  return null;
 }
 
 export function buildHemingInterpretation(chartA: ZiweiChart, chartB: ZiweiChart, question = ''): string {

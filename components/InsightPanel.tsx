@@ -35,7 +35,7 @@ const TOPICS = [
 ] as const;
 
 type TopicKey = (typeof TOPICS)[number]['key'];
-type PanelMode = 'analysis' | 'chat';
+type PanelMode = 'analysis';
 
 const TOPIC_PROMPTS: Record<TopicKey, string> = {
   overview: '请生成命格总览，包含命盘标签、主标题、命格总览、命盘推演、三方四正联动、风险提醒、针对你的命盘、现实建议。',
@@ -376,7 +376,6 @@ function AssistantMessage({
 export default function InsightPanel({ chart, selectedPalace, onExportReport }: InsightPanelProps) {
   const [mode, setMode] = useState<PanelMode>('analysis');
   const [messages, setMessages] = useState<Message[]>([]);
-  const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [activeTopic, setActiveTopic] = useState<TopicKey>('overview');
@@ -497,7 +496,6 @@ export default function InsightPanel({ chart, selectedPalace, onExportReport }: 
     const apiMessages = sourceMessages.map(message => ({ role: message.role, content: message.content }));
 
     setMessages(prev => options.reset ? [userMsg] : [...prev, userMsg]);
-    setInput('');
     streamResponse(apiMessages, {
       title: options.title ?? '追问解读',
       requestId,
@@ -517,11 +515,6 @@ export default function InsightPanel({ chart, selectedPalace, onExportReport }: 
     });
   };
 
-  const handleSend = () => {
-    setMode('chat');
-    sendMessage(input, { title: 'AI 追问' });
-  };
-
   const handleCopy = async () => {
     const answer = [...messages].reverse().find(message => message.role === 'assistant' && message.content.trim());
     if (!answer) return;
@@ -539,9 +532,6 @@ export default function InsightPanel({ chart, selectedPalace, onExportReport }: 
       <div className="insight-mode-bar">
         <button type="button" className={mode === 'analysis' ? 'is-active' : ''} onClick={() => setMode('analysis')}>
           命盘分析
-        </button>
-        <button type="button" className={mode === 'chat' ? 'is-active' : ''} onClick={() => setMode('chat')}>
-          AI 对话
         </button>
         <button
           type="button"
@@ -608,37 +598,6 @@ export default function InsightPanel({ chart, selectedPalace, onExportReport }: 
         </AnimatePresence>
       </div>
 
-      <div className="flex-shrink-0 px-3 pb-3 pt-2" style={{ borderTop: '1px solid var(--t-border)' }}>
-        <div className="flex gap-2">
-          <input
-            type="text"
-            value={input}
-            onChange={event => setInput(event.target.value)}
-            onKeyDown={event => event.key === 'Enter' && !event.shiftKey && handleSend()}
-            placeholder="继续追问，例如：今年适合换工作吗？"
-            disabled={loading}
-            className="flex-1 rounded-lg px-3 py-2 text-[12px] focus:outline-none transition-colors"
-            style={{
-              background: 'var(--t-card)',
-              border: '1px solid var(--t-border)',
-              color: 'var(--t-text)',
-            }}
-          />
-          <button
-            onClick={handleSend}
-            disabled={loading || !input.trim()}
-            aria-busy={loading}
-            className={`ui-button-primary px-3 py-2 rounded-lg text-[12px] font-medium transition-all disabled:opacity-30 disabled:cursor-not-allowed ${loading ? 'is-loading' : ''}`}
-            style={{
-              background: 'rgba(212,168,67,0.15)',
-              border: '1px solid rgba(212,168,67,0.25)',
-              color: 'var(--t-gold)',
-            }}
-          >
-            {loading ? '...' : '追问'}
-          </button>
-        </div>
-      </div>
     </div>
   );
 }

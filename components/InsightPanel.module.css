@@ -1,0 +1,248 @@
+.answerReport {
+  padding: 26px clamp(18px, 3vw, 34px) 30px;
+  border: 1px solid #e5e7eb;
+  border-radius: 18px;
+  background: #ffffff;
+  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.045);
+}
+
+.overviewPanel {
+  margin-bottom: 30px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid #e8ebef;
+}
+
+.overviewFacts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.overviewFacts span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  padding: 0 10px;
+  border: 1px solid #e3e6eb;
+  border-radius: 999px;
+  background: #f8fafc;
+  color: #4b5563;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.overviewMain {
+  display: grid;
+  grid-template-columns: minmax(180px, 280px) minmax(0, 1fr);
+  gap: 28px;
+  align-items: center;
+}
+
+.radarSvg {
+  width: min(100%, 280px);
+  aspect-ratio: 1;
+  overflow: visible;
+}
+
+.radarGrid {
+  fill: none;
+  stroke: #e5e7eb;
+  stroke-width: 1;
+}
+
+.radarArea {
+  fill: rgba(79, 70, 229, 0.16);
+  stroke: none;
+}
+
+.radarLine {
+  fill: none;
+  stroke: #4f46e5;
+  stroke-width: 2.4;
+  stroke-linejoin: round;
+}
+
+.radarLabel {
+  fill: #111827;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.overviewCards {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.overviewCards article {
+  min-width: 0;
+  padding: 15px 16px;
+  border: 1px solid #e7ebf0;
+  border-radius: 14px;
+  background: #fbfcfd;
+}
+
+.overviewCards strong {
+  display: block;
+  margin-bottom: 7px;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.overviewCards p,
+.overviewNote {
+  margin: 0;
+  color: #4b5563;
+  font-size: 13px;
+  line-height: 1.75;
+}
+
+.overviewNote {
+  margin-top: 10px;
+  color: #8a94a6;
+  text-align: center;
+  font-size: 12px;
+}
+
+.reportContent {
+  max-width: 980px;
+  color: #222831;
+}
+
+.reportTitle {
+  margin: 0 0 10px;
+  color: #111827;
+  font-size: clamp(25px, 2.6vw, 36px);
+  font-weight: 950;
+  line-height: 1.2;
+  letter-spacing: 0;
+}
+
+.reportLead {
+  max-width: 900px;
+  margin: 0 0 28px;
+  color: #5c6472;
+  font-size: 15px;
+  line-height: 1.85;
+}
+
+.reportSectionTitle {
+  margin: 30px 0 12px;
+  padding-top: 18px;
+  border-top: 1px solid #e8ebef;
+  color: #111827;
+  font-size: 19px;
+  font-weight: 900;
+  line-height: 1.35;
+  letter-spacing: 0;
+}
+
+.reportParagraph {
+  margin: 0 0 12px;
+  color: #303846;
+  font-size: 15px;
+  line-height: 2;
+}
+
+.reportList {
+  display: grid;
+  gap: 8px;
+  margin: 0 0 14px;
+  padding: 0;
+  list-style: none;
+}
+
+.reportList li {
+  position: relative;
+  padding-left: 18px;
+  color: #3f4652;
+  font-size: 14px;
+  line-height: 1.85;
+}
+
+.reportList li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.85em;
+  width: 6px;
+  height: 6px;
+  border-radius: 999px;
+  background: #4f46e5;
+}
+
+@media (max-width: 900px) {
+  .overviewMain {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .overviewCards {
+    grid-template-columns: 1fr;
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .answerReport {
+    padding: 20px 16px 24px;
+    border-radius: 14px;
+  }
+
+  .overviewFacts span {
+    max-width: 100%;
+    white-space: normal;
+    line-height: 1.35;
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+
+  .reportLead,
+  .reportParagraph {
+    font-size: 14px;
+  }
+
+  .reportSectionTitle {
+    font-size: 17px;
+  }
+}
+
+:global([data-theme="dark"]) .answerReport,
+:global([data-theme="dark"]) .overviewCards article {
+  border-color: rgba(148, 163, 184, 0.18);
+  background: rgba(15, 23, 42, 0.78);
+}
+
+:global([data-theme="dark"]) .overviewPanel,
+:global([data-theme="dark"]) .reportSectionTitle {
+  border-color: rgba(148, 163, 184, 0.18);
+}
+
+:global([data-theme="dark"]) .overviewFacts span {
+  border-color: rgba(148, 163, 184, 0.2);
+  background: rgba(15, 23, 42, 0.7);
+  color: #d1d5db;
+}
+
+:global([data-theme="dark"]) .reportTitle,
+:global([data-theme="dark"]) .reportSectionTitle,
+:global([data-theme="dark"]) .overviewCards strong,
+:global([data-theme="dark"]) .radarLabel {
+  color: #f8fafc;
+  fill: #f8fafc;
+}
+
+:global([data-theme="dark"]) .reportLead,
+:global([data-theme="dark"]) .reportParagraph,
+:global([data-theme="dark"]) .reportList li,
+:global([data-theme="dark"]) .overviewCards p {
+  color: #cbd5e1;
+}
+
+:global([data-theme="dark"]) .radarGrid {
+  stroke: rgba(148, 163, 184, 0.25);
+}

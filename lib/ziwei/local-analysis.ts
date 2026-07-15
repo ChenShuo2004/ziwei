@@ -20,11 +20,12 @@ type Topic =
 interface TopicMeta {
   title: string;
   palaceKeywords: string[];
-  focus: string;
-  advantage: string;
+  subtitle: string;
+  overview: string;
+  deduction: string;
   risk: string;
+  personal: string;
   advice: string;
-  nextYear: string;
   safety?: string;
 }
 
@@ -32,123 +33,136 @@ const TOPIC_META: Record<Topic, TopicMeta> = {
   overview: {
     title: '命格总览',
     palaceKeywords: ['命'],
-    focus: '整体格局要先看命宫，再看财帛、官禄、迁移三方如何把能力落到现实。',
-    advantage: '适合先抓住最稳定的主星优势，建立一套可以反复使用的做事方法。',
-    risk: '容易只看单一宫位就下判断，忽略现实资源、环境变化和长期节奏。',
-    advice: '把命盘当作自我观察工具：先确认自己的优势场景，再用小步试错验证方向。',
-    nextYear: '未来一年重点是减少摇摆，把最能形成复利的工作、关系或资产安排固定下来。',
+    subtitle: '先看命宫定性，再看财帛、官禄、迁移三方如何把能力落到现实。',
+    overview: '这张盘的价值不在一句好坏，而在看清你最容易发力的地方，以及哪些惯性会在关键阶段拖慢你。',
+    deduction: '命宫代表底层气质，三方代表现实用武之地，大限代表这一阶段被放大的主题。',
+    risk: '不要只盯着某一颗星下判断。命盘真正有用的地方，是把优势、代价和现实选择放在一起看。',
+    personal: '适合先建立稳定的行动系统，把能形成复利的工作、关系或资产安排固定下来。',
+    advice: '先选一个最想改善的现实场景，例如事业、感情、财务或健康，再围绕它做具体决策。',
   },
   wealth: {
     title: '财运',
     palaceKeywords: ['财帛'],
-    focus: '财运重点看收入来源、守财能力和钱是否能沉淀为长期资产。',
-    advantage: '适合把赚钱方式系统化，不只靠临时机会，而是建立稳定现金流。',
-    risk: '若财帛宫受煞曜、化忌或空宫影响，容易有冲动投入、现金流断点或赚得到留不住的问题。',
-    advice: '先做预算、现金流和风险隔离，再考虑扩张、副业或投资。',
-    nextYear: '未来一年适合把财务目标拆成储蓄、还款、增收和资产配置四张清单。',
+    subtitle: '重点看钱从哪里来、能不能守住，以及能否沉淀成长期资产。',
+    overview: '财运不是简单的有钱没钱，而是收入结构、现金流稳定度和资产沉淀能力的组合。',
+    deduction: '财帛宫看赚钱方式，田宅宫看积累能力，官禄宫看收入是否来自职业或事业位置。',
+    risk: '若财帛宫见煞曜、化忌或空宫，容易有冲动投入、现金流断点、赚得到但留不住的问题。',
+    personal: '你的财务判断要少靠短期情绪，多靠预算、节奏和风险隔离。',
+    advice: '先建立现金流表，再考虑副业、扩张或投资；任何大额投入都要有退出方案。',
     safety: '财务内容只作文化参考，不构成投资建议。',
   },
   career: {
     title: '事业',
     palaceKeywords: ['官禄'],
-    focus: '事业重点看适合承担什么社会角色，以及能否长期维持稳定输出。',
-    advantage: '适合把命宫气质变成职业定位，让能力、岗位和收入模式互相配合。',
-    risk: '容易在不适合的环境里硬扛，或因为外部机会太多而分散主线。',
-    advice: '优先选择能放大你主星优势的岗位、行业或产品方向，不急着追热点。',
-    nextYear: '未来一年重点是明确一个主赛道，积累可展示的成果，而不是频繁换方向。',
+    subtitle: '重点看适合承担什么社会角色，以及能否长期维持稳定输出。',
+    overview: '事业判断要把命宫气质、官禄宫位置和迁移宫外部机会连起来看。',
+    deduction: '官禄宫代表职业路径和成就方式，财帛宫代表收入模式，迁移宫代表平台、市场和外部贵人。',
+    risk: '容易在不适合的环境里硬扛，或因为外部机会太多而频繁切换主线。',
+    personal: '适合把个人优势变成可展示的成果，而不是只停留在想法和兴趣上。',
+    advice: '未来一年先明确一个主赛道，积累作品、案例、客户或可量化成绩。',
   },
   love: {
     title: '感情',
     palaceKeywords: ['夫妻'],
-    focus: '感情不只看桃花，更要看亲密关系里的安全感、边界和沟通节奏。',
-    advantage: '适合把真实需求讲清楚，关系越透明，越容易稳定推进。',
-    risk: '若夫妻宫有煞曜或化忌，容易因为试探、控制感、沉默或现实压力产生消耗。',
+    subtitle: '重点看亲密关系里的期待、边界、安全感和现实协作。',
+    overview: '感情不能只看桃花，真正影响稳定度的是夫妻宫与福德宫能否互相承接。',
+    deduction: '夫妻宫看关系模式，命宫看自我表达，福德宫看内在安全感和情绪恢复能力。',
+    risk: '若夫妻宫受煞曜或化忌影响，容易因为试探、沉默、控制感或现实压力形成消耗。',
+    personal: '关系越透明越稳定，越靠猜测和忍耐，越容易把小问题拖成结构性问题。',
     advice: '少猜，多说清楚；先确认金钱观、生活节奏和长期目标，再谈承诺。',
-    nextYear: '未来一年适合修正关系里的旧模式，尤其是沟通、边界和共同规划。',
     safety: '感情内容只作文化参考，不能替代真实沟通和专业咨询。',
   },
   personality: {
     title: '性格',
     palaceKeywords: ['命'],
-    focus: '性格重点看命宫主星，也要看三方四正如何触发你的行为模式。',
-    advantage: '适合把第一反应里的优势训练成稳定能力，而不是只靠情绪和直觉。',
+    subtitle: '重点看命宫主星带来的第一反应，以及三方四正如何触发行为模式。',
+    overview: '性格不是固定标签，而是在资源、关系、职业和压力场景中反复出现的行为惯性。',
+    deduction: '命宫看底层气质，财帛看资源态度，官禄看做事方式，迁移看外部环境中的表现。',
     risk: '容易把某种惯性当成性格本身，忽略它在不同场景下的代价。',
-    advice: '把优势用于长期目标，把盲区写成风险清单，遇事先暂停再判断。',
-    nextYear: '未来一年适合建立更稳定的表达、决策和复盘习惯。',
+    personal: '你的成长重点是把优势训练成稳定能力，把盲区写成风险清单。',
+    advice: '遇到重大选择时，先暂停，再判断自己是在理性决策，还是在重复旧模式。',
   },
   health: {
     title: '健康',
     palaceKeywords: ['疾厄'],
-    focus: '健康倾向重点看体质节奏、压力模式和容易失衡的生活习惯。',
-    advantage: '适合通过稳定作息、规律运动和压力管理来改善整体状态。',
-    risk: '若疾厄宫见煞曜或化忌，通常提醒长期消耗、急躁、熬夜或情绪压力要被认真管理。',
-    advice: '把睡眠、饮食、运动和体检作为基础动作，不用命理替代医学判断。',
-    nextYear: '未来一年重点是建立可持续的健康节奏，尤其减少长期透支。',
+    subtitle: '重点看体质节奏、压力模式和容易失衡的生活习惯。',
+    overview: '健康倾向更适合当作生活方式提醒，而不是当作确定性医疗判断。',
+    deduction: '疾厄宫看压力和体质倾向，福德宫看精神恢复能力，大限宫位会提示这一阶段压力来源。',
+    risk: '若疾厄宫见煞曜或化忌，通常提醒长期消耗、熬夜、急躁或情绪压力要被认真管理。',
+    personal: '你的状态更需要靠长期节奏修复，而不是靠短期硬撑。',
+    advice: '把睡眠、饮食、运动和体检作为基础动作；有症状先看医生。',
     safety: '这不是医疗建议。如有具体症状，请以正规体检和医生意见为准。',
   },
   siblings: {
     title: '兄弟合伙',
     palaceKeywords: ['兄弟'],
-    focus: '兄弟合伙重点看同辈、伙伴、合伙人之间的资源互助和利益边界。',
-    advantage: '适合寻找能互补能力的人，但合作前要先定义责任和分账方式。',
+    subtitle: '重点看同辈、伙伴、合伙人之间的资源互助和利益边界。',
+    overview: '合伙不是只看关系好不好，而是看分工、权责、利益和退出机制是否清楚。',
+    deduction: '兄弟宫看同辈协作，交友宫看外部伙伴，财帛宫看利益分配。',
     risk: '容易因为人情、信任或口头承诺进入合作，后期在钱、权、责上产生摩擦。',
-    advice: '所有合作都要写清楚角色、投入、退出机制和收益分配。',
-    nextYear: '未来一年适合筛选高质量伙伴，减少低效率社交和模糊合作。',
+    personal: '适合找能互补能力的人，但合作前要先定义责任和分账方式。',
+    advice: '所有合作都写清楚角色、投入、收益分配和退出机制。',
   },
   children: {
     title: '子女',
     palaceKeywords: ['子女'],
-    focus: '子女宫也可看下属、作品、长期培养出来的人和事。',
-    advantage: '适合用耐心和规则感经营长期关系，不急着用控制换结果。',
+    subtitle: '重点看子女、下属、作品，以及你长期培养出来的人和事。',
+    overview: '子女宫不只代表亲子，也代表你能否把经验、方法和影响力延续出去。',
+    deduction: '子女宫看培养关系，官禄宫看管理方式，福德宫看耐心和情绪承接。',
     risk: '容易在期待、管理或教育方式上用力过猛，造成对方压力或疏离。',
+    personal: '适合用规则和耐心经营长期关系，不急着用控制换结果。',
     advice: '把要求拆成清晰规则，给对方成长空间，也保留必要边界。',
-    nextYear: '未来一年适合培养可传承的能力、团队或作品，不只追求短期反馈。',
   },
   travel: {
     title: '迁移外出',
     palaceKeywords: ['迁移'],
-    focus: '迁移宫看外部机会、异地发展、出行变化和离开熟悉环境后的表现。',
-    advantage: '适合主动走出去接触新市场、新圈层或新资源。',
-    risk: '外部机会看似很多，但若没有筛选标准，容易奔波消耗或被环境牵着走。',
+    subtitle: '重点看外部机会、异地发展、出行变化和离开熟悉环境后的表现。',
+    overview: '迁移宫强时，外部环境往往能放大机会；迁移宫受阻时，外出也可能变成消耗。',
+    deduction: '迁移宫看外缘和平台，命宫看自身承接力，官禄宫看外部机会是否能转成事业结果。',
+    risk: '机会看似很多，但若没有筛选标准，容易奔波消耗或被环境牵着走。',
+    personal: '适合主动接触新市场、新圈层或新资源，但每一次行动都要有目的。',
     advice: '外出、搬迁、换城市或拓展市场前，先确认资源、成本和回撤方案。',
-    nextYear: '未来一年适合增加高质量外部连接，但每一次行动都要有明确目的。',
   },
   network: {
     title: '人际贵人',
     palaceKeywords: ['交友', '仆役'],
-    focus: '交友宫看朋友圈、协作者、贵人和容易带来消耗的人。',
-    advantage: '适合经营少数高信任关系，用长期价值交换建立贵人缘。',
-    risk: '容易被热闹关系消耗，或在不清楚边界的关系里承担过多。',
-    advice: '区分朋友、客户、合伙人和贵人，不同关系用不同边界管理。',
-    nextYear: '未来一年适合清理低质量关系，把精力放在能共同成长的人身上。',
+    subtitle: '重点看朋友圈、协作者、贵人和容易带来消耗的人。',
+    overview: '贵人不是越多越好，真正有用的是少数高信任、高价值交换的关系。',
+    deduction: '交友宫看圈层质量，迁移宫看外部连接，福德宫看关系是否消耗你的精神能量。',
+    risk: '容易被热闹关系消耗，或在边界不清的关系里承担过多。',
+    personal: '适合区分朋友、客户、合伙人和贵人，不同关系用不同边界管理。',
+    advice: '清理低质量关系，把精力放在能共同成长的人身上。',
   },
   property: {
     title: '田宅',
     palaceKeywords: ['田宅'],
-    focus: '田宅宫看居住环境、家庭空间、不动产倾向和长期安全感。',
-    advantage: '适合把赚到的钱逐步沉淀为更稳定的生活和资产结构。',
+    subtitle: '重点看居住环境、家庭空间、不动产倾向和长期安全感。',
+    overview: '田宅宫看的是“能不能留下来”：钱能不能沉淀，生活能不能稳定，家庭空间能不能支持你。',
+    deduction: '田宅宫看资产和居住，财帛宫看现金流，福德宫看空间带来的精神稳定。',
     risk: '容易因家庭压力、居住变化或资产决策过急，影响现金流和心态。',
+    personal: '适合把赚到的钱逐步沉淀为更稳定的生活和资产结构。',
     advice: '处理房产、租住、装修或家庭资产时，先算现金流，再谈理想方案。',
-    nextYear: '未来一年适合优化居住环境和资产结构，不宜只凭情绪做大额决定。',
     safety: '不动产内容只作文化参考，不构成投资或购房建议。',
   },
   fortune: {
     title: '福德',
     palaceKeywords: ['福德'],
-    focus: '福德宫看精神状态、内在满足、抗压方式和长期幸福感。',
-    advantage: '适合建立能恢复能量的生活方式，让努力不变成长期透支。',
+    subtitle: '重点看精神状态、内在满足、抗压方式和长期幸福感。',
+    overview: '福德宫决定你是不是能长期稳定地过日子，也决定努力之后能不能恢复能量。',
+    deduction: '福德宫看精神底盘，命宫看自我驱动，疾厄宫看压力如何反映到身体和生活习惯。',
     risk: '容易外在看起来能撑，内在却长期紧绷，最后影响关系和决策质量。',
-    advice: '给休息、兴趣、独处和稳定关系留位置，别把所有价值都押在结果上。',
-    nextYear: '未来一年重点是降低精神内耗，建立更可持续的生活节奏。',
+    personal: '适合建立能恢复能量的生活方式，让努力不变成长期透支。',
+    advice: '给休息、兴趣、独处和稳定关系留位置，不要把所有价值都押在结果上。',
   },
   parents: {
     title: '父母长辈',
     palaceKeywords: ['父母'],
-    focus: '父母宫看长辈关系、文书学习、制度资源和上级缘分。',
-    advantage: '适合借助经验、规则、证书、文书或长辈资源降低试错成本。',
+    subtitle: '重点看长辈关系、文书学习、制度资源和上级缘分。',
+    overview: '父母宫不只看父母，也看你如何面对权威、规则、证照、合同和上级资源。',
+    deduction: '父母宫看长辈和制度，官禄宫看职场权威，命宫看你如何拿回选择权。',
     risk: '容易受权威期待影响，或在沟通里把边界和责任混在一起。',
+    personal: '适合借助经验、规则、证书、文书或长辈资源降低试错成本。',
     advice: '与长辈、上级或制度打交道时，保持尊重，但把自己的选择权拿回来。',
-    nextYear: '未来一年适合处理证照、合同、学习和长辈沟通相关事项。',
   },
 };
 
@@ -209,7 +223,7 @@ function starKnowledge(palace?: Palace): string {
   const majorStars = starsOf(palace, 'major');
   if (!majorStars.length) {
     if (palace?.borrowedStars?.length) {
-      return `${palace.name}为空宫，需借${palace.borrowedFromName ?? '对宫'}的${palace.borrowedStars.join('、')}来看，重点是先观察外部环境和关系互动，再判断本宫事务。`;
+      return `${palace.name}为空宫，需借${palace.borrowedFromName ?? '对宫'}的${palace.borrowedStars.join('、')}来看；空宫不等于没有，而是更容易被对宫、环境和关系牵动。`;
     }
     return '该宫没有明显主星，需结合对宫、三方四正和大限一起判断，不宜单点下结论。';
   }
@@ -221,19 +235,23 @@ function starKnowledge(palace?: Palace): string {
   }).join('；');
 }
 
-function siHuaSummary(chart: ZiweiChart, palace?: Palace): string {
-  const transformed = chart.palaces.flatMap(item =>
-    item.stars
+function siHuaItems(chart: ZiweiChart): string[] {
+  return chart.palaces.flatMap(palace =>
+    palace.stars
       .filter(star => star.siHua)
-      .map(star => `${star.name}化${star.siHua}在${item.name}`),
+      .map(star => `${star.name}化${star.siHua}在${palace.name}`),
   );
+}
+
+function siHuaSummary(chart: ZiweiChart, palace?: Palace): string {
+  const all = siHuaItems(chart);
   const current = palace?.stars
     .filter(star => star.siHua)
     .map(star => `${star.name}化${star.siHua}`)
     .join('、');
 
-  if (current) return `${palace?.name}本宫见${current}；全盘四化为：${transformed.join('；') || '未见明显四化标记'}。`;
-  return transformed.length ? transformed.join('；') : '本盘未见明显四化标记。';
+  if (current) return `${palace?.name}本宫见${current}；全盘四化为：${all.join('；') || '未见明显四化标记'}。`;
+  return all.length ? all.join('；') : '本盘未见明显四化标记。';
 }
 
 function sanFangSummary(chart: ZiweiChart): string {
@@ -254,6 +272,19 @@ function safetyLine(meta: TopicMeta): string {
   return meta.safety ?? '命理解读只作文化参考，不替代医疗、法律、投资、心理咨询或人生重大决策。';
 }
 
+function reportTags(chart: ZiweiChart, topic: Topic, palace?: Palace): string {
+  const ming = mingPalace(chart);
+  const dxRange = chart.daXians[chart.currentDaXianIndex];
+  const dxText = dxRange ? `${dxRange.startAge}-${dxRange.endAge}岁大限` : '大限资料不足';
+  return [
+    `- 主题：${TOPIC_META[topic].title}`,
+    `- 命宫主星：${starNames(ming, 'major')}`,
+    `- 当前宫位：${palaceLabel(palace)}`,
+    `- 五行局：${chart.wuxingJuName}`,
+    `- 阶段：${dxText}`,
+  ].join('\n');
+}
+
 function buildTopicReport(chart: ZiweiChart, topic: Topic): string {
   const meta = TOPIC_META[topic];
   const palace = palaceForTopic(chart, topic);
@@ -265,23 +296,34 @@ function buildTopicReport(chart: ZiweiChart, topic: Topic): string {
   ];
 
   return [
-    `**一句话结论**`,
-    `${meta.title}的重点不是一句“好或不好”，而是看${palaceLabel(palace)}的主星如何与命宫、三方四正和当前大限配合。${meta.focus}`,
+    `# ${meta.title}`,
+    `> ${meta.subtitle}`,
     ``,
-    `**命盘依据**`,
-    `${palaceLabel(palace)}主星为${starNames(palace, 'major')}；命宫主星为${starNames(ming, 'major')}；对宫为${palaceLabel(opposite)}，主星为${starNames(opposite, 'major')}。${supportStars.length ? `本宫辅煞曜可重点看：${supportStars.join('、')}。` : '本宫辅煞曜不算突出。'}${sanFangSummary(chart)}`,
+    `**命盘标签**`,
+    reportTags(chart, topic, palace),
     ``,
-    `**你的优势**`,
-    `${starKnowledge(palace)}。${meta.advantage}`,
+    `**命格总览**`,
+    `${meta.overview}`,
+    `${palaceLabel(palace)}主星为${starNames(palace, 'major')}；命宫主星为${starNames(ming, 'major')}；对宫为${palaceLabel(opposite)}，主星为${starNames(opposite, 'major')}。`,
     ``,
-    `**容易卡住的地方**`,
-    `${meta.risk} ${siHuaSummary(chart, palace)}`,
+    `**命盘推演**`,
+    `${meta.deduction}`,
+    `${starKnowledge(palace)}。${supportStars.length ? `本宫辅煞曜可重点看：${supportStars.join('、')}。` : '本宫辅煞曜不算突出，重点看主星、对宫和大限。'}`,
+    ``,
+    `**三方四正联动**`,
+    `${sanFangSummary(chart)}`,
+    `${daXianSummary(chart)}`,
+    ``,
+    `**风险提醒**`,
+    `${meta.risk}`,
+    `${siHuaSummary(chart, palace)}`,
+    ``,
+    `**针对你的命盘**`,
+    `${meta.personal}`,
     ``,
     `**现实建议**`,
-    `${meta.advice} ${safetyLine(meta)}`,
-    ``,
-    `**未来一年重点**`,
-    `${daXianSummary(chart)}${meta.nextYear}`,
+    `${meta.advice}`,
+    `${safetyLine(meta)}`,
   ].join('\n');
 }
 
@@ -294,23 +336,29 @@ function buildFocusedPalaceReport(chart: ZiweiChart, palace: Palace): string {
     .map(star => `${star.name}${star.siHua ? `化${star.siHua}` : ''}`);
 
   return [
-    `**一句话结论**`,
-    `${palace.name}主管的事务不能只看本宫主星，要同时看对宫、命宫和当前大限。这个宫位越清楚，现实决策越不容易被情绪带走。`,
+    `# ${palace.name}解读`,
+    `> ${palace.name}主管的事务不能只看本宫主星，要同时看对宫、命宫和当前大限。`,
     ``,
-    `**命盘依据**`,
-    `${palaceLabel(palace)}主星为${starNames(palace, 'major')}；对宫${palaceLabel(opposite)}主星为${starNames(opposite, 'major')}；命宫主星为${starNames(ming, 'major')}。${supportStars.length ? `本宫还见${supportStars.join('、')}，会影响事情推进的顺逆和节奏。` : '本宫辅煞曜不算突出，重点看主星和对宫。'}`,
+    `**宫位定位**`,
+    `- 当前宫位：${palaceLabel(palace)}`,
+    `- 本宫主星：${starNames(palace, 'major')}`,
+    `- 对宫：${palaceLabel(opposite)}，主星为${starNames(opposite, 'major')}`,
+    `- 命宫主星：${starNames(ming, 'major')}`,
     ``,
-    `**你的优势**`,
+    `**本宫主星**`,
     `${starKnowledge(palace)}。如果把这个宫位的优势落到行动里，适合先做清晰规划，再稳定推进。`,
     ``,
-    `**容易卡住的地方**`,
-    `若该宫见空宫、煞曜或化忌，容易出现反复、误判、关系消耗或资源不到位。${siHuaSummary(chart, palace)}`,
+    `**对宫与三方**`,
+    `${supportStars.length ? `本宫还见${supportStars.join('、')}，会影响事情推进的顺逆和节奏。` : '本宫辅煞曜不算突出，重点看主星和对宫。'}`,
+    `${sanFangSummary(chart)}`,
+    ``,
+    `**风险提醒**`,
+    `若该宫见空宫、煞曜或化忌，容易出现反复、误判、关系消耗或资源不到位。`,
+    `${siHuaSummary(chart, palace)}`,
     ``,
     `**现实建议**`,
-    `把${palace.name}对应的事情拆成三步：先确认事实，再设边界，最后决定投入。不要只凭一时感受做长期承诺。命理解读只作文化参考，不替代现实判断。`,
-    ``,
-    `**未来一年重点**`,
-    `${daXianSummary(chart)}未来一年适合把${palace.name}相关事项做一次整理：该保留的保留，该止损的止损，该长期经营的就建立规则。`,
+    `把${palace.name}对应的事情拆成三步：先确认事实，再设边界，最后决定投入。不要只凭一时感受做长期承诺。`,
+    `${daXianSummary(chart)}`,
   ].join('\n');
 }
 
@@ -360,8 +408,11 @@ export function buildHemingInterpretation(chartA: ZiweiChart, chartB: ZiweiChart
     : '双方命宫主星差异较大，关系中的吸引点也会伴随磨合点。';
 
   return [
+    `# 合盘解读`,
+    `> 合盘重点不在“绝对合不合”，而在双方命宫节奏、夫妻宫期待和福德宫安全感能否对齐。`,
+    ``,
     `**缘分定性**`,
-    `${sharedText}合盘重点不在“绝对合不合”，而在双方命宫节奏、夫妻宫期待和福德宫安全感能否对齐。`,
+    `${sharedText}`,
     ``,
     `**双方命宫**`,
     `A 的命宫主星为${starNames(aMing, 'major')}；B 的命宫主星为${starNames(bMing, 'major')}。命宫显示两个人遇事时的第一反应，差异越大，越需要提前约定沟通方式。`,

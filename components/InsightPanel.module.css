@@ -232,6 +232,160 @@
   background: #ffffff;
 }
 
+.chatPanel {
+  display: flex;
+  min-height: 100%;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.chatEmptyState {
+  display: flex;
+  min-height: 320px;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 28px;
+  text-align: center;
+}
+
+.chatEmptyState strong {
+  color: #111827;
+  font-size: 24px;
+  font-weight: 950;
+  line-height: 1.25;
+}
+
+.chatEmptyState p {
+  max-width: 520px;
+  margin: 10px 0 22px;
+  color: #6b7280;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.chatExamples {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.chatExamples button {
+  min-height: 34px;
+  border: 1px solid #e3e7ee;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #334155;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 750;
+  padding: 0 14px;
+  transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+.chatExamples button:hover {
+  border-color: #c9d2e0;
+  background: #f8fafc;
+  color: #111827;
+}
+
+.chatUserRow {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.chatUserBubble,
+.chatAssistantBubble {
+  max-width: min(86%, 680px);
+  border-radius: 16px;
+  font-size: 14px;
+  line-height: 1.75;
+}
+
+.chatUserBubble {
+  padding: 10px 14px;
+  background: #111827;
+  color: #ffffff;
+}
+
+.chatAssistantBubble {
+  padding: 14px 16px;
+  border: 1px solid #e7ebf0;
+  background: #fbfcfd;
+  color: #303846;
+}
+
+.chatAssistantBubble .reportContent {
+  color: inherit;
+}
+
+.chatAssistantBubble .reportTitle {
+  margin-top: 0;
+  font-size: 18px;
+}
+
+.chatAssistantBubble .reportSectionTitle {
+  margin-top: 18px;
+  padding-top: 16px;
+  font-size: 16px;
+}
+
+.chatAssistantBubble .reportParagraph,
+.chatAssistantBubble .reportList li,
+.chatAssistantBubble .reportMarkedLine {
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.chatComposer {
+  display: flex;
+  flex-shrink: 0;
+  gap: 10px;
+  padding: 12px;
+  border-top: 1px solid #e8ebef;
+  background: #ffffff;
+}
+
+.chatComposer input {
+  min-width: 0;
+  flex: 1;
+  min-height: 40px;
+  border: 1px solid #e3e7ee;
+  border-radius: 999px;
+  background: #f8fafc;
+  color: #111827;
+  font-size: 13px;
+  outline: none;
+  padding: 0 14px;
+  transition: background 0.18s ease, border-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.chatComposer input:focus {
+  border-color: #b9c2d2;
+  background: #ffffff;
+  box-shadow: 0 0 0 3px rgba(15, 23, 42, 0.06);
+}
+
+.chatComposer button {
+  min-width: 72px;
+  min-height: 40px;
+  border: 0;
+  border-radius: 999px;
+  background: #111827;
+  color: #ffffff;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 850;
+  padding: 0 16px;
+}
+
+.chatComposer button:disabled,
+.chatComposer input:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
 @media (max-width: 900px) {
   .overviewMain {
     grid-template-columns: 1fr;
@@ -248,6 +402,26 @@
   .answerReport {
     padding: 20px 16px 24px;
     border-radius: 14px;
+  }
+
+  .chatEmptyState {
+    min-height: 260px;
+    padding: 22px 10px;
+  }
+
+  .chatUserBubble,
+  .chatAssistantBubble {
+    max-width: 94%;
+  }
+
+  .chatComposer {
+    gap: 8px;
+    padding: 10px;
+  }
+
+  .chatComposer button {
+    min-width: 64px;
+    padding: 0 12px;
   }
 
   .overviewFacts span {
@@ -271,7 +445,8 @@
 :global([data-theme="dark"]) .answerReport,
 :global([data-theme="dark"]) .overviewCards article,
 :global([data-theme="dark"]) .reportFold,
-:global([data-theme="dark"]) .reportFoldBody {
+:global([data-theme="dark"]) .reportFoldBody,
+:global([data-theme="dark"]) .chatAssistantBubble {
   border-color: rgba(148, 163, 184, 0.18);
   background: rgba(15, 23, 42, 0.78);
 }
@@ -288,11 +463,30 @@
   color: #d1d5db;
 }
 
+:global([data-theme="dark"]) .chatExamples button,
+:global([data-theme="dark"]) .chatComposer input {
+  border-color: rgba(148, 163, 184, 0.22);
+  background: rgba(15, 23, 42, 0.7);
+  color: #e5e7eb;
+}
+
+:global([data-theme="dark"]) .chatComposer {
+  border-color: rgba(148, 163, 184, 0.18);
+  background: rgba(15, 23, 42, 0.82);
+}
+
+:global([data-theme="dark"]) .chatUserBubble,
+:global([data-theme="dark"]) .chatComposer button {
+  background: #f8fafc;
+  color: #0f172a;
+}
+
 :global([data-theme="dark"]) .reportTitle,
 :global([data-theme="dark"]) .reportSectionTitle,
 :global([data-theme="dark"]) .reportFold summary,
 :global([data-theme="dark"]) .overviewCards strong,
-:global([data-theme="dark"]) .radarLabel {
+:global([data-theme="dark"]) .radarLabel,
+:global([data-theme="dark"]) .chatEmptyState strong {
   color: #f8fafc;
   fill: #f8fafc;
 }
@@ -301,7 +495,8 @@
 :global([data-theme="dark"]) .reportParagraph,
 :global([data-theme="dark"]) .reportMarkedLine,
 :global([data-theme="dark"]) .reportList li,
-:global([data-theme="dark"]) .overviewCards p {
+:global([data-theme="dark"]) .overviewCards p,
+:global([data-theme="dark"]) .chatEmptyState p {
   color: #cbd5e1;
 }
 

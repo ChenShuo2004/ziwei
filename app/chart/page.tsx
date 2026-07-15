@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import BirthForm from '@/components/BirthForm';
 import ChartBoard from '@/components/ChartBoard';
+import type { TimeContext, TimeView } from '@/components/TimeNav';
 import InsightPanel from '@/components/InsightPanel';
 import ShareModal from '@/components/ShareModal';
 import ThemeToggle from '@/components/ThemeToggle';
@@ -170,6 +171,8 @@ export default function ChartPage() {
   const [mode, setMode] = useState<ChartMode>('ming');
   const [notice, setNotice] = useState('');
   const [bootError, setBootError] = useState('');
+  const [timeContext, setTimeContext] = useState<TimeContext | null>(null);
+  const [requestedTimeView, setRequestedTimeView] = useState<TimeView>('mingpan');
 
   useEffect(() => {
     const info = parseChartUrl();
@@ -198,8 +201,9 @@ export default function ChartPage() {
 
   const handleModeClick = (next: ChartMode) => {
     setMode(next);
+    setRequestedTimeView(next === 'ming' ? 'mingpan' : next);
     if (next === 'liuyue' || next === 'liuri' || next === 'liushi') {
-      setNotice(`${MODE_LABELS[next]}精细盘正在接入中，完成后会同步命盘与解读。`);
+      setNotice('');
       return;
     }
     setNotice('');
@@ -281,7 +285,7 @@ export default function ChartPage() {
 
         <section className="white-result-grid pro-result-grid">
           <div className="white-board-panel">
-            <ChartBoard chart={chart} onPalaceSelect={setSelectedPalace} compact />
+            <ChartBoard chart={chart} onPalaceSelect={setSelectedPalace} onTimeContextChange={setTimeContext} requestedView={requestedTimeView} compact />
             <div className="pro-board-actions">
               <p>点击宫位查看三方四正</p>
               <button
@@ -306,6 +310,7 @@ export default function ChartPage() {
             <InsightPanel
               chart={chart}
               selectedPalace={selectedPalace}
+              timeContext={timeContext}
               onExportReport={handleExportReport}
             />
           </div>

@@ -163,7 +163,9 @@ function useOverview(chart: ZiweiChart) {
         },
         {
           title: '成长课题',
-          body: `当前${currentDx ? `${currentDx.startAge}-${currentDx.endAge}岁大限落${currentDx.palaceName}` : '大限资料不足'}，适合把阶段重点收敛到可执行计划。`,
+          body: currentDx
+            ? `当前${currentDx.startAge}-${currentDx.endAge}岁大限落${currentDx.palaceName}，适合把阶段重点收敛到可执行计划。`
+            : '当前适合把阶段重点收敛到可执行计划。',
         },
       ],
     };
@@ -228,7 +230,9 @@ function OverviewPanel({ chart }: { chart: ZiweiChart }) {
       <div className={styles.overviewFacts}>
         <span>命宫主星 · {majorStars(overview.ming)}</span>
         <span>{chart.wuxingJuName}</span>
-        <span>{overview.currentDx ? `大限 ${overview.currentDx.startAge}-${overview.currentDx.endAge} · ${overview.currentDx.palaceName}` : '大限资料不足'}</span>
+        {overview.currentDx && (
+          <span>大限 {overview.currentDx.startAge}-{overview.currentDx.endAge} · {overview.currentDx.palaceName}</span>
+        )}
         <span>四化 {overview.siHuaCount} 项</span>
       </div>
       <div className={styles.overviewMain}>

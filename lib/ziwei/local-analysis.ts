@@ -379,6 +379,8 @@ function buildStructuredReport(chart: ZiweiChart, topic: Topic, palace?: Palace)
     `> ✦ AI 生成 · 仅供参考`,
     ``,
     topicOpening(meta, palace, opposite),
+    `**\u73b0\u5b9e\u5efa\u8bae**`,
+    meta.advice,
     ``,
     `**一句话定调**`,
     oneLineVerdict(meta, palace),
@@ -418,8 +420,7 @@ function buildStructuredReport(chart: ZiweiChart, topic: Topic, palace?: Palace)
     ...foldBlock(`主辅组合精细论断（${palace?.name ?? meta.title}实际辅煞）`, auxiliaryDiagnosis(palace), true),
     ``,
     `**现实建议**`,
-    meta.advice,
-  ].join('\n');
+  ].filter((line, index, lines) => !(line === '**\u73b0\u5b9e\u5efa\u8bae**' && index === lines.lastIndexOf(line))).join('\n');
 }
 
 function buildTopicReport(chart: ZiweiChart, topic: Topic): string {

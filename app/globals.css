@@ -1908,18 +1908,42 @@ body {
   display: flex !important;
   align-items: center;
   gap: 8px;
+  min-height: 36px;
   margin-top: 10px !important;
+  padding: 7px 8px;
+  border-radius: 10px;
   color: #7c8491 !important;
   font-size: 13px !important;
   line-height: 1.5 !important;
   cursor: pointer;
+  user-select: none;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.white-checkbox:hover {
+  background: #f7f8fa;
+  color: #3f4652 !important;
 }
 
 .white-checkbox input {
-  width: 14px;
-  height: 14px;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
   margin: 0;
   accent-color: var(--white-ink);
+  cursor: pointer;
+}
+
+.chart-start-page .white-checkbox {
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  padding: 7px 8px;
+}
+
+.chart-start-page .white-checkbox input {
+  width: 15px;
+  height: 15px;
 }
 
 .white-field-hint {

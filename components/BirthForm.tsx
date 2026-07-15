@@ -300,8 +300,9 @@ export default function BirthForm({
             {shichenInfo && <em>（{shichenInfo.range}）</em>}
           </p>
         </div>
-        <label className="white-checkbox">
+        <label className="white-checkbox" htmlFor="unknown-birth-time">
           <input
+            id="unknown-birth-time"
             type="checkbox"
             checked={form.unknownTime}
             onChange={e => setForm({ ...form, unknownTime: e.target.checked })}

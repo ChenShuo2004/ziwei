@@ -2298,6 +2298,32 @@ body {
   color: #9a6a12;
 }
 
+.insight-mode-bar .insight-icon-button {
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.insight-icon-button svg {
+  width: 18px;
+  height: 18px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+.insight-icon-button:hover {
+  border-color: #b88624;
+  background: #fff1c7;
+}
+
 .insight-topic-grid {
   flex: 1 1 auto;
   min-width: 0;

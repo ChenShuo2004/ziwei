@@ -543,8 +543,16 @@ export default function InsightPanel({ chart, selectedPalace, onExportReport }: 
         <button type="button" className={mode === 'chat' ? 'is-active' : ''} onClick={() => setMode('chat')}>
           AI 对话
         </button>
-        <button type="button" className="insight-report-button" onClick={onExportReport}>
-          导出全盘报告 PDF
+        <button
+          type="button"
+          className="insight-report-button insight-icon-button"
+          onClick={onExportReport}
+          aria-label="导出全盘报告 PDF"
+          title="导出全盘报告 PDF"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3v11m0 0 4-4m-4 4-4-4M5 19h14" />
+          </svg>
         </button>
       </div>
 

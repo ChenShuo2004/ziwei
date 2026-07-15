@@ -2178,6 +2178,7 @@ body {
   padding: 0 12px;
 }
 
+.pro-school-picker,
 .pro-chart-toolbar-actions > button:first-of-type {
   display: none;
 }

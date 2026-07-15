@@ -281,7 +281,7 @@ export default function ChartPage() {
 
         <section className="white-result-grid pro-result-grid">
           <div className="white-board-panel">
-            <ChartBoard chart={chart} onPalaceSelect={setSelectedPalace} />
+            <ChartBoard chart={chart} onPalaceSelect={setSelectedPalace} compact />
             <div className="pro-board-actions">
               <p>点击宫位查看三方四正</p>
               <button

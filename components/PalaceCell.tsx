@@ -11,6 +11,7 @@ interface PalaceCellProps {
   isSelected?: boolean;
   isSanFang?: boolean;
   delay?: number;
+  compact?: boolean;
   /** 叠加四化：星名 → 四化类型（'禄'/'权'/'科'/'忌'） */
   overlayStarSiHua?: Record<string, string>;
   /** 叠加标签：'年'（流年）或 '限'（大限） */
@@ -55,7 +56,7 @@ const SiHuaBadge = ({
 
 export default function PalaceCell({
   palace, onClick, onStarClick, isSelected, isSanFang, delay = 0,
-  overlayStarSiHua, overlayLabel, onSiHuaClick,
+  overlayStarSiHua, overlayLabel, onSiHuaClick, compact = false,
 }: PalaceCellProps) {
   const { branch, stem, name, stars, daXianAge, isCurrentDaXian, isMingGong, isShenGong } = palace;
   const ganzhi = `${STEMS[stem]}${BRANCHES[branch]}`;
@@ -70,9 +71,12 @@ export default function PalaceCell({
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.35, delay, ease: 'easeOut' }}
       onClick={onClick}
-      className="relative flex flex-col p-1.5 cursor-pointer transition-all duration-200 h-full"
+      className={clsx(
+        'relative flex flex-col cursor-pointer transition-all duration-200 h-full palace-cell',
+        compact ? 'is-compact p-1.5' : 'p-1.5',
+      )}
       style={{
-        minHeight: '90px',
+        minHeight: compact ? '78px' : '90px',
         background: isCurrentDaXian
           ? 'rgba(147,51,234,0.08)'
           : isSelected
@@ -105,7 +109,7 @@ export default function PalaceCell({
 
       {/* 宫名行 */}
       <div className="flex items-center gap-1 mb-0.5 pr-8">
-        <span className={clsx('text-[10px] font-medium tracking-wide',
+        <span className={clsx(compact ? 'text-[11px]' : 'text-[10px]', 'font-semibold tracking-wide palace-cell-name',
           isMingGong ? 'text-amber-500' : isShenGong ? 'text-sky-500' : ''
         )}
           style={!isMingGong && !isShenGong ? { color: 'var(--t-faint)' } : undefined}
@@ -121,7 +125,7 @@ export default function PalaceCell({
       </div>
 
       {/* 干支 */}
-      <div className="text-[9px] font-mono mb-1" style={{ color: 'var(--t-faint)', opacity: 0.75 }}>{ganzhi}</div>
+      <div className={clsx(compact ? 'text-[10px]' : 'text-[9px]', 'font-mono mb-1 palace-cell-stem')} style={{ color: 'var(--t-faint)', opacity: 0.75 }}>{ganzhi}</div>
 
       {/* 主星 */}
       <div className="flex flex-col gap-0.5 flex-1">
@@ -137,7 +141,8 @@ export default function PalaceCell({
               onClick={e => { e.stopPropagation(); onStarClick?.(star); }}
             >
               <span className={clsx(
-                'text-[13px] leading-tight font-bold tracking-tight cursor-pointer hover:brightness-125 transition-all',
+                compact ? 'text-[14px]' : 'text-[13px]',
+                'leading-tight font-bold tracking-tight cursor-pointer hover:brightness-125 transition-all palace-cell-major',
                 star.brightness === 'bright' ? 'text-amber-300' : star.brightness === 'dim' ? 'text-amber-700/80' : 'text-amber-500',
               )}>
                 {star.name}
@@ -165,7 +170,7 @@ export default function PalaceCell({
           {luckyStars.map(s => {
             const overlaySiHua = overlayStarSiHua?.[s.name];
             return (
-              <span key={s.name} className="inline-flex items-center text-[9px] text-sky-500/70 leading-tight">
+              <span key={s.name} className={clsx('inline-flex items-center text-sky-500/70 leading-tight palace-cell-minor', compact ? 'text-[9.5px]' : 'text-[9px]')}>
                 {s.name}
                 {s.siHua && <SiHuaBadge siHua={s.siHua} />}
                 {overlaySiHua && (
@@ -189,7 +194,7 @@ export default function PalaceCell({
       {shaStars.length > 0 && (
         <div className="flex flex-wrap gap-x-1">
           {shaStars.map(s => (
-            <span key={s.name} className="text-[9px] text-red-500/60 leading-tight">
+            <span key={s.name} className={clsx('text-red-500/60 leading-tight palace-cell-minor', compact ? 'text-[9.5px]' : 'text-[9px]')}>
               {s.name}{s.siHua && <SiHuaBadge siHua={s.siHua} />}
             </span>
           ))}

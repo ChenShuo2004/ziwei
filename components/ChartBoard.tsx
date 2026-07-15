@@ -11,6 +11,7 @@ interface ChartBoardProps {
   onStarSelect?: (star: Star, palace: Palace) => void;
   onPalaceSelect?: (palace: Palace) => void;
   onSiHuaClick?: (starName: string, siHua: string, view: TimeView) => void;
+  compact?: boolean;
 }
 
 const BRANCH_GRID_POS: Record<number, [number, number]> = {
@@ -52,7 +53,7 @@ function getSanFangSiZheng(branch: number): [number, number, number, number] {
 
 const ANIMATION_ORDER = [5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4];
 
-export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHuaClick }: ChartBoardProps) {
+export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHuaClick, compact = false }: ChartBoardProps) {
   const [selectedBranch, setSelectedBranch] = useState<number | null>(null);
   const [timeView, setTimeView] = useState<TimeView>('mingpan');
   const [liunianYear, setLiunianYear] = useState<number>(new Date().getFullYear());
@@ -88,7 +89,7 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
   const sanFangSet = sanFangBranches ? new Set(sanFangBranches) : null;
 
   return (
-    <div className="w-full select-none">
+    <div className={`w-full select-none chart-board ${compact ? 'is-compact' : ''}`}>
       {/* 时间导航轴 */}
       <TimeNav
         chart={chart}
@@ -102,7 +103,7 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
       <motion.div
         initial={{ opacity: 0, y: -8 }}
         animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-3"
+        className="text-center mb-3 chart-board-title"
       >
         <div className="text-[10px] tracking-[0.5em] uppercase mb-1" style={{ color: 'var(--t-faint)' }}>
           Zi Wei Dou Shu
@@ -114,7 +115,7 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
 
       {/* 4x4 命盘网格（含 SVG 叠加层） */}
       <div
-        className="grid rounded-xl overflow-hidden relative"
+        className="grid rounded-xl overflow-hidden relative chart-board-grid"
         style={{
           gridTemplateColumns: 'repeat(4, 1fr)',
           gridTemplateRows: 'repeat(4, auto)',
@@ -132,6 +133,7 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
             <div key={branch} style={{ gridRow: row, gridColumn: col, background: 'var(--t-bg)' }}>
               <PalaceCell
                 palace={palace}
+                compact={compact}
                 onClick={() => handlePalaceClick(branch)}
                 onStarClick={(star) => onStarSelect?.(star, palace)}
                 isSelected={selectedBranch === branch}
@@ -150,8 +152,8 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.5 }}
-          className="flex flex-col items-center justify-center p-4 gap-3"
-          style={{ gridRow: '2 / 4', gridColumn: '2 / 4', background: 'var(--t-bg)' }}
+          className="flex flex-col items-center justify-center p-4 gap-3 chart-board-center"
+          style={{ gridRow: '2 / 4', gridColumn: '2 / 4', background: compact ? '#ffffff' : 'var(--t-bg)' }}
         >
           <div className="text-5xl select-none leading-none" style={{ color: 'var(--t-gold)', opacity: 0.12, filter: 'drop-shadow(0 0 12px rgba(180,120,30,0.15))' }}>
             ☯

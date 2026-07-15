@@ -1,14 +1,14 @@
 .answerReport {
-  padding: 26px clamp(18px, 3vw, 34px) 30px;
-  border: 1px solid #e5e7eb;
-  border-radius: 18px;
+  padding: 22px clamp(18px, 2.4vw, 32px) 30px;
+  border: 0;
+  border-radius: 0;
   background: #ffffff;
-  box-shadow: 0 18px 42px rgba(15, 23, 42, 0.045);
+  box-shadow: none;
 }
 
 .overviewPanel {
-  margin-bottom: 30px;
-  padding-bottom: 24px;
+  margin-bottom: 28px;
+  padding-bottom: 26px;
   border-bottom: 1px solid #e8ebef;
 }
 
@@ -36,13 +36,13 @@
 .overviewMain {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 18px;
+  gap: 24px;
   align-items: center;
   justify-items: center;
 }
 
 .radarSvg {
-  width: min(100%, 280px);
+  width: min(100%, 430px);
   aspect-ratio: 1;
   overflow: visible;
 }
@@ -54,33 +54,33 @@
 }
 
 .radarArea {
-  fill: rgba(79, 70, 229, 0.16);
+  fill: rgba(88, 80, 236, 0.16);
   stroke: none;
 }
 
 .radarLine {
   fill: none;
-  stroke: #4f46e5;
-  stroke-width: 2.4;
+  stroke: #5b5cf0;
+  stroke-width: 3.2;
   stroke-linejoin: round;
 }
 
 .radarLabel {
   fill: #111827;
-  font-size: 12px;
-  font-weight: 800;
+  font-size: 14px;
+  font-weight: 900;
 }
 
 .overviewCards {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px;
+  gap: 14px;
   width: 100%;
 }
 
 .overviewCards article {
   min-width: 0;
-  padding: 15px 16px;
+  padding: 18px 20px;
   border: 1px solid #e7ebf0;
   border-radius: 14px;
   background: #fbfcfd;
@@ -88,9 +88,9 @@
 
 .overviewCards strong {
   display: block;
-  margin-bottom: 7px;
+  margin-bottom: 10px;
   color: #111827;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 900;
   line-height: 1.35;
 }
@@ -99,8 +99,8 @@
 .overviewNote {
   margin: 0;
   color: #4b5563;
-  font-size: 13px;
-  line-height: 1.75;
+  font-size: 14px;
+  line-height: 1.82;
 }
 
 .overviewNote {
@@ -118,7 +118,7 @@
 .reportTitle {
   margin: 0 0 10px;
   color: #111827;
-  font-size: clamp(25px, 2.6vw, 36px);
+  font-size: clamp(28px, 2.8vw, 42px);
   font-weight: 950;
   line-height: 1.2;
   letter-spacing: 0;
@@ -128,7 +128,7 @@
   max-width: 900px;
   margin: 0 0 28px;
   color: #5c6472;
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.85;
 }
 
@@ -146,7 +146,7 @@
 .reportParagraph {
   margin: 0 0 12px;
   color: #303846;
-  font-size: 15px;
+  font-size: 16px;
   line-height: 2;
 }
 

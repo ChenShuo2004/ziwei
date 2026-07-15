@@ -187,7 +187,15 @@ function RadarChart({ scores }: { scores: number[] }) {
   );
 
   return (
-    <svg className={styles.radarSvg} viewBox="0 0 180 180" role="img" aria-label="六维命盘参考图">
+    <motion.svg
+      className={styles.radarSvg}
+      viewBox="0 0 180 180"
+      role="img"
+      aria-label="六维命盘参考图"
+      initial={{ opacity: 0, scale: 0.88, rotate: -4 }}
+      animate={{ opacity: 1, scale: 1, rotate: 0 }}
+      transition={{ duration: 0.58, ease: [0.22, 1, 0.36, 1] }}
+    >
       {grid.map(item => <polygon key={item} points={item} className={styles.radarGrid} />)}
       {RADAR_AXES.map((axis, index) => {
         const angle = (Math.PI * 2 * index) / RADAR_AXES.length - Math.PI / 2;
@@ -195,9 +203,21 @@ function RadarChart({ scores }: { scores: number[] }) {
         const y = center + Math.sin(angle) * 78;
         return <text key={axis} x={x} y={y} textAnchor="middle" dominantBaseline="middle" className={styles.radarLabel}>{axis}</text>;
       })}
-      <polygon points={points} className={styles.radarArea} />
-      <polygon points={points} className={styles.radarLine} />
-    </svg>
+      <motion.polygon
+        points={points}
+        className={styles.radarArea}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.18, duration: 0.45 }}
+      />
+      <motion.polygon
+        points={points}
+        className={styles.radarLine}
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.22, duration: 0.72, ease: 'easeOut' }}
+      />
+    </motion.svg>
   );
 }
 
@@ -279,12 +299,10 @@ function ReportContent({ text, streaming }: { text: string; streaming?: boolean 
   );
 }
 
-function TopicIntro({ title, loading }: { title: string; loading: boolean }) {
+function TopicIntro({ title }: { title: string }) {
   return (
     <div className="insight-topic-intro">
-      <span>AI 生成 · 仅供参考</span>
       <strong>{title}</strong>
-      <p>{loading ? '正在生成报告...' : '切换主题或继续追问，AI 会基于当前命盘回答。'}</p>
     </div>
   );
 }
@@ -517,7 +535,7 @@ export default function InsightPanel({ chart, selectedPalace, onExportReport }: 
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0 insight-scroll" aria-live="polite" aria-busy={loading}>
         <div className="insight-intro-row">
-          <TopicIntro title={activeTitle} loading={loading} />
+          <TopicIntro title={activeTitle} />
           <button
             type="button"
             className="insight-copy-button"

@@ -2061,11 +2061,11 @@ body {
 
 .white-result-grid {
   display: grid;
-  grid-template-columns: minmax(620px, 1.35fr) minmax(520px, 0.95fr);
-  gap: 24px;
-  max-width: 1560px;
+  grid-template-columns: minmax(430px, 500px) minmax(0, 1fr);
+  gap: 16px;
+  max-width: 1840px;
   margin: 0 auto;
-  padding: 0 28px 72px;
+  padding: 0 18px 56px;
   align-items: start;
 }
 
@@ -2087,9 +2087,7 @@ body {
 
 .pro-chart-shell {
   min-height: 100vh;
-  background:
-    radial-gradient(circle at 16% 8%, rgba(212, 168, 67, 0.08), transparent 30%),
-    linear-gradient(180deg, #fbfaf7 0%, #f6f3ed 100%);
+  background: #ffffff;
 }
 
 .pro-chart-toolbar {
@@ -2204,7 +2202,7 @@ body {
 }
 
 .pro-result-grid {
-  padding-top: 18px;
+  padding-top: 16px;
 }
 
 .pro-board-actions {
@@ -2237,11 +2235,20 @@ body {
 
 .white-board-panel,
 .white-insight-panel {
-  padding: 18px;
+  padding: 16px;
+}
+
+.white-chart-page .white-board-panel {
+  position: sticky;
+  top: 58px;
+  max-height: calc(100vh - 76px);
+  overflow: auto;
+  border-radius: 14px;
 }
 
 .white-insight-panel {
-  min-height: 720px;
+  min-height: calc(100vh - 92px);
+  border-radius: 14px;
 }
 
 .white-insight-panel > div {
@@ -2251,9 +2258,9 @@ body {
 .insight-topic-bar {
   flex-shrink: 0;
   display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 12px;
+  align-items: center;
+  gap: 0;
+  padding: 12px 14px;
   border-bottom: 1px solid #e8ebef;
   background: #ffffff;
 }
@@ -2264,7 +2271,7 @@ body {
   gap: 8px;
   padding: 12px;
   border-bottom: 1px solid #e8ebef;
-  background: #ffffff;
+  background: #f5f5f6;
 }
 
 .insight-mode-bar button {
@@ -2272,7 +2279,7 @@ body {
   padding: 0 12px;
   border: 1px solid #dfe4ea;
   border-radius: 999px;
-  background: #f8fafc;
+  background: #ffffff;
   color: #536071;
   font-size: 12px;
   font-weight: 900;
@@ -2292,15 +2299,24 @@ body {
 }
 
 .insight-topic-grid {
-  flex: 1 1 0;
+  flex: 1 1 auto;
   min-width: 0;
-  display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
-  gap: 8px;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow-x: auto;
+  padding: 3px;
+  border-radius: 13px;
+  background: #f1f1f2;
+  scrollbar-width: none;
 }
 
 .insight-topic-grid.is-pro-grid {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: none;
+}
+
+.insight-topic-grid::-webkit-scrollbar {
+  display: none;
 }
 
 .insight-topic-grid button {
@@ -2309,23 +2325,23 @@ body {
   align-items: center;
   justify-content: center;
   min-width: 0;
-  min-height: 34px;
-  padding: 0 8px;
-  border: 1px solid #dfe4ea;
-  border-radius: 999px;
-  background: #f8fafc;
-  color: #536071;
-  font-size: 12px;
+  flex: 0 0 auto;
+  min-height: 32px;
+  padding: 0 16px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: #7a7f88;
+  font-size: 13px;
   font-weight: 800;
   transition: background 0.18s ease, border-color 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
 }
 
 .insight-topic-grid button:hover,
 .insight-topic-grid button.is-active {
-  border-color: #111827;
-  background: #111827;
-  color: #ffffff;
-  box-shadow: 0 10px 24px rgba(17, 24, 39, 0.12);
+  background: #ffffff;
+  color: #111827;
+  box-shadow: 0 1px 4px rgba(17, 24, 39, 0.08);
 }
 
 .insight-topic-grid button i {
@@ -2362,7 +2378,7 @@ body {
 }
 
 .insight-scroll {
-  background: #f8fafc;
+  background: #ffffff;
 }
 
 .insight-intro-row {
@@ -2378,10 +2394,10 @@ body {
 
 .insight-topic-intro {
   display: grid;
-  gap: 5px;
-  padding: 16px;
-  border: 1px solid #e5e9ef;
-  border-radius: 14px;
+  gap: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
   background: #ffffff;
 }
 
@@ -2394,15 +2410,49 @@ body {
 
 .insight-topic-intro strong {
   color: #111827;
-  font-size: 18px;
-  line-height: 1.25;
+  font-size: 28px;
+  line-height: 1.18;
+  letter-spacing: 0;
 }
 
-.insight-topic-intro p {
+.insight-topic-intro p,
+.insight-topic-intro em {
   margin: 0;
   color: #667085;
   font-size: 13px;
+  font-style: normal;
   line-height: 1.6;
+}
+
+.chart-board.is-compact .chart-board-title {
+  margin-bottom: 8px;
+}
+
+.chart-board.is-compact .chart-board-grid {
+  border-radius: 10px;
+  box-shadow: 0 10px 28px rgba(17, 24, 39, 0.08) !important;
+}
+
+.chart-board.is-compact .chart-board-center {
+  background: #ffffff !important;
+}
+
+.chart-board.is-compact .palace-cell {
+  padding: 7px 8px;
+}
+
+.chart-board.is-compact .palace-cell-name,
+.chart-board.is-compact .palace-cell-stem {
+  color: #3f4652 !important;
+}
+
+.chart-board.is-compact .palace-cell-major {
+  color: #d48a00;
+  line-height: 1.12;
+}
+
+.chart-board.is-compact .palace-cell-minor {
+  opacity: 0.78;
 }
 
 .insight-answer-card {

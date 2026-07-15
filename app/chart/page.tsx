@@ -24,6 +24,13 @@ const MODE_LABELS: Record<ChartMode, string> = {
   liushi: '流时',
 };
 
+const SCHOOL_OPTIONS = [
+  { key: 'ni', label: '\u502a\u6d77\u53a6\u4e09\u5408\u6d3e', description: '\u4ee5\u547d\u5bab\u3001\u4e09\u65b9\u56db\u6b63\u3001\u5927\u9650\u6d41\u5e74\u4e3a\u6838\u5fc3' },
+  { key: 'sanhe', label: '\u4f20\u7edf\u4e09\u5408\u6d3e', description: '\u4f18\u5148\u89c2\u5bdf\u5bab\u4f4d\u4e92\u52a8\u4e0e\u4e09\u5408\u4f1a\u7167' },
+  { key: 'feixing', label: '\u98de\u661f\u56db\u5316\u6d3e', description: '\u5f3a\u8c03\u56db\u5316\u98de\u5bab\u4e0e\u52a8\u6001\u89e6\u53d1' },
+  { key: 'zhongzhou', label: '\u4e2d\u5dde\u6d3e', description: '\u91cd\u89c6\u661f\u66dc\u5e99\u65fa\u4e0e\u5bab\u4f4d\u683c\u5c40' },
+] as const;
+
 function clockToBranch(hour: number, minute: number, longitude: number): number {
   const clockMins = hour * 60 + minute;
   const offset = (longitude - 120) * 4;
@@ -173,6 +180,8 @@ export default function ChartPage() {
   const [bootError, setBootError] = useState('');
   const [timeContext, setTimeContext] = useState<TimeContext | null>(null);
   const [requestedTimeView, setRequestedTimeView] = useState<TimeView>('mingpan');
+  const [schoolOpen, setSchoolOpen] = useState(false);
+  const [schoolKey, setSchoolKey] = useState<(typeof SCHOOL_OPTIONS)[number]['key']>('ni');
 
   useEffect(() => {
     const info = parseChartUrl();
@@ -270,6 +279,39 @@ export default function ChartPage() {
             </div>
           </div>
           <div className="pro-chart-toolbar-actions">
+            <div className="pro-school-picker">
+              <button
+                type="button"
+                className={schoolOpen ? 'is-open' : ''}
+                aria-haspopup="listbox"
+                aria-expanded={schoolOpen}
+                onClick={() => setSchoolOpen(open => !open)}
+              >
+                流派 <span aria-hidden="true">⌄</span>
+              </button>
+              {schoolOpen && (
+                <div className="pro-school-menu" role="listbox" aria-label="流派选择">
+                  <div className="pro-school-menu-title">当前推演体系</div>
+                  {SCHOOL_OPTIONS.map(option => (
+                    <button
+                      key={option.key}
+                      type="button"
+                      role="option"
+                      aria-selected={schoolKey === option.key}
+                      className={schoolKey === option.key ? 'is-selected' : ''}
+                      onClick={() => {
+                        setSchoolKey(option.key);
+                        setSchoolOpen(false);
+                        setNotice(`已切换至${option.label}，后续分析将优先参考：${option.description}。`);
+                      }}
+                    >
+                      <strong>{option.label}</strong>
+                      <span>{option.description}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
             <button type="button" onClick={() => setNotice('流派切换正在接入中，当前采用默认紫微斗数体系。')}>流派</button>
             <button type="button" onClick={() => setNotice('历史命盘会优先保存在本机，下一步接入本地历史列表。')}>历史</button>
             <button type="button" onClick={() => setNotice('反馈入口会接入表单，当前可先记录到功能待办。')}>反馈</button>

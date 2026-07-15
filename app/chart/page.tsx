@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import BirthForm from '@/components/BirthForm';
 import ChartBoard from '@/components/ChartBoard';
@@ -180,6 +180,7 @@ export default function ChartPage() {
   const [bootError, setBootError] = useState('');
   const [timeContext, setTimeContext] = useState<TimeContext | null>(null);
   const [requestedTimeView, setRequestedTimeView] = useState<TimeView>('mingpan');
+  const ignoreNextTimeContext = useRef(false);
   const [schoolOpen, setSchoolOpen] = useState(false);
   const [schoolKey, setSchoolKey] = useState<(typeof SCHOOL_OPTIONS)[number]['key']>('ni');
 
@@ -209,6 +210,7 @@ export default function ChartPage() {
   }, [chart]);
 
   const handleModeClick = (next: ChartMode) => {
+    if (next !== mode) ignoreNextTimeContext.current = true;
     setMode(next);
     setRequestedTimeView(next === 'ming' ? 'mingpan' : next);
     if (next === 'liuyue' || next === 'liuri' || next === 'liushi') {
@@ -216,6 +218,14 @@ export default function ChartPage() {
       return;
     }
     setNotice('');
+  };
+
+  const handleTimeContextChange = (context: TimeContext) => {
+    if (ignoreNextTimeContext.current) {
+      ignoreNextTimeContext.current = false;
+      return;
+    }
+    setTimeContext(context);
   };
 
   const handleSubmit = (info: BirthInfo) => {
@@ -327,7 +337,7 @@ export default function ChartPage() {
 
         <section className="white-result-grid pro-result-grid">
           <div className="white-board-panel">
-            <ChartBoard chart={chart} onPalaceSelect={setSelectedPalace} onTimeContextChange={setTimeContext} requestedView={requestedTimeView} compact />
+            <ChartBoard chart={chart} onPalaceSelect={setSelectedPalace} onTimeContextChange={handleTimeContextChange} requestedView={requestedTimeView} compact />
             <div className="pro-board-actions">
               <p>点击宫位查看三方四正</p>
               <button

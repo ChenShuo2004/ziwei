@@ -111,49 +111,50 @@
 }
 
 .reportContent {
-  max-width: 980px;
+  max-width: none;
   color: #222831;
 }
 
 .reportTitle {
-  margin: 0 0 10px;
+  margin: 4px 0 14px;
   color: #111827;
-  font-size: clamp(28px, 2.8vw, 42px);
+  font-size: clamp(24px, 2vw, 34px);
   font-weight: 950;
   line-height: 1.2;
   letter-spacing: 0;
 }
 
 .reportLead {
-  max-width: 900px;
-  margin: 0 0 28px;
-  color: #5c6472;
-  font-size: 16px;
-  line-height: 1.85;
+  max-width: none;
+  margin: 0 0 10px;
+  color: #6b7280;
+  font-size: 14px;
+  font-weight: 650;
+  line-height: 1.7;
 }
 
 .reportSectionTitle {
-  margin: 30px 0 12px;
-  padding-top: 18px;
+  margin: 34px 0 16px;
+  padding-top: 24px;
   border-top: 1px solid #e8ebef;
   color: #111827;
-  font-size: 19px;
+  font-size: 20px;
   font-weight: 900;
   line-height: 1.35;
   letter-spacing: 0;
 }
 
 .reportParagraph {
-  margin: 0 0 12px;
+  margin: 0 0 16px;
   color: #303846;
   font-size: 16px;
-  line-height: 2;
+  line-height: 2.05;
 }
 
 .reportList {
   display: grid;
-  gap: 8px;
-  margin: 0 0 14px;
+  gap: 10px;
+  margin: 0 0 18px;
   padding: 0;
   list-style: none;
 }
@@ -162,8 +163,8 @@
   position: relative;
   padding-left: 18px;
   color: #3f4652;
-  font-size: 14px;
-  line-height: 1.85;
+  font-size: 15px;
+  line-height: 1.95;
 }
 
 .reportList li::before {
@@ -175,6 +176,60 @@
   height: 6px;
   border-radius: 999px;
   background: #4f46e5;
+}
+
+.reportMarkedLine {
+  margin: 0 0 12px;
+  color: #222831;
+  font-size: 16px;
+  font-weight: 720;
+  line-height: 1.95;
+}
+
+.reportDivider {
+  margin: 28px 0;
+  border: 0;
+  border-top: 1px solid #e8ebef;
+}
+
+.reportFold {
+  margin: 22px 0;
+  border: 1px dashed #cfd5dd;
+  border-radius: 8px;
+  background: #fbfcfd;
+  overflow: hidden;
+}
+
+.reportFold summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 48px;
+  padding: 0 14px;
+  color: #111827;
+  cursor: pointer;
+  font-size: 17px;
+  font-weight: 900;
+  line-height: 1.35;
+  list-style: none;
+}
+
+.reportFold summary::-webkit-details-marker {
+  display: none;
+}
+
+.reportFold summary small {
+  flex: 0 0 auto;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.reportFoldBody {
+  padding: 14px 18px 18px;
+  border-top: 1px dashed #d8dde5;
+  background: #ffffff;
 }
 
 @media (max-width: 900px) {
@@ -214,13 +269,16 @@
 }
 
 :global([data-theme="dark"]) .answerReport,
-:global([data-theme="dark"]) .overviewCards article {
+:global([data-theme="dark"]) .overviewCards article,
+:global([data-theme="dark"]) .reportFold,
+:global([data-theme="dark"]) .reportFoldBody {
   border-color: rgba(148, 163, 184, 0.18);
   background: rgba(15, 23, 42, 0.78);
 }
 
 :global([data-theme="dark"]) .overviewPanel,
-:global([data-theme="dark"]) .reportSectionTitle {
+:global([data-theme="dark"]) .reportSectionTitle,
+:global([data-theme="dark"]) .reportDivider {
   border-color: rgba(148, 163, 184, 0.18);
 }
 
@@ -232,6 +290,7 @@
 
 :global([data-theme="dark"]) .reportTitle,
 :global([data-theme="dark"]) .reportSectionTitle,
+:global([data-theme="dark"]) .reportFold summary,
 :global([data-theme="dark"]) .overviewCards strong,
 :global([data-theme="dark"]) .radarLabel {
   color: #f8fafc;
@@ -240,6 +299,7 @@
 
 :global([data-theme="dark"]) .reportLead,
 :global([data-theme="dark"]) .reportParagraph,
+:global([data-theme="dark"]) .reportMarkedLine,
 :global([data-theme="dark"]) .reportList li,
 :global([data-theme="dark"]) .overviewCards p {
   color: #cbd5e1;

@@ -285,7 +285,148 @@ function reportTags(chart: ZiweiChart, topic: Topic, palace?: Palace): string {
   ].join('\n');
 }
 
+function foldBlock(title: string, lines: string[], open = false): string[] {
+  return [`[[fold:${title}|${open ? 'open' : 'closed'}]]`, ...lines, '[[/fold]]'];
+}
+
+function topicReportTitle(meta: TopicMeta, topic: Topic): string {
+  if (topic === 'overview') return meta.title;
+  return `${meta.title}总览`;
+}
+
+function starCountText(palace?: Palace): string {
+  const count = starsOf(palace).filter(star => star.type !== 'major').length;
+  if (count <= 0) return '主星格局';
+  return `${count}个辅煞格局`;
+}
+
+function compactMainStars(palace?: Palace): string {
+  return starNames(palace, 'major').replace(/\s+/g, '');
+}
+
+function oneLineVerdict(meta: TopicMeta, palace?: Palace): string {
+  const stars = compactMainStars(palace);
+  return `「${stars}坐守，先抓住${meta.title}的主线，再用三方四正和四化确认现实落点。」`;
+}
+
+function topicOpening(meta: TopicMeta, palace?: Palace, opposite?: Palace): string {
+  return `${meta.title}格局要先看本宫能不能立住，再看对宫、三方四正和当前大限如何牵动。${palaceLabel(palace)}主星为${compactMainStars(palace)}，对宫为${palaceLabel(opposite)}，这说明判断不能只落在单颗星上，而要把本宫的底色、对宫的拉扯、辅煞的节奏和四化的流向合在一起看。${meta.overview}${meta.personal}`;
+}
+
+function structuredEvidence(chart: ZiweiChart, topic: Topic, palace?: Palace, opposite?: Palace): string[] {
+  const ming = mingPalace(chart);
+  const dxRange = chart.daXians[chart.currentDaXianIndex];
+  const dxPalace = currentDaXian(chart);
+  return [
+    `• 主题：${TOPIC_META[topic].title}`,
+    `• 本宫：${palaceLabel(palace)}，主星 ${compactMainStars(palace)}`,
+    `• 对宫：${palaceLabel(opposite)}，主星 ${compactMainStars(opposite)}`,
+    `• 命宫主星：${compactMainStars(ming)}`,
+    `• 五行局：${chart.wuxingJuName}`,
+    dxRange ? `• 当前大限：${dxRange.startAge}-${dxRange.endAge}岁，落${palaceLabel(dxPalace)}` : '• 当前大限：资料不足，先以本命盘结构为主',
+  ];
+}
+
+function classicReferences(topic: Topic, palace?: Palace): string[] {
+  const palaceName = palace?.name ?? '本宫';
+  const stars = compactMainStars(palace);
+  return [
+    `• 《紫微斗数全书・${palaceName}论》：${stars}坐守，先看本宫旺弱，再合三方四正。`,
+    `• 《诸星问答论》：主星定性，辅曜定机，煞曜定阻，四化定流转。`,
+    `• 倪师《天纪》：宫位不能孤看，对宫与大限一动，事情才有现实触发。`,
+    `• 本盘合参：${TOPIC_META[topic].title}以本宫为体，对宫为用，三方会照决定能否落地。`,
+  ];
+}
+
+function auxiliaryDiagnosis(palace?: Palace): string[] {
+  const lucky = starsOf(palace, 'lucky').map(star => `${star.name}${star.siHua ? `化${star.siHua}` : ''}`);
+  const sha = starsOf(palace, 'sha').map(star => `${star.name}${star.siHua ? `化${star.siHua}` : ''}`);
+  const misc = starsOf(palace)
+    .filter(star => star.type !== 'major' && star.type !== 'lucky' && star.type !== 'sha')
+    .slice(0, 6)
+    .map(star => `${star.name}${star.siHua ? `化${star.siHua}` : ''}`);
+
+  return [
+    lucky.length ? `✦ 吉曜：${lucky.join('、')}，代表事情有顺手处，适合顺势放大。` : '✦ 吉曜：不算突出，做事更要依赖流程、耐心和现实资源。',
+    sha.length ? `◆ 煞曜：${sha.join('、')}，代表阻力、冲动或反复，需要提前设置边界。` : '◆ 煞曜：阻力不算尖锐，重点在长期执行而非短期硬冲。',
+    misc.length ? `▸ 其他辅曜：${misc.join('、')}，会影响细节节奏和人事互动。` : '▸ 其他辅曜：以主星、对宫和大限作为主要判断依据。',
+  ];
+}
+
+function structuredFourHua(chart: ZiweiChart, palace?: Palace): string[] {
+  const palaceItems = palace?.stars
+    .filter(star => star.siHua)
+    .map(star => `• ${star.name}化${star.siHua}在${palace.name}`)
+    ?? [];
+  const allItems = siHuaItems(chart).map(item => `• ${item}`);
+  if (palaceItems.length) return [...palaceItems, `▸ 全盘四化：${allItems.length ? allItems.map(item => item.replace(/^• /, '')).join('；') : '未见明显四化标记'}`];
+  return allItems.length ? allItems : ['• 本宫未见明显四化，先看主星、对宫和大限触发。'];
+}
+
+function buildStructuredReport(chart: ZiweiChart, topic: Topic, palace?: Palace): string {
+  const meta = TOPIC_META[topic];
+  const ming = mingPalace(chart);
+  const opposite = oppositePalace(chart, palace);
+  const supportStars = [
+    ...starsOf(palace, 'lucky').slice(0, 4).map(star => star.name),
+    ...starsOf(palace, 'sha').slice(0, 4).map(star => star.name),
+  ];
+
+  return [
+    `# ${topicReportTitle(meta, topic)}`,
+    `> ✓ 已逐条核对 ${compactMainStars(palace)}・${meta.title}`,
+    `> ✦ ${starCountText(palace)} ›`,
+    `> ✦ AI 生成 · 仅供参考`,
+    ``,
+    topicOpening(meta, palace, opposite),
+    ``,
+    `**一句话定调**`,
+    oneLineVerdict(meta, palace),
+    ``,
+    `**核心论断**`,
+    `${palaceLabel(palace)}是这次判断的核心宫位，主星为${compactMainStars(palace)}；命宫主星为${compactMainStars(ming)}，说明你的底层反应方式会直接影响${meta.title}的兑现质量。`,
+    `${meta.deduction}真正要看的不是“好坏一句话”，而是这组星曜能否被稳定使用，以及遇到压力时会不会转成消耗。`,
+    ``,
+    `**命盘推演**`,
+    `本宫主星：${compactMainStars(palace)}`,
+    starKnowledge(palace),
+    supportStars.length ? `本宫辅煞重点：${supportStars.join('、')}。这些星曜决定事情推进时是顺、是急、是反复，还是需要借人借势。` : '本宫辅煞不算突出，重点看主星、对宫、三方四正和大限。',
+    ``,
+    `**三方四正联动**`,
+    `▌ 本宫・${palace?.name ?? '对应宫位'}：${compactMainStars(palace)}`,
+    `▌ 对宫・${opposite?.name ?? '对宫'}：${compactMainStars(opposite)}`,
+    sanFangSummary(chart),
+    daXianSummary(chart),
+    `▸ 本盘合参：本宫定主题，对宫看外部牵动，三方会照看资源能不能真正落地。`,
+    ``,
+    `**四化路径・你这盘**`,
+    ...structuredFourHua(chart, palace),
+    ``,
+    `**年干四化・关键宫位影响**`,
+    siHuaSummary(chart, palace),
+    `是否形成明显机会，要看四化落宫是否与你当前大限、流年重点同向。`,
+    ``,
+    ...foldBlock('命盘依据', structuredEvidence(chart, topic, palace, opposite), false),
+    ``,
+    ...foldBlock('经典出处', classicReferences(topic, palace), true),
+    ``,
+    `**风险提醒**`,
+    `> 紫微斗数讲究阴阳互见，下方为基于本盘特征的中性提醒，知所警惕方能转危为安。`,
+    `◆ ${meta.risk}`,
+    `◆ ${safetyLine(meta)}`,
+    ``,
+    ...foldBlock(`主辅组合精细论断（${palace?.name ?? meta.title}实际辅煞）`, auxiliaryDiagnosis(palace), true),
+    ``,
+    `**现实建议**`,
+    meta.advice,
+  ].join('\n');
+}
+
 function buildTopicReport(chart: ZiweiChart, topic: Topic): string {
+  return buildStructuredReport(chart, topic, palaceForTopic(chart, topic));
+}
+
+function _buildTopicReportLegacy(chart: ZiweiChart, topic: Topic): string {
   const meta = TOPIC_META[topic];
   const palace = palaceForTopic(chart, topic);
   const ming = mingPalace(chart);
@@ -328,6 +469,14 @@ function buildTopicReport(chart: ZiweiChart, topic: Topic): string {
 }
 
 function buildFocusedPalaceReport(chart: ZiweiChart, palace: Palace): string {
+  const topic = (Object.keys(TOPIC_META) as Topic[]).find(key =>
+    TOPIC_META[key].palaceKeywords.some(keyword => palace.name.includes(keyword)),
+  ) ?? 'overview';
+
+  return buildStructuredReport(chart, topic, palace);
+}
+
+function _buildFocusedPalaceReportLegacy(chart: ZiweiChart, palace: Palace): string {
   const ming = mingPalace(chart);
   const opposite = oppositePalace(chart, palace);
   const supportStars = starsOf(palace)

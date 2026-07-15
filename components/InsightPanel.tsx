@@ -263,15 +263,50 @@ function ReportContent({ text, streaming }: { text: string; streaming?: boolean 
     );
   };
 
-  lines.forEach((rawLine, index) => {
+  const renderFold = (title: string, bodyLines: string[], open: boolean) => {
+    flushList();
+    elements.push(
+      <details key={`fold-${elements.length}`} className={styles.reportFold} open={open}>
+        <summary>
+          <span>{title}</span>
+          <small>{open ? '收起' : '展开'}</small>
+        </summary>
+        <div className={styles.reportFoldBody}>
+          <ReportContent text={bodyLines.join('\n')} />
+        </div>
+      </details>,
+    );
+  };
+
+  for (let index = 0; index < lines.length; index += 1) {
+    const rawLine = lines[index];
     const line = rawLine.trim();
     if (!line) {
       flushList();
-      return;
+      continue;
     }
-    if (line.startsWith('- ')) {
-      listItems.push(line.slice(2));
-      return;
+
+    const foldMatch = line.match(/^\[\[fold:(.+?)(?:\|(open|closed))?\]\]$/);
+    if (foldMatch) {
+      const bodyLines: string[] = [];
+      index += 1;
+      while (index < lines.length && lines[index].trim() !== '[[/fold]]') {
+        bodyLines.push(lines[index]);
+        index += 1;
+      }
+      renderFold(foldMatch[1], bodyLines, foldMatch[2] === 'open');
+      continue;
+    }
+
+    if (line === '---') {
+      flushList();
+      elements.push(<hr key={index} className={styles.reportDivider} />);
+      continue;
+    }
+
+    if (line.startsWith('- ') || line.startsWith('• ')) {
+      listItems.push(line.replace(/^[-•]\s+/, ''));
+      continue;
     }
 
     flushList();
@@ -285,10 +320,12 @@ function ReportContent({ text, streaming }: { text: string; streaming?: boolean 
       elements.push(<p key={index} className={styles.reportLead}>{quoteMatch[1]}</p>);
     } else if (sectionMatch) {
       elements.push(<h3 key={index} className={styles.reportSectionTitle}>{sectionMatch[1]}</h3>);
+    } else if (/^[◆✦▌▸]/.test(line)) {
+      elements.push(<p key={index} className={styles.reportMarkedLine}>{line}</p>);
     } else {
       elements.push(<p key={index} className={styles.reportParagraph}>{line}</p>);
     }
-  });
+  }
   flushList();
 
   return (

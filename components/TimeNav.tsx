@@ -192,8 +192,8 @@ export default function TimeNav({
         </motion.div>
       )}
 
-      <div className="chart-time-controls" aria-label="\u547d\u76d8\u65f6\u95f4\u7ef4\u5ea6">
-        <TimeSection label="\u5927\u9650" hint="\u6df1\u8272\u4e3a\u6240\u9009\u5927\u9650\uff0c\u70b9\u51fb\u5207\u6362">
+      <div className="chart-time-controls" aria-label={'\u547d\u76d8\u65f6\u95f4\u7ef4\u5ea6'}>
+        <TimeSection label={'\u5927\u9650'} hint={'\u6df1\u8272\u4e3a\u6240\u9009\u5927\u9650\uff0c\u70b9\u51fb\u5207\u6362'}>
           <div className="chart-time-options">
             {chart.daXians.map((item, index) => (
               <TimeOption key={`${item.startAge}-${item.endAge}`} active={view === 'daxian' && index === chart.currentDaXianIndex} onClick={() => onViewChange('daxian')} title={`${item.startAge}\u2013${item.endAge}\u5c81`} subtitle={item.palaceName} />
@@ -201,7 +201,7 @@ export default function TimeNav({
           </div>
         </TimeSection>
 
-        <TimeSection label="\u6d41\u5e74" hint="\u7d2b\u8272\u4e3a\u5f53\u524d\u5e74\uff0c\u70b9\u51fb\u4efb\u4e00\u5e74\u5207\u6362">
+        <TimeSection label={'\u6d41\u5e74'} hint={'\u7d2b\u8272\u4e3a\u5f53\u524d\u5e74\uff0c\u70b9\u51fb\u4efb\u4e00\u5e74\u5207\u6362'}>
           <div className="chart-time-options">
             {Array.from({ length: 6 }, (_, index) => liunianYear - 4 + index).map(year => (
               <TimeOption key={year} active={view === 'liunian' && year === liunianYear} onClick={() => { onYearChange(year); onViewChange('liunian'); }} title={String(year)} subtitle={`${getYearStemIndex(year)}\u5e74`} />
@@ -209,7 +209,7 @@ export default function TimeNav({
           </div>
         </TimeSection>
 
-        <TimeSection label="\u6d41\u6708" hint="\u7cbe\u7ec6\u5230\u6bcf\u6708\u8fd0\u52bf\uff0c\u70b9\u51fb\u5207\u6362">
+        <TimeSection label={'\u6d41\u6708'} hint={'\u7cbe\u7ec6\u5230\u6bcf\u6708\u8fd0\u52bf\uff0c\u70b9\u51fb\u5207\u6362'}>
           <div className="chart-time-options">
             {Array.from({ length: 12 }, (_, index) => index + 1).map(month => (
               <TimeOption key={month} active={view === 'liuyue' && month === liuyueMonth} onClick={() => { onMonthChange(month); onViewChange('liuyue'); }} title={`${month}\u6708`} />
@@ -217,7 +217,7 @@ export default function TimeNav({
           </div>
         </TimeSection>
 
-        <TimeSection label="\u6d41\u65e5" hint="\u7cbe\u7ec6\u5230\u6bcf\u5929\uff0c\u70b9\u51fb\u5207\u6362">
+        <TimeSection label={'\u6d41\u65e5'} hint={'\u7cbe\u7ec6\u5230\u6bcf\u5929\uff0c\u70b9\u51fb\u5207\u6362'}>
           <div className="chart-time-options">
             {Array.from({ length: 31 }, (_, index) => index + 1).map(day => (
               <TimeOption key={day} active={view === 'liuri' && day === liuriDay} onClick={() => { onDayChange(day); onViewChange('liuri'); }} title={`\u521d${day}`} />
@@ -225,7 +225,7 @@ export default function TimeNav({
           </div>
         </TimeSection>
 
-        <TimeSection label="\u6d41\u65f6" hint="\u7cbe\u7ec6\u5230\u65f6\u8fb0\uff0c\u70b9\u51fb\u5207\u6362">
+        <TimeSection label={'\u6d41\u65f6'} hint={'\u7cbe\u7ec6\u5230\u65f6\u8fb0\uff0c\u70b9\u51fb\u5207\u6362'}>
           <div className="chart-time-options">
             {BRANCHES.map((branch, hour) => (
               <TimeOption key={branch} active={view === 'liushi' && hour === liushiHour} onClick={() => { onHourChange(hour); onViewChange('liushi'); }} title={`${branch}\u65f6`} />

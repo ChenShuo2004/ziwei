@@ -3,6 +3,7 @@
 import { useCallback, useRef, useState } from 'react';
 import Link from 'next/link';
 import BirthForm, { type BirthFormState } from '@/components/BirthForm';
+import ThemeToggle from '@/components/ThemeToggle';
 import { formToBirthInfo } from '@/lib/ziwei/share';
 import type { BirthInfo, ZiweiChart } from '@/lib/ziwei/types';
 
@@ -237,8 +238,8 @@ function WhiteHeader({ active }: { active?: 'chart' | 'heming' }) {
         <Link className={active === 'chart' ? 'is-active' : ''} href="/chart">起盘</Link>
         <span>·</span>
         <Link className={active === 'heming' ? 'is-active' : ''} href="/heming">合盘</Link>
-        <Link href="/knowledge">知识库</Link>
-        <Link href="/library">古籍库</Link>
+        <Link href="/ziwei-mysteries">紫薇秘术</Link>
+        <ThemeToggle />
       </nav>
     </header>
   );

@@ -6,6 +6,7 @@ import BirthForm from '@/components/BirthForm';
 import ChartBoard from '@/components/ChartBoard';
 import InsightPanel from '@/components/InsightPanel';
 import ShareModal from '@/components/ShareModal';
+import ThemeToggle from '@/components/ThemeToggle';
 import { generateChart } from '@/lib/ziwei/algorithm';
 import { BRANCHES, STEMS } from '@/lib/ziwei/constants';
 import type { BirthInfo, Palace, ZiweiChart } from '@/lib/ziwei/types';
@@ -343,8 +344,8 @@ function WhiteHeader({ active }: { active?: 'chart' | 'heming' }) {
         <Link className={active === 'chart' ? 'is-active' : ''} href="/chart">排盘</Link>
         <span>·</span>
         <Link className={active === 'heming' ? 'is-active' : ''} href="/heming">合盘</Link>
-        <Link href="/knowledge">知识库</Link>
-        <Link href="/library">古籍库</Link>
+        <Link href="/ziwei-mysteries">紫薇秘术</Link>
+        <ThemeToggle />
       </nav>
     </header>
   );

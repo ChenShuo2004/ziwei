@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { Palace, ZiweiChart } from '@/lib/ziwei/types';
 import { detectPatterns } from '@/lib/ziwei/patterns';
+import { useLocale } from '@/components/LocaleProvider';
 import type { TimeContext } from './TimeNav';
 import styles from './InsightPanel.module.css';
 
@@ -36,6 +37,12 @@ const TOPICS = [
   { key: 'fortune', label: '福德' },
   { key: 'parents', label: '父母长辈' },
 ] as const;
+
+const TOPIC_LABELS_EN: Record<string, string> = {
+  overview: 'Overview', wealth: 'Wealth', career: 'Career', love: 'Relationships', personality: 'Personality',
+  health: 'Health', siblings: 'Siblings & Partners', children: 'Children', travel: 'Travel', network: 'Network',
+  property: 'Property', fortune: 'Wellbeing', parents: 'Parents',
+};
 
 type TopicKey = (typeof TOPICS)[number]['key'];
 type PanelMode = 'analysis' | 'chat';
@@ -499,6 +506,7 @@ function AssistantMessage({
 }
 
 export default function InsightPanel({ chart, selectedPalace, timeContext, onExportReport }: InsightPanelProps) {
+  const { locale } = useLocale();
   const [mode, setMode] = useState<PanelMode>('analysis');
   const [messages, setMessages] = useState<Message[]>([]);
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
@@ -515,6 +523,7 @@ export default function InsightPanel({ chart, selectedPalace, timeContext, onExp
   const requestIdRef = useRef(0);
   const scrollRef = useRef<HTMLDivElement>(null);
   const lastTimeContext = useRef<string>('');
+  const lastReportLocale = useRef(locale);
 
   useEffect(() => { messagesRef.current = messages; }, [messages]);
   useEffect(() => { chatMessagesRef.current = chatMessages; }, [chatMessages]);
@@ -576,7 +585,7 @@ export default function InsightPanel({ chart, selectedPalace, timeContext, onExp
       const res = await fetch('/api/interpret', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chart, messages: apiMessages, ...options.meta }),
+        body: JSON.stringify({ chart, messages: apiMessages, locale, ...options.meta }),
         signal: options.signal,
       });
       if (!res.ok || !res.body) throw new Error('AI request failed');
@@ -660,6 +669,18 @@ export default function InsightPanel({ chart, selectedPalace, timeContext, onExp
       },
     });
   };
+
+  useEffect(() => {
+    if (!autoLoaded.current || lastReportLocale.current === locale) return;
+    lastReportLocale.current = locale;
+    sendMessage(TOPIC_PROMPTS[activeTopic], {
+      hidden: true,
+      reset: true,
+      title: activeTitle,
+      topic: activeTopic,
+      period: null,
+    });
+  }, [locale]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const _sendChatMessage = (question: string) => {
     const text = question.trim();
@@ -801,7 +822,7 @@ export default function InsightPanel({ chart, selectedPalace, timeContext, onExp
                   aria-pressed={isActive}
                   type="button"
                 >
-                  {topic.label}
+                  {locale === 'en' ? TOPIC_LABELS_EN[topic.key] : topic.label}
                   {loading && isActive && <i aria-hidden="true" />}
                 </button>
               );

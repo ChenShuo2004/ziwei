@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import type { KnowledgeReader, MysteryItem, MysteryReader, MysteryType } from '@/lib/ziwei-mysteries';
 import { MYSTERY_CATEGORIES } from '@/lib/ziwei-mysteries';
+import { useLocale } from '@/components/LocaleProvider';
 
 interface ZiweiMysteriesClientProps {
   items: MysteryItem[];
@@ -15,23 +16,32 @@ interface ZiweiMysteriesClientProps {
 const entryCards: Array<{
   type: MysteryType;
   title: string;
+  titleEn: string;
   eyebrow: string;
   description: string;
+  descriptionEn: string;
   meta: string;
+  metaEn: string;
 }> = [
   {
     type: 'knowledge',
     title: '知识讲解',
+    titleEn: 'Knowledge',
     eyebrow: 'Knowledge',
     description: '从十四主星、宫位体系到四化格局，按现代阅读方式整理紫微斗数基础知识。',
+    descriptionEn: 'Explore stars, palaces and Four Transformations through a modern knowledge guide.',
     meta: '星曜 · 宫位 · 四化 · 格局',
+    metaEn: 'Stars · Palaces · Transformations · Patterns',
   },
   {
     type: 'classics',
     title: '古籍原文',
+    titleEn: 'Classical Texts',
     eyebrow: 'Classics',
     description: '汇集古籍原文、章节与注解，保留典籍脉络，也方便进入具体篇章阅读。',
+    descriptionEn: 'Read classical source texts, chapters and notes while preserving their traditional context.',
     meta: '典籍 · 章节 · 原文 · 注解',
+    metaEn: 'Texts · Chapters · Sources · Notes',
   },
 ];
 
@@ -40,6 +50,7 @@ function getType(value: string | null): MysteryType | 'all' {
 }
 
 export default function ZiweiMysteriesClient({ items, reader, knowledgeReader }: ZiweiMysteriesClientProps) {
+  const { locale } = useLocale();
   const searchParams = useSearchParams();
   const queryKey = searchParams.toString();
   const pointerScrollY = useRef(0);
@@ -110,11 +121,11 @@ export default function ZiweiMysteriesClient({ items, reader, knowledgeReader }:
               aria-current={isActive ? 'page' : undefined}
             >
               <span className="mysteries-entry-card__eyebrow">{card.eyebrow}</span>
-              <h2>{card.title}</h2>
-              <p>{card.description}</p>
+              <h2>{locale === 'en' ? card.titleEn : card.title}</h2>
+              <p>{locale === 'en' ? card.descriptionEn : card.description}</p>
               <div className="mysteries-entry-card__meta">
-                <span>{card.meta}</span>
-                <strong>{count} 条内容</strong>
+                <span>{locale === 'en' ? card.metaEn : card.meta}</span>
+                <strong>{count} {locale === 'en' ? 'items' : '条内容'}</strong>
               </div>
               <span className="mysteries-entry-card__arrow" aria-hidden="true">→</span>
             </button>

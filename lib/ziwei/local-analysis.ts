@@ -590,6 +590,58 @@ interface InterpretationOptions {
   topic?: Topic;
   period?: string | null;
   palaceBranch?: number | null;
+  locale?: 'zh' | 'en';
+}
+
+const STAR_EN: Record<string, string> = {
+  '\u7d2b\u5fae': 'Ziwei', '\u5929\u673a': 'Tianji', '\u592a\u9633': 'Taiyang', '\u6b66\u66f2': 'Wuqu',
+  '\u5929\u540c': 'Tiantong', '\u5ec9\u8d1e': 'Lianzhen', '\u5929\u5e9c': 'Tianfu', '\u592a\u9634': 'Taiyin',
+  '\u8d2a\u72fc': 'Tanlang', '\u5de8\u95e8': 'Jumen', '\u5929\u76f8': 'Tianxiang', '\u5929\u6881': 'Tianliang',
+  '\u4e03\u6740': 'Qisha', '\u7834\u519b': 'Pojun',
+};
+
+function englishStars(palace?: Palace): string {
+  const names = starsOf(palace, 'major').map(star => `${STAR_EN[star.name] ?? star.name}（${star.name}）`);
+  return names.join(', ') || 'Empty palace（空宫）';
+}
+
+function englishPalaceName(name: string): string {
+  const names: Array<[string, string]> = [
+    ['\u547d', 'Life Palace（命宫）'], ['\u592b\u59bb', 'Spouse Palace（夫妻宫）'], ['\u8d22\u5e1b', 'Wealth Palace（财帛宫）'],
+    ['\u798f\u5fb7', 'Fortune & Wellbeing Palace（福德宫）'], ['\u5b98\u7984', 'Career Palace（官禄宫）'], ['\u8fc1\u79fb', 'Travel Palace（迁移宫）'],
+  ];
+  return names.find(([key]) => name.includes(key))?.[1] ?? `${name} Palace`;
+}
+
+function buildEnglishChartReport(chart: ZiweiChart, topic: Topic, palace?: Palace): string {
+  const ming = mingPalace(chart);
+  const currentDx = chart.daXians[chart.currentDaXianIndex];
+  const sihua = chart.palaces.flatMap(item => item.stars.filter(star => star.siHua).map(star => `${STAR_EN[star.name] ?? star.name} transforms ${star.siHua}（${star.name}化${star.siHua}）, placed in ${englishPalaceName(item.name)}`));
+  const focus = palace ?? ming;
+  return [
+    `# ${topic === 'overview' ? 'Natal Chart Overview' : `${englishPalaceName(focus?.name ?? 'Life')} Analysis`}`,
+    '> This report uses the local Zi Wei ruleset. English terms include the original Chinese term for reference.',
+    '',
+    '**Practical Advice**',
+    `Start with the real-life area represented by ${englishPalaceName(focus?.name ?? 'Life')}. Use the chart as a reflection tool, then confirm important decisions with facts, communication and professional advice.`,
+    '',
+    '**One-line Reading**',
+    `${englishPalaceName(focus?.name ?? 'Life')} is the current focus. Its major stars are ${englishStars(focus)}.`,
+    '',
+    '**Chart Evidence**',
+    `Life Palace（命宫）: ${englishStars(ming)}.`,
+    `Five Elements Bureau（五行局）: ${chart.wuxingJuName}.`,
+    currentDx ? `Current Major Period（当前大限）: ${currentDx.startAge}–${currentDx.endAge}, ${englishPalaceName(currentDx.palaceName)}.` : 'Current Major Period（当前大限）: no period data available.',
+    '',
+    '**Palace Structure**',
+    ...chart.palaces.map(item => `- ${englishPalaceName(item.name)}: ${englishStars(item)}.`),
+    '',
+    '**Four Transformations**',
+    ...(sihua.length ? sihua.map(item => `- ${item}.`) : ['- No marked Four Transformations（四化） were found in this chart.']),
+    '',
+    '**Reality Check**',
+    'Traditional chart interpretation is for cultural reflection only. It does not replace medical, legal, financial or relationship advice.',
+  ].join('\n');
 }
 
 export function buildChartInterpretation(chart: ZiweiChart, prompt = '', options: InterpretationOptions = {}): string {
@@ -597,6 +649,7 @@ export function buildChartInterpretation(chart: ZiweiChart, prompt = '', options
     ? palaceByBranch(chart, options.palaceBranch)
     : focusedPalaceFromText(chart, prompt);
   const topic = options.topic ?? detectTopic(prompt);
+  if (options.locale === 'en') return buildEnglishChartReport(chart, topic, focused ?? mingPalace(chart));
   const report = focused ? buildFocusedPalaceReport(chart, focused) : buildTopicReport(chart, topic);
   const period = options.period ?? detectTimePeriod(prompt);
   if (!period) return report;
@@ -615,7 +668,38 @@ function detectTimePeriod(prompt: string): string | null {
   return null;
 }
 
-export function buildHemingInterpretation(chartA: ZiweiChart, chartB: ZiweiChart, question = ''): string {
+export function buildHemingInterpretation(chartA: ZiweiChart, chartB: ZiweiChart, question = '', locale: 'zh' | 'en' = 'zh'): string {
+  if (locale === 'en') {
+    const aMing = mingPalace(chartA);
+    const bMing = mingPalace(chartB);
+    const aSpouse = palaceByName(chartA, '\u592b\u59bb');
+    const bSpouse = palaceByName(chartB, '\u592b\u59bb');
+    return [
+      '# Synastry Deep Report（合盘深度报告）',
+      '> Compatibility is not an absolute yes-or-no question. This report compares both people’s rhythm, intimacy expectations and emotional security.',
+      '',
+      '**Relationship Structure**',
+      `A Life Palace（命宫）: ${englishStars(aMing)}.`,
+      `B Life Palace（命宫）: ${englishStars(bMing)}.`,
+      `A Spouse Palace（夫妻宫）: ${englishStars(aSpouse)}.`,
+      `B Spouse Palace（夫妻宫）: ${englishStars(bSpouse)}.`,
+      '',
+      '**Marriage & Partnership**',
+      'Long-term compatibility depends on whether both people can agree on money, living arrangements, family responsibilities and conflict repair. Attraction is only the starting point; repeatable agreements create stability.',
+      '',
+      '**Conflict Triggers**',
+      'The most likely friction points are communication speed, personal boundaries and risk tolerance. Separate facts, feelings and next actions before making a relationship-wide judgment.',
+      '',
+      '**Financial Complementarity**',
+      'For a business partnership, define investment shares, decision rights, cash-flow limits and an exit mechanism in writing. Emotional trust should support the agreement, not replace it.',
+      '',
+      '**Practical Advice**',
+      question ? `Regarding “${question}”: test the question against real cooperation, shared schedules and explicit boundaries before drawing a conclusion.` : 'Set a regular conversation rhythm and review money, time, family boundaries and future plans together.',
+      '',
+      '**Cultural Reference Notice**',
+      'This is a traditional culture-based reflection tool and does not replace relationship, legal, investment or medical advice.',
+    ].join('\n');
+  }
   const aMing = mingPalace(chartA);
   const bMing = mingPalace(chartB);
   const aSpouse = palaceByName(chartA, '夫妻');

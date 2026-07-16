@@ -1,8 +1,8 @@
-import HomeScrollStage, { type HomeModule } from '@/components/HomeScrollStage';
+'use client';
 
-type HomePageProps = {
-  searchParams?: Promise<Record<string, string | string[] | undefined>>;
-};
+import HomeScrollStage, { type HomeModule } from '@/components/HomeScrollStage';
+import SiteHeader from '@/components/layout/SiteHeader';
+import { useLocale } from '@/components/LocaleProvider';
 
 type Locale = 'zh' | 'en';
 
@@ -11,9 +11,7 @@ const content: Record<Locale, {
   nav: {
     chart: string;
     heming: string;
-    knowledge: string;
-    library: string;
-    login: string;
+    mysteries: string;
   };
   skip: string;
   srTitle: string;
@@ -28,9 +26,7 @@ const content: Record<Locale, {
     nav: {
       chart: '起盘',
       heming: '合盘',
-      knowledge: '知识库',
-      library: '古籍库',
-      login: '登录',
+      mysteries: '紫薇秘术',
     },
     skip: '跳转到主要内容',
     srTitle: 'ziwei 紫微斗数在线排盘 · AI 命盘解读 · 合盘 · 命运双胞胎',
@@ -40,8 +36,7 @@ const content: Record<Locale, {
     footer: [
       { href: '/chart', text: '01 起盘' },
       { href: '/heming', text: '02 合盘' },
-      { href: '/knowledge', text: '03 知识库' },
-      { href: '/library', text: '04 古籍库' },
+      { href: '/ziwei-mysteries', text: '03 紫薇秘术' },
     ],
     modules: [
       {
@@ -96,8 +91,8 @@ const content: Record<Locale, {
         no: '07',
         eyebrow: 'ACADEMY',
         title: '学术中心',
-        description: '14 主星 × 13 宫位 + 6 部古籍原典',
-        href: '/academy',
+        description: '紫薇秘术、古籍原文与学习入口',
+        href: '/ziwei-mysteries',
         image: '/images/scenes/hero-clean.jpg',
       },
     ],
@@ -107,9 +102,7 @@ const content: Record<Locale, {
     nav: {
       chart: 'Chart',
       heming: 'Synastry',
-      knowledge: 'Knowledge',
-      library: 'Classics',
-      login: 'Login',
+      mysteries: 'Mysteries',
     },
     skip: 'Skip to main content',
     srTitle: 'ziwei charting · AI interpretation · synastry · chart twins',
@@ -119,8 +112,7 @@ const content: Record<Locale, {
     footer: [
       { href: '/chart', text: '01 Chart' },
       { href: '/heming', text: '02 Synastry' },
-      { href: '/knowledge', text: '03 Knowledge' },
-      { href: '/library', text: '04 Classics' },
+      { href: '/ziwei-mysteries', text: '03 Mysteries' },
     ],
     modules: [
       {
@@ -174,44 +166,24 @@ const content: Record<Locale, {
       {
         no: '07',
         eyebrow: 'ACADEMY',
-        title: 'Academy',
-        description: '14 major stars, 13 palaces, and 6 classical source texts',
-        href: '/academy',
+        title: 'Mysteries',
+        description: 'Knowledge notes, classical texts, and study references',
+        href: '/ziwei-mysteries',
         image: '/images/scenes/hero-clean.jpg',
       },
     ],
   },
 };
 
-export default async function HomePage({ searchParams }: HomePageProps) {
-  const params = await searchParams;
-  const langParam = Array.isArray(params?.lang) ? params?.lang[0] : params?.lang;
-  const locale: Locale = langParam === 'en' ? 'en' : 'zh';
+export default function HomePage() {
+  const { locale } = useLocale();
   const t = content[locale];
 
   return (
     <main className="ziwei-home">
       <a className="skip-link" href="#main-content">{t.skip}</a>
 
-      <header className="ziwei-header" aria-label="主导航">
-        <a className="brand" href={locale === 'en' ? '/?lang=en' : '/'} aria-label="ziwei 首页">
-          <span>ziwei</span>
-          <small>{t.brandSubtitle}</small>
-        </a>
-
-        <nav className="top-links" aria-label="顶部快捷入口">
-          <a href="/chart">{t.nav.chart}</a>
-          <a href="/heming">{t.nav.heming}</a>
-          <a href="/knowledge">{t.nav.knowledge}</a>
-          <a href="/library">{t.nav.library}</a>
-          <a href="/login">{t.nav.login}</a>
-          <span className="language-switch" aria-label="语言切换">
-            <a className={locale === 'zh' ? 'is-active' : ''} href="/" aria-current={locale === 'zh' ? 'page' : undefined}>中</a>
-            <span>/</span>
-            <a className={locale === 'en' ? 'is-active' : ''} href="/?lang=en" aria-current={locale === 'en' ? 'page' : undefined}>EN</a>
-          </span>
-        </nav>
-      </header>
+      <SiteHeader active="home" locale={locale} />
 
       <h1 className="sr-only">{t.srTitle}</h1>
 

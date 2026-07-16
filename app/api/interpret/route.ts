@@ -9,6 +9,7 @@ interface InterpretBody {
   topic?: Topic;
   period?: string | null;
   palaceBranch?: number | null;
+  locale?: 'zh' | 'en';
 }
 
 export async function POST(request: Request) {
@@ -22,6 +23,7 @@ export async function POST(request: Request) {
     topic: body.topic,
     period: body.period,
     palaceBranch: body.palaceBranch,
+    locale: body.locale,
   });
 
   return new Response(streamText(localAnswer), {

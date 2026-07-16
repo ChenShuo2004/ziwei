@@ -5,6 +5,7 @@ import BirthForm, { type BirthFormState } from '@/components/BirthForm';
 import SiteHeader from '@/components/layout/SiteHeader';
 import { formToBirthInfo } from '@/lib/ziwei/share';
 import type { BirthInfo, ZiweiChart } from '@/lib/ziwei/types';
+import { useLocale } from '@/components/LocaleProvider';
 
 function AiContent({ text, streaming }: { text: string; streaming?: boolean }) {
   const lines = text.split('\n');
@@ -31,6 +32,7 @@ function AiContent({ text, streaming }: { text: string; streaming?: boolean }) {
 }
 
 export default function HemingPage() {
+  const { locale } = useLocale();
   const [chartA, setChartA] = useState<ZiweiChart | null>(null);
   const [chartB, setChartB] = useState<ZiweiChart | null>(null);
   const [formA, setFormA] = useState<BirthFormState | null>(null);
@@ -91,7 +93,7 @@ export default function HemingPage() {
       const res = await fetch('/api/heming', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chartA: cA, chartB: cB, question: q ?? undefined }),
+        body: JSON.stringify({ chartA: cA, chartB: cB, question: q ?? undefined, locale }),
       });
       if (!res.ok || !res.body) throw new Error('analysis failed');
 
@@ -130,27 +132,27 @@ export default function HemingPage() {
     } finally {
       setAnalyzing(false);
     }
-  }, [chartA, chartB, formA, formB, generateChart]);
+  }, [chartA, chartB, formA, formB, generateChart, locale]);
 
   return (
     <main className="white-page">
       <SiteHeader active="heming" />
       <section className="white-hero white-hero-compact">
         <p className="white-kicker">02 / SYNASTRY</p>
-        <h1>紫微合盘分析</h1>
-        <p className="white-subtitle">输入两个人的出生信息</p>
+        <h1>{locale === 'en' ? 'Zi Wei Synastry' : '紫微合盘分析'}</h1>
+        <p className="white-subtitle">{locale === 'en' ? 'Compare two birth charts and explore relationship dynamics.' : '输入两个人的出生信息'}</p>
         <span className="white-rule" />
       </section>
 
       <section className="white-heming-layout">
         <article className="white-party-card">
           <p className="white-party-label">甲方 / A</p>
-          <BirthForm hideSubmit compact frame={false} onSubmit={() => {}} onFormSave={setFormA} title="甲方生辰" />
+          <BirthForm hideSubmit compact frame={false} onSubmit={() => {}} onFormSave={setFormA} title={locale === 'en' ? 'Person A birth details' : '甲方生辰'} />
         </article>
 
         <article className="white-party-card">
           <p className="white-party-label">乙方 / B</p>
-          <BirthForm hideSubmit compact frame={false} onSubmit={() => {}} onFormSave={setFormB} title="乙方生辰" />
+          <BirthForm hideSubmit compact frame={false} onSubmit={() => {}} onFormSave={setFormB} title={locale === 'en' ? 'Person B birth details' : '乙方生辰'} />
         </article>
       </section>
 

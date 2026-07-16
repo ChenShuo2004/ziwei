@@ -7,11 +7,13 @@ import ChartBoard from '@/components/ChartBoard';
 import type { TimeContext, TimeView } from '@/components/TimeNav';
 import InsightPanel from '@/components/InsightPanel';
 import ShareModal from '@/components/ShareModal';
-import ThemeToggle from '@/components/ThemeToggle';
+import SiteHeader from '@/components/layout/SiteHeader';
 import { generateChart } from '@/lib/ziwei/algorithm';
 import { BRANCHES, STEMS } from '@/lib/ziwei/constants';
 import type { BirthInfo, Palace, ZiweiChart } from '@/lib/ziwei/types';
 import type { BirthFormState } from '@/components/BirthForm';
+import { useLocale } from '@/components/LocaleProvider';
+import { term, text } from '@/lib/i18n/dictionaries';
 
 type ChartMode = 'ming' | 'daxian' | 'liunian' | 'liuyue' | 'liuri' | 'liushi';
 
@@ -38,7 +40,6 @@ function clockToBranch(hour: number, minute: number, longitude: number): number 
   if (solar >= 1380 || solar < 60) return 0;
   return Math.floor((solar - 60) / 120) + 1;
 }
-
 function parseChartUrl(): BirthInfo | null {
   const params = new URLSearchParams(window.location.search);
   const serialized = params.get('birth');
@@ -171,6 +172,7 @@ function downloadTextFile(filename: string, content: string) {
 }
 
 export default function ChartPage() {
+  const { locale } = useLocale();
   const [chart, setChart] = useState<ZiweiChart | null>(null);
   const [selectedPalace, setSelectedPalace] = useState<Palace | null>(null);
   const [birthData, setBirthData] = useState<BirthFormState | null>(null);
@@ -203,11 +205,19 @@ export default function ChartPage() {
 
   const modeItems = useMemo(() => {
     const currentDx = chart?.daXians[chart.currentDaXianIndex];
+    const modeLabels: Record<ChartMode, string> = {
+      ming: term('ming', locale),
+      daxian: term('daxian', locale),
+      liunian: term('liunian', locale),
+      liuyue: term('liuyue', locale),
+      liuri: term('liuri', locale),
+      liushi: term('liushi', locale),
+    };
     return (Object.keys(MODE_LABELS) as ChartMode[]).map(item => ({
       key: item,
-      label: item === 'daxian' && currentDx ? `大限 ${currentDx.startAge}–${currentDx.endAge}` : MODE_LABELS[item],
+      label: item === 'daxian' && currentDx ? `${modeLabels[item]} ${currentDx.startAge}–${currentDx.endAge}` : modeLabels[item],
     }));
-  }, [chart]);
+  }, [chart, locale]);
 
   const handleModeClick = (next: ChartMode) => {
     if (next !== mode) ignoreNextTimeContext.current = true;
@@ -243,23 +253,23 @@ export default function ChartPage() {
 
   if (!chart) {
     return (
-      <main className="white-page">
-        <WhiteHeader active="chart" />
+      <main className="white-page chart-start-page">
+        <SiteHeader active="chart" />
         <section className="white-hero">
           <p className="white-kicker">01 / DESTINY ENGINE</p>
-          <h1>紫微斗数排盘</h1>
-          <p className="white-subtitle">输入出生信息，生成命盘与 AI 解读。</p>
+          <h1>{text('chartTitle', locale)}</h1>
+          <p className="white-subtitle">{text('chartSubtitle', locale)}</p>
           <span className="white-rule" />
         </section>
 
-        <section className="white-form-wrap" aria-label="紫微斗数排盘">
+        <section className="white-form-wrap chart-start-form" aria-label="紫微斗数排盘">
           {bootError && (
             <div className="pro-chart-notice" role="alert">
               URL 参数已识别，但自动起盘失败：{bootError}
               <button type="button" onClick={() => setBootError('')}>关闭</button>
             </div>
           )}
-          <BirthForm onSubmit={handleSubmit} onFormSave={setBirthData} submitLabel="立即起盘" />
+          <BirthForm onSubmit={handleSubmit} onFormSave={setBirthData} submitLabel={text('startChart', locale)} />
         </section>
       </main>
     );
@@ -276,9 +286,9 @@ export default function ChartPage() {
               <span>WARMTH</span>
             </Link>
             <button type="button" className="pro-back-button" onClick={() => window.location.assign('/chart')}>
-              <span>‹</span> 返回
+              <span>‹</span> {text('back', locale)}
             </button>
-            <div className="pro-mode-tabs" aria-label="排盘维度">
+            <div className="pro-mode-tabs" aria-label={text('chartDimension', locale)}>
               {modeItems.map(item => (
                 <button
                   key={item.key}
@@ -300,11 +310,11 @@ export default function ChartPage() {
                 aria-expanded={schoolOpen}
                 onClick={() => setSchoolOpen(open => !open)}
               >
-                流派 <span aria-hidden="true">⌄</span>
+                {locale === 'en' ? 'Method' : '流派'} <span aria-hidden="true">⌄</span>
               </button>
               {schoolOpen && (
                 <div className="pro-school-menu" role="listbox" aria-label="流派选择">
-                  <div className="pro-school-menu-title">当前推演体系</div>
+                  <div className="pro-school-menu-title">{text('currentSchool', locale)}</div>
                   {SCHOOL_OPTIONS.map(option => (
                     <button
                       key={option.key}
@@ -325,16 +335,16 @@ export default function ChartPage() {
                 </div>
               )}
             </div>
-            <button type="button" onClick={() => setNotice('流派切换正在接入中，当前采用默认紫微斗数体系。')}>流派</button>
-            <button type="button" onClick={() => setNotice('历史命盘会优先保存在本机，下一步接入本地历史列表。')}>历史</button>
-            <button type="button" onClick={() => setNotice('反馈入口会接入表单，当前可先记录到功能待办。')}>反馈</button>
+            <button type="button" onClick={() => setNotice(locale === 'en' ? 'Method switching is being connected. The default Zi Wei system is currently active.' : '流派切换正在接入中，当前采用默认紫微斗数体系。')}>{locale === 'en' ? 'Method' : '流派'}</button>
+            <button type="button" onClick={() => setNotice(locale === 'en' ? 'Chart history will be stored locally in a future update.' : '历史命盘会优先保存在本机，下一步接入本地历史列表。')}>{locale === 'en' ? 'History' : '历史'}</button>
+            <button type="button" onClick={() => setNotice(locale === 'en' ? 'Feedback forms will be connected in a future update.' : '反馈入口会接入表单，当前可先记录到功能待办。')}>{locale === 'en' ? 'Feedback' : '反馈'}</button>
           </div>
         </div>
 
         {notice && (
           <div className="pro-chart-notice" role="status">
             {notice}
-            <button type="button" onClick={() => setNotice('')}>关闭</button>
+            <button type="button" onClick={() => setNotice('')}>{text('close', locale)}</button>
           </div>
         )}
 
@@ -342,13 +352,13 @@ export default function ChartPage() {
           <div className="white-board-panel">
             <ChartBoard chart={chart} onPalaceSelect={setSelectedPalace} onTimeContextChange={handleTimeContextChange} requestedView={requestedTimeView} compact />
             <div className="pro-board-actions">
-              <p>点击宫位查看三方四正</p>
+              <p>{text('viewPalace', locale)}</p>
               <button
                 type="button"
                 className="white-secondary-button"
                 onClick={() => { setChart(null); setSelectedPalace(null); window.history.replaceState({}, '', '/chart'); }}
               >
-                重新起盘
+                {text('restartChart', locale)}
               </button>
               <button
                 type="button"
@@ -356,7 +366,7 @@ export default function ChartPage() {
                 onClick={() => setShareOpen(true)}
                 disabled={!birthData}
               >
-                分享命盘
+                {text('shareChart', locale)}
               </button>
             </div>
           </div>
@@ -393,20 +403,3 @@ export default function ChartPage() {
   );
 }
 
-function WhiteHeader({ active }: { active?: 'chart' | 'heming' }) {
-  return (
-    <header className="white-header">
-      <Link className="white-brand" href="/">
-        <strong>ziwei</strong>
-        <span>紫微斗数 · 三纪</span>
-      </Link>
-      <nav className="white-nav" aria-label="主导航">
-        <Link className={active === 'chart' ? 'is-active' : ''} href="/chart">排盘</Link>
-        <span>·</span>
-        <Link className={active === 'heming' ? 'is-active' : ''} href="/heming">合盘</Link>
-        <Link href="/ziwei-mysteries">紫薇秘术</Link>
-        <ThemeToggle />
-      </nav>
-    </header>
-  );
-}

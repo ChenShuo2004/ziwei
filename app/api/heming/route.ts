@@ -7,6 +7,7 @@ interface HemingBody {
   chartA?: ZiweiChart;
   chartB?: ZiweiChart;
   question?: string;
+  locale?: 'zh' | 'en';
 }
 
 export async function POST(request: Request) {
@@ -15,7 +16,7 @@ export async function POST(request: Request) {
     return new Response('Missing charts', { status: 400 });
   }
 
-  const localAnswer = buildHemingInterpretation(body.chartA, body.chartB, body.question);
+  const localAnswer = buildHemingInterpretation(body.chartA, body.chartB, body.question, body.locale);
 
   return new Response(streamText(localAnswer), {
     headers: {

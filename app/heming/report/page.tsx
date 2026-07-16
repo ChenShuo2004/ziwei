@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import SiteHeader from '@/components/layout/SiteHeader';
 import type { Palace, ZiweiChart } from '@/lib/ziwei/types';
+import { useLocale } from '@/components/LocaleProvider';
 
 interface HemingReportData {
   chartA: ZiweiChart;
@@ -45,8 +46,10 @@ function ReportText({ text }: { text: string }) {
 }
 
 export default function HemingReportPage() {
+  const { locale } = useLocale();
   const [data, setData] = useState<HemingReportData | null>(null);
   const [missing, setMissing] = useState(false);
+  const reportLocale = useRef<string | null>(null);
 
   useEffect(() => {
     const raw = sessionStorage.getItem('heming-report');
@@ -62,6 +65,37 @@ export default function HemingReportPage() {
       setMissing(true);
     }
   }, []);
+
+  useEffect(() => {
+    if (!data || reportLocale.current === locale) return;
+    reportLocale.current = locale;
+    let cancelled = false;
+    void (async () => {
+      try {
+        const response = await fetch('/api/heming', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ chartA: data.chartA, chartB: data.chartB, locale }),
+        });
+        if (!response.ok || !response.body) return;
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+        let report = '';
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          for (const line of decoder.decode(value, { stream: true }).split('\n')) {
+            if (!line.startsWith('data: ') || line.slice(6) === '[DONE]') continue;
+            try { report += JSON.parse(line.slice(6)).delta?.text ?? ''; } catch { /* Ignore malformed chunks. */ }
+          }
+          if (!cancelled && report) setData(current => current ? { ...current, analysis: report } : current);
+        }
+      } catch {
+        // Keep the last complete report when a language refresh cannot connect.
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [data, locale]);
 
   const highlights = useMemo(() => {
     if (!data) return [];
@@ -79,16 +113,16 @@ export default function HemingReportPage() {
       <main className="white-page">
         <SiteHeader active="heming" />
         <section className="white-empty-state heming-report-empty">
-          <h1>合盘报告已失效</h1>
-          <p>请返回合盘页面，重新填写双方出生信息并生成报告。</p>
-          <Link className="white-submit is-inline" href="/heming">返回合盘</Link>
+          <h1>{locale === 'en' ? 'Synastry report unavailable' : '合盘报告已失效'}</h1>
+          <p>{locale === 'en' ? 'Return to Synastry and generate a new report.' : '请返回合盘页面，重新填写双方出生信息并生成报告。'}</p>
+          <Link className="white-submit is-inline" href="/heming">{locale === 'en' ? 'Back to Synastry' : '返回合盘'}</Link>
         </section>
       </main>
     );
   }
 
   if (!data) {
-    return <main className="white-page"><SiteHeader active="heming" /><div className="white-loading-state"><i /><p>正在整理合盘报告...</p></div></main>;
+    return <main className="white-page"><SiteHeader active="heming" /><div className="white-loading-state"><i /><p>{locale === 'en' ? 'Preparing synastry report...' : '正在整理合盘报告...'}</p></div></main>;
   }
 
   return (
@@ -96,8 +130,8 @@ export default function HemingReportPage() {
       <SiteHeader active="heming" />
       <section className="white-hero white-hero-compact heming-report-hero">
         <p className="white-kicker">02 / SYNASTRY REPORT</p>
-        <h1>合盘深度报告</h1>
-        <p className="white-subtitle">从命宫节奏、夫妻宫期待、福德宫安全感与现实协作，完整观察双方关系结构。</p>
+        <h1>{locale === 'en' ? 'Synastry Deep Report' : '合盘深度报告'}</h1>
+        <p className="white-subtitle">{locale === 'en' ? 'Compare chart rhythm, intimacy expectations, emotional security and practical cooperation.' : '从命宫节奏、夫妻宫期待、福德宫安全感与现实协作，完整观察双方关系结构。'}</p>
         <span className="white-rule" />
         <Link className="heming-back-link" href="/heming">‹ 返回重新合盘</Link>
       </section>
@@ -121,14 +155,14 @@ export default function HemingReportPage() {
       </section>
 
       <section className="white-analysis-card heming-deep-report">
-        <div className="white-section-title"><span /><strong>关系结构总览</strong><span /></div>
+        <div className="white-section-title"><span /><strong>{locale === 'en' ? 'Relationship Structure' : '关系结构总览'}</strong><span /></div>
         <div className="heming-highlight-grid">
           {highlights.map(([title, value]) => <article key={title}><strong>{title}</strong><p>{value}</p></article>)}
         </div>
         <div className="heming-report-outline">
-          <h3>本次报告重点</h3>
-          <p>合盘不只判断“合不合”，更要看两个人如何分工、如何表达需求，以及在金钱、家庭和长期目标上能否形成稳定规则。</p>
-          <p>夫妻宫负责亲密关系的期待，福德宫反映关系中的安全感；命宫与三方四正则帮助判断双方遇到压力时的行动节奏。</p>
+          <h3>{locale === 'en' ? 'Report Focus' : '本次报告重点'}</h3>
+          <p>{locale === 'en' ? 'Synastry is not only about compatibility. It also examines division of roles, expression of needs and stable agreements around money, family and long-term goals.' : '合盘不只判断“合不合”，更要看两个人如何分工、如何表达需求，以及在金钱、家庭和长期目标上能否形成稳定规则。'}</p>
+          <p>{locale === 'en' ? 'The Spouse Palace reflects intimacy expectations, Fortune & Wellbeing Palace reflects emotional security, and the Life Palace shows each person’s response under pressure.' : '夫妻宫负责亲密关系的期待，福德宫反映关系中的安全感；命宫与三方四正则帮助判断双方遇到压力时的行动节奏。'}</p>
         </div>
         <ReportText text={data.analysis} />
       </section>

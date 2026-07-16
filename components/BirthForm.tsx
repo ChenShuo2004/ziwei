@@ -5,6 +5,7 @@ import type { BirthInfo } from '@/lib/ziwei/types';
 import { SHICHEN } from '@/lib/ziwei/constants';
 import { PROVINCES } from '@/lib/ziwei/cities';
 import { birthDateToSolarDate, isValidSolarDate, type CalendarType } from '@/lib/ziwei/birth-date';
+import { useLocale } from '@/components/LocaleProvider';
 
 export interface BirthFormState {
   name: string;
@@ -55,6 +56,8 @@ export default function BirthForm({
   title = '输入生辰八字',
   submitLabel = '立即起盘',
 }: BirthFormProps) {
+  const { locale } = useLocale();
+  const isEn = locale === 'en';
   const [form, setForm] = useState<BirthFormState>({
     name: initialData?.name ?? '',
     calendar: initialData?.calendar ?? 'solar',
@@ -184,11 +187,11 @@ export default function BirthForm({
       </div>
 
       <div className="white-field">
-        <label>姓名（可选）</label>
+        <label>{isEn ? 'Name (optional)' : '姓名（可选）'}</label>
         <input
           className="white-input"
           type="text"
-          placeholder="请输入姓名"
+          placeholder={isEn ? 'Enter name' : '请输入姓名'}
           value={form.name}
           onChange={e => setForm({ ...form, name: e.target.value })}
         />
@@ -196,21 +199,21 @@ export default function BirthForm({
 
       <div className="white-field">
         <div className="white-field-row">
-          <label>出生日期（{form.calendar === 'lunar' ? '农历' : '公历'}）</label>
-          <div className="white-calendar-toggle" aria-label="历法">
+          <label>{isEn ? 'Birth date' : '出生日期'}（{form.calendar === 'lunar' ? (isEn ? 'Lunar' : '农历') : (isEn ? 'Solar' : '公历')}）</label>
+          <div className="white-calendar-toggle" aria-label={isEn ? 'Calendar' : '历法'}>
             <button
               type="button"
               className={form.calendar === 'solar' ? 'is-active' : ''}
               onClick={() => setForm({ ...form, calendar: 'solar', isLeapMonth: false })}
             >
-              公历
+              {isEn ? 'Solar' : '公历'}
             </button>
             <button
               type="button"
               className={form.calendar === 'lunar' ? 'is-active' : ''}
               onClick={() => setForm({ ...form, calendar: 'lunar' })}
             >
-              农历
+              {isEn ? 'Lunar' : '农历'}
             </button>
           </div>
         </div>
@@ -221,7 +224,7 @@ export default function BirthForm({
               checked={form.isLeapMonth}
               onChange={e => setForm({ ...form, isLeapMonth: e.target.checked })}
             />
-            <span>闰月</span>
+            <span>{isEn ? 'Leap month' : '闰月'}</span>
           </label>
         )}
         <div className="white-grid white-grid-3">
@@ -232,7 +235,7 @@ export default function BirthForm({
               onChange={e => { setForm({ ...form, year: e.target.value }); setTouched(t => ({ ...t, year: true })); }}
               required
             >
-              <option value="">年份</option>
+              <option value="">{isEn ? 'Year' : '年份'}</option>
               {Array.from({ length: 127 }, (_, i) => 2026 - i).map(yr => (
                 <option key={yr} value={String(yr)}>{yr}</option>
               ))}
@@ -246,7 +249,7 @@ export default function BirthForm({
               onChange={e => { setForm({ ...form, month: e.target.value }); setTouched(t => ({ ...t, month: true })); }}
               required
             >
-              <option value="">月份</option>
+              <option value="">{isEn ? 'Month' : '月份'}</option>
               {Array.from({ length: 12 }, (_, i) => i + 1).map(month => (
                 <option key={month} value={String(month)}>{month} 月</option>
               ))}
@@ -260,7 +263,7 @@ export default function BirthForm({
               onChange={e => { setForm({ ...form, day: e.target.value }); setTouched(t => ({ ...t, day: true })); }}
               required
             >
-              <option value="">日期</option>
+              <option value="">{isEn ? 'Day' : '日期'}</option>
               {Array.from({ length: 31 }, (_, i) => i + 1).map(day => (
                 <option key={day} value={String(day)}>{day} 日</option>
               ))}
@@ -271,7 +274,7 @@ export default function BirthForm({
       </div>
 
       <div className="white-field">
-        <label>出生时间（北京时间）</label>
+        <label>{isEn ? 'Birth time (Beijing time)' : '出生时间（北京时间）'}</label>
         <div className={`white-time-panel ${form.unknownTime ? 'is-muted' : ''}`}>
           <div className="white-grid white-grid-2">
             <select
@@ -296,7 +299,7 @@ export default function BirthForm({
             </select>
           </div>
           <p className="white-solar-time">
-            真太阳时 <span>→</span> <strong>{SHICHEN_NAMES[branch]}时</strong>
+            {isEn ? 'True solar time' : '真太阳时'} <span>→</span> <strong>{SHICHEN_NAMES[branch]}{isEn ? ' hour' : '时'}</strong>
             {shichenInfo && <em>（{shichenInfo.range}）</em>}
           </p>
         </div>
@@ -307,19 +310,19 @@ export default function BirthForm({
             checked={form.unknownTime}
             onChange={e => setForm({ ...form, unknownTime: e.target.checked })}
           />
-          <span>不知道出生时间，以子时（23:00-01:00）起盘</span>
+          <span>{isEn ? 'Unknown birth time; use Zi hour (23:00–01:00)' : '不知道出生时间，以子时（23:00-01:00）起盘'}</span>
         </label>
       </div>
 
       <div className="white-field">
-        <label>出生地点（用于真太阳时校正）</label>
+        <label>{isEn ? 'Birth location (for true solar time correction)' : '出生地点（用于真太阳时校正）'}</label>
         <div className="white-grid white-grid-2">
           <select
             className={`white-select ${showErr('location') && errors.location ? 'has-error' : ''}`}
             value={form.province}
             onChange={e => handleProvince(e.target.value)}
           >
-            <option value="">省份 / 直辖市</option>
+            <option value="">{isEn ? 'Province / municipality' : '省份 / 直辖市'}</option>
             {PROVINCES.map(province => (
               <option key={province.name} value={province.name}>{province.name}</option>
             ))}
@@ -330,7 +333,7 @@ export default function BirthForm({
             onChange={e => handleCity(e.target.value)}
             disabled={!form.province}
           >
-            <option value="">{form.province ? '城市' : '先选省份'}</option>
+            <option value="">{form.province ? (isEn ? 'City' : '城市') : (isEn ? 'Select province first' : '先选省份')}</option>
             {cityList.map(city => (
               <option key={city.name} value={city.name}>{city.name}</option>
             ))}
@@ -338,28 +341,28 @@ export default function BirthForm({
         </div>
         {form.province && (
           <p className="white-field-hint">
-            {form.city || '请选择城市'} · 经度 {form.longitude.toFixed(1)}E · 时差 {offsetMin > 0 ? '+' : ''}{offsetMin} 分钟
+            {form.city || (isEn ? 'Select city' : '请选择城市')} · {isEn ? 'Longitude' : '经度'} {form.longitude.toFixed(1)}E · {isEn ? 'Offset' : '时差'} {offsetMin > 0 ? '+' : ''}{offsetMin} {isEn ? 'min' : '分钟'}
           </p>
         )}
         {showErr('location') && errors.location && <p className="white-error">{errors.location}</p>}
       </div>
 
       <div className="white-field">
-        <label>性别</label>
+        <label>{isEn ? 'Gender' : '性别'}</label>
         <div className="white-segmented">
           <button
             type="button"
             className={form.gender === 'male' ? 'is-active' : ''}
             onClick={() => setForm({ ...form, gender: 'male' })}
           >
-            男
+            {isEn ? 'Male' : '男'}
           </button>
           <button
             type="button"
             className={form.gender === 'female' ? 'is-active' : ''}
             onClick={() => setForm({ ...form, gender: 'female' })}
           >
-            女
+            {isEn ? 'Female' : '女'}
           </button>
         </div>
       </div>

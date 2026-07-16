@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import SiteHeader from '@/components/layout/SiteHeader';
 import { getMysteryItems, getMysteryKnowledgeReader, getMysteryReader } from '@/lib/ziwei-mysteries';
 import ZiweiMysteriesClient from './ZiweiMysteriesClient';
+import MysteriesHero from './MysteriesHero';
 
 type ZiweiMysteriesPageProps = {
   searchParams?: Promise<Record<string, string | string[] | undefined>>;
@@ -32,17 +33,7 @@ export default async function ZiweiMysteriesPage({ searchParams }: ZiweiMysterie
     <main className="ziwei-home mysteries-page">
       <SiteHeader active="mysteries" />
 
-      <section className="mysteries-hero">
-        <div className="library-eyebrow">
-          <span />
-          <strong>ZIWEI MYSTERIES</strong>
-          <span />
-        </div>
-        <h1>紫薇秘术</h1>
-        <p>
-          汇合命盘基础、星曜体系、宫位解读与古籍原文，把知识讲解和典籍检索放在同一个研究入口里。
-        </p>
-      </section>
+      <MysteriesHero />
 
       <ZiweiMysteriesClient items={items} reader={reader} knowledgeReader={knowledgeReader} />
     </main>

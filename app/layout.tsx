@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { ThemeProvider } from '@/components/ThemeProvider';
+import { LocaleProvider } from '@/components/LocaleProvider';
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
@@ -49,8 +50,13 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <script dangerouslySetInnerHTML={{ __html: `(function(){try{var t=localStorage.getItem('ziwei-theme');document.documentElement.setAttribute('data-theme',t==='dark'?'dark':'light');}catch(e){document.documentElement.setAttribute('data-theme','light');}})();` }} />
       </head>
       <body className="min-h-screen">
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try { var locale = window.localStorage.getItem('warmth-locale'); if (locale === 'en') document.documentElement.lang = 'en'; } catch (_) {}`,
+          }}
+        />
         <ThemeProvider>
-          {children}
+          <LocaleProvider>{children}</LocaleProvider>
         </ThemeProvider>
         {enableVercelInsights && (
           <>

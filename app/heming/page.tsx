@@ -1,9 +1,8 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
-import Link from 'next/link';
 import BirthForm, { type BirthFormState } from '@/components/BirthForm';
-import ThemeToggle from '@/components/ThemeToggle';
+import SiteHeader from '@/components/layout/SiteHeader';
 import { formToBirthInfo } from '@/lib/ziwei/share';
 import type { BirthInfo, ZiweiChart } from '@/lib/ziwei/types';
 
@@ -38,7 +37,6 @@ export default function HemingPage() {
   const [formB, setFormB] = useState<BirthFormState | null>(null);
   const [analysis, setAnalysis] = useState('');
   const [analyzing, setAnalyzing] = useState(false);
-  const [question, setQuestion] = useState('');
   const [analysisError, setAnalysisError] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
   const analysisRef = useRef<HTMLDivElement>(null);
@@ -119,7 +117,14 @@ export default function HemingPage() {
         }
       }
 
-      setTimeout(() => analysisRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 100);
+      sessionStorage.setItem('heming-report', JSON.stringify({
+        chartA: cA,
+        chartB: cB,
+        formA,
+        formB,
+        analysis: text,
+      }));
+      window.location.assign('/heming/report');
     } catch {
       setAnalysisError(true);
     } finally {
@@ -127,17 +132,9 @@ export default function HemingPage() {
     }
   }, [chartA, chartB, formA, formB, generateChart]);
 
-  const quickQuestions = [
-    '感情匹配度如何？',
-    '适合合伙创业吗？',
-    '两人结婚是否合适？',
-    '哪方面最容易产生矛盾？',
-    '财运是否互补？',
-  ];
-
   return (
     <main className="white-page">
-      <WhiteHeader active="heming" />
+      <SiteHeader active="heming" />
       <section className="white-hero white-hero-compact">
         <p className="white-kicker">02 / SYNASTRY</p>
         <h1>紫微合盘分析</h1>
@@ -188,59 +185,7 @@ export default function HemingPage() {
         )}
       </section>
 
-      {analysis && (
-        <section className="white-followup">
-          <p>针对此次合盘继续追问</p>
-          <div className="white-chip-row">
-            {quickQuestions.map(q => (
-              <button
-                type="button"
-                key={q}
-                disabled={analyzing}
-                onClick={() => { setQuestion(q); runAnalysis(q); }}
-              >
-                {q}
-              </button>
-            ))}
-          </div>
-          <div className="white-question-row">
-            <input
-              value={question}
-              onChange={e => setQuestion(e.target.value)}
-              onKeyDown={e => { if (e.key === 'Enter' && !analyzing) runAnalysis(question || undefined); }}
-              placeholder="继续追问，如：哪几年是两人感情关键期？"
-              disabled={analyzing}
-            />
-            <button
-              type="button"
-              className={analyzing ? 'is-loading' : ''}
-              disabled={analyzing}
-              aria-busy={analyzing}
-              onClick={() => runAnalysis(question || undefined)}
-            >
-              {analyzing ? '分析中...' : '继续追问'}
-            </button>
-          </div>
-        </section>
-      )}
     </main>
   );
 }
 
-function WhiteHeader({ active }: { active?: 'chart' | 'heming' }) {
-  return (
-    <header className="white-header">
-      <Link className="white-brand" href="/">
-        <strong>ziwei</strong>
-        <span>紫微斗数 · 三纪</span>
-      </Link>
-      <nav className="white-nav" aria-label="主导航">
-        <Link className={active === 'chart' ? 'is-active' : ''} href="/chart">起盘</Link>
-        <span>·</span>
-        <Link className={active === 'heming' ? 'is-active' : ''} href="/heming">合盘</Link>
-        <Link href="/ziwei-mysteries">紫薇秘术</Link>
-        <ThemeToggle />
-      </nav>
-    </header>
-  );
-}

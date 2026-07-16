@@ -3214,6 +3214,134 @@ body {
   }
 }
 
+.heming-report-hero {
+  position: relative;
+}
+
+.heming-back-link {
+  display: inline-flex;
+  margin-top: 18px;
+  color: #596273;
+  font-size: 13px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.heming-report-parties {
+  display: grid;
+  width: min(100% - 48px, 1120px);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin: 0 auto 24px;
+}
+
+.heming-summary-card {
+  margin: 0;
+}
+
+.heming-summary-card h2 {
+  margin: 0 0 5px;
+  color: var(--white-ink);
+  font-size: 24px;
+}
+
+.heming-summary-card > p {
+  margin: 0 0 18px;
+  color: #697384;
+  font-size: 13px;
+}
+
+.heming-summary-card dl {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+}
+
+.heming-summary-card dl div {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: 12px;
+  padding-top: 8px;
+  border-top: 1px solid #edf0f3;
+}
+
+.heming-summary-card dt {
+  color: #7a8492;
+  font-size: 12px;
+}
+
+.heming-summary-card dd {
+  margin: 0;
+  color: #303846;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.heming-deep-report {
+  max-width: 1120px;
+}
+
+.heming-highlight-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0 0 28px;
+}
+
+.heming-highlight-grid article {
+  padding: 16px;
+  border: 1px solid #e7ebf0;
+  border-radius: 10px;
+  background: #fbfcfd;
+}
+
+.heming-highlight-grid strong {
+  color: var(--white-ink);
+  font-size: 14px;
+}
+
+.heming-highlight-grid p {
+  margin: 8px 0 0;
+  color: #596273;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.heming-report-outline {
+  margin: 0 0 28px;
+  padding: 20px 0;
+  border-top: 1px solid #e7ebf0;
+  border-bottom: 1px solid #e7ebf0;
+}
+
+.heming-report-outline h3 {
+  margin: 0 0 10px;
+  color: var(--white-ink);
+  font-size: 18px;
+}
+
+.heming-report-outline p {
+  margin: 6px 0 0;
+  color: #596273;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
+.white-ai-content h2 {
+  margin: 0 0 16px;
+  color: var(--white-ink);
+  font-size: 24px;
+}
+
+.white-ai-content blockquote {
+  margin: 0 0 22px;
+  padding-left: 14px;
+  border-left: 3px solid #cfd6e0;
+  color: #697384;
+  font-size: 14px;
+  line-height: 1.8;
+}
+
 @media (min-width: 1181px) {
   .white-chart-page .white-insight-panel {
     position: sticky;

@@ -447,7 +447,7 @@ function UserMessage({ content }: { content: string }) {
   );
 }
 
-function ChatEmptyState({ onExampleClick }: { onExampleClick: (question: string) => void }) {
+function _ChatEmptyState({ onExampleClick }: { onExampleClick: (question: string) => void }) {
   return (
     <div className={styles.chatEmptyState}>
       <strong>直接问 AI</strong>
@@ -463,7 +463,7 @@ function ChatEmptyState({ onExampleClick }: { onExampleClick: (question: string)
   );
 }
 
-function ChatMessageBubble({ message, streaming }: { message: Message; streaming?: boolean }) {
+function _ChatMessageBubble({ message, streaming }: { message: Message; streaming?: boolean }) {
   if (message.role === 'user') {
     return (
       <motion.div initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} className={styles.chatUserRow}>
@@ -502,7 +502,7 @@ export default function InsightPanel({ chart, selectedPalace, timeContext, onExp
   const [mode, setMode] = useState<PanelMode>('analysis');
   const [messages, setMessages] = useState<Message[]>([]);
   const [chatMessages, setChatMessages] = useState<Message[]>([]);
-  const [chatInput, setChatInput] = useState('');
+  const [_chatInput, setChatInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
   const [activeTopic, setActiveTopic] = useState<TopicKey>('overview');
@@ -661,7 +661,7 @@ export default function InsightPanel({ chart, selectedPalace, timeContext, onExp
     });
   };
 
-  const sendChatMessage = (question: string) => {
+  const _sendChatMessage = (question: string) => {
     const text = question.trim();
     if (!text) return;
 
@@ -776,9 +776,6 @@ export default function InsightPanel({ chart, selectedPalace, timeContext, onExp
         <button type="button" className={mode === 'analysis' ? 'is-active' : ''} onClick={() => setMode('analysis')}>
           命盘分析
         </button>
-        <button type="button" className={mode === 'chat' ? 'is-active' : ''} onClick={() => setMode('chat')}>
-          AI 对话
-        </button>
         <button
           type="button"
           className="insight-report-button insight-icon-button"
@@ -792,8 +789,7 @@ export default function InsightPanel({ chart, selectedPalace, timeContext, onExp
         </button>
       </div>
 
-      {mode === 'analysis' && (
-        <div className="insight-topic-bar">
+      <div className="insight-topic-bar">
           <div className="insight-topic-grid is-pro-grid">
             {TOPICS.map(topic => {
               const isActive = activeTopic === topic.key;
@@ -811,12 +807,10 @@ export default function InsightPanel({ chart, selectedPalace, timeContext, onExp
               );
             })}
           </div>
-        </div>
-      )}
+      </div>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0 insight-scroll" aria-live="polite" aria-busy={loading}>
-        {mode === 'analysis' ? (
-          <>
+        <>
             <div className="insight-intro-row">
               <TopicIntro title={activeTitle} />
               <button
@@ -844,40 +838,9 @@ export default function InsightPanel({ chart, selectedPalace, timeContext, onExp
                 return <AssistantMessage key={index} chart={chart} msg={msg} streaming={loading && isLast} />;
               })}
             </AnimatePresence>
-          </>
-        ) : (
-          <div className={styles.chatPanel}>
-            {chatMessages.length === 0 && <ChatEmptyState onExampleClick={sendChatMessage} />}
-            <AnimatePresence initial={false}>
-              {chatMessages.map((message, index) => {
-                const isLast = index === chatMessages.length - 1;
-                return <ChatMessageBubble key={index} message={message} streaming={loading && isLast} />;
-              })}
-            </AnimatePresence>
-          </div>
-        )}
+        </>
       </div>
 
-      {mode === 'chat' && (
-        <form
-          className={styles.chatComposer}
-          onSubmit={event => {
-            event.preventDefault();
-            sendChatMessage(chatInput);
-          }}
-        >
-          <input
-            type="text"
-            value={chatInput}
-            onChange={event => setChatInput(event.target.value)}
-            placeholder="直接问 AI，例如：今年适合换工作吗？"
-            disabled={loading}
-          />
-          <button type="submit" disabled={loading || !chatInput.trim()}>
-            {loading ? '思考中' : '发送'}
-          </button>
-        </form>
-      )}
     </div>
   );
 }

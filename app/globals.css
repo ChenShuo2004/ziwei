@@ -5231,6 +5231,14 @@ body {
   text-shadow: none;
 }
 
+[data-theme="dark"] .module-card:active .module-cta,
+[data-theme="dark"] .module-card:focus-visible .module-cta {
+  border-color: #ffffff;
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 0 0 3px rgba(255, 255, 255, .22);
+}
+
 [data-theme="dark"] .beam {
   border: 1px solid rgba(34, 211, 238, 0.18);
   border-radius: 24px;

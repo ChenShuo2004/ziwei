@@ -12,6 +12,103 @@
   border-bottom: 1px solid #e8ebef;
 }
 
+.patternPopover {
+  position: relative;
+  z-index: 5;
+  margin-bottom: 14px;
+}
+
+.patternTrigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 30px;
+  padding: 0 9px;
+  border: 1px solid #111827;
+  border-radius: 7px;
+  background: #ffffff;
+  color: #374151;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.patternTrigger span:first-child {
+  color: #4f46e5;
+}
+
+.patternTrigger:hover,
+.patternTrigger[aria-expanded="true"] {
+  background: #f5f7ff;
+  border-color: #4f46e5;
+}
+
+.patternMenu {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  width: min(360px, calc(100vw - 32px));
+  max-height: min(520px, calc(100vh - 120px));
+  overflow-y: auto;
+  padding: 8px;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, .98);
+  box-shadow: 0 18px 48px rgba(15, 23, 42, .16);
+}
+
+.patternCard {
+  padding: 12px 10px;
+  border-bottom: 1px solid #edf0f3;
+}
+
+.patternCard:last-child {
+  border-bottom: 0;
+}
+
+.patternCardHeader {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 7px;
+}
+
+.patternCardHeader strong {
+  color: #111827;
+  font-size: 14px;
+  line-height: 1.35;
+}
+
+.patternBadges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+.patternBadges span {
+  padding: 3px 7px;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  color: #6b7280;
+  font-size: 10px;
+  line-height: 1;
+}
+
+.patternCard p {
+  margin: 0 0 7px;
+  color: #4b5563;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.patternCard small {
+  color: #9ca3af;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
 .overviewFacts {
   display: flex;
   flex-wrap: wrap;
@@ -455,6 +552,40 @@
 :global([data-theme="dark"]) .reportSectionTitle,
 :global([data-theme="dark"]) .reportDivider {
   border-color: rgba(148, 163, 184, 0.18);
+}
+
+:global([data-theme="dark"]) .patternTrigger {
+  border-color: #cbd5e1;
+  background: #0f172a;
+  color: #e5e7eb;
+}
+
+:global([data-theme="dark"]) .patternTrigger:hover,
+:global([data-theme="dark"]) .patternTrigger[aria-expanded="true"] {
+  background: #172554;
+  border-color: #818cf8;
+}
+
+:global([data-theme="dark"]) .patternMenu {
+  border-color: rgba(148, 163, 184, .24);
+  background: rgba(15, 23, 42, .98);
+}
+
+:global([data-theme="dark"]) .patternCard {
+  border-color: rgba(148, 163, 184, .18);
+}
+
+:global([data-theme="dark"]) .patternCardHeader strong {
+  color: #f8fafc;
+}
+
+:global([data-theme="dark"]) .patternCard p {
+  color: #cbd5e1;
+}
+
+:global([data-theme="dark"]) .patternBadges span {
+  border-color: rgba(148, 163, 184, .25);
+  color: #cbd5e1;
 }
 
 :global([data-theme="dark"]) .overviewFacts span {

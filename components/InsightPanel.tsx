@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
 import type { Palace, ZiweiChart } from '@/lib/ziwei/types';
+import { detectPatterns } from '@/lib/ziwei/patterns';
 import type { TimeContext } from './TimeNav';
 import styles from './InsightPanel.module.css';
 
@@ -258,6 +259,7 @@ function OverviewPanel({ chart }: { chart: ZiweiChart }) {
   const overview = useOverview(chart);
   return (
     <section className={styles.overviewPanel}>
+      <PatternPopover chart={chart} />
       <div className={styles.overviewFacts}>
         <span>命宫主星 · {majorStars(overview.ming)}</span>
         <span>{chart.wuxingJuName}</span>
@@ -279,6 +281,62 @@ function OverviewPanel({ chart }: { chart: ZiweiChart }) {
       </div>
       <p className={styles.overviewNote}>六维强度为本地规则粗略估算，仅作阅读参考。</p>
     </section>
+  );
+}
+
+function PatternPopover({ chart }: { chart: ZiweiChart }) {
+  const patterns = detectPatterns(chart).slice(0, 3);
+  const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!open) return undefined;
+    const handlePointerDown = (event: PointerEvent) => {
+      if (!rootRef.current?.contains(event.target as Node)) setOpen(false);
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setOpen(false);
+    };
+    document.addEventListener('pointerdown', handlePointerDown);
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('pointerdown', handlePointerDown);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [open]);
+
+  if (!patterns.length) return null;
+
+  return (
+    <div ref={rootRef} className={styles.patternPopover}>
+      <button
+        type="button"
+        className={styles.patternTrigger}
+        aria-expanded={open}
+        aria-haspopup="dialog"
+        onClick={() => setOpen(value => !value)}
+      >
+        <span aria-hidden="true">✦</span> {patterns.length} 个古书格局 <span aria-hidden="true">›</span>
+      </button>
+      {open && (
+        <div className={styles.patternMenu} role="dialog" aria-label="古书格局">
+          {patterns.map((pattern, index) => (
+            <article key={`${pattern.name}-${index}`} className={styles.patternCard}>
+              <div className={styles.patternCardHeader}>
+                <strong>{pattern.name}</strong>
+                <div className={styles.patternBadges}>
+                  {pattern.palaces.slice(0, 2).map(palace => (
+                    <span key={palace}>{palace.replace(/宫/g, '')}</span>
+                  ))}
+                </div>
+              </div>
+              <p>{pattern.description}</p>
+              <small>出处 · {pattern.source ?? '传统口径，待核'}</small>
+            </article>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 

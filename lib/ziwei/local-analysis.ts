@@ -1,6 +1,8 @@
 import type { Palace, Star, ZiweiChart } from './types';
 import { BRANCHES, STAR_DESCRIPTIONS, STEMS } from './constants';
 import { HEMING_SCORE_CRITERIA, SIHUA_IN_FUQI_GU, STAR_IN_FUQI_GU } from './heming-knowledge';
+import { detectPatterns } from './patterns';
+import { getEntryForLocalTopic } from './knowledge-base';
 
 export type Topic =
   | 'overview'
@@ -304,6 +306,10 @@ function compactMainStars(palace?: Palace): string {
   return starNames(palace, 'major').replace(/\s+/g, '');
 }
 
+function primaryMajorStarName(palace?: Palace): string | undefined {
+  return starsOf(palace, 'major')[0]?.name ?? palace?.borrowedStars?.[0];
+}
+
 function oneLineVerdict(meta: TopicMeta, palace?: Palace): string {
   const stars = compactMainStars(palace);
   return `「${stars}坐守，先抓住${meta.title}的主线，再用三方四正和四化确认现实落点。」`;
@@ -317,7 +323,14 @@ function structuredEvidence(chart: ZiweiChart, topic: Topic, palace?: Palace, op
   const ming = mingPalace(chart);
   const dxRange = chart.daXians[chart.currentDaXianIndex];
   const dxPalace = currentDaXian(chart);
+  const patterns = detectPatterns(chart).slice(0, 6);
+  const patternLines = patterns.length
+    ? patterns.map(pattern => `\u2605 \u683c\u5c40\uff1a${pattern.name}\uff0c\u6d89\u53ca${pattern.palaces.join('\u3001')}${pattern.source ? `\uff0c\u51fa\u5904\uff1a${pattern.source}` : ''}`)
+    : ['\u2605 \u683c\u5c40\uff1a\u672c\u76d8\u6682\u672a\u89e6\u53d1\u5df2\u8bc6\u522b\u7684\u4e25\u683c\u53e4\u4e66\u683c\u5c40\uff0c\u4ee5\u4e3b\u661f\u3001\u4e09\u65b9\u56db\u6b63\u548c\u56db\u5316\u8def\u5f84\u4e3a\u4e3b\u3002'];
   return [
+    ...patternLines,
+    `\u2605 \u5409\u66dc\uff1a${starNames(palace, 'lucky')}\uff1b\u714e\u66dc\uff1a${starNames(palace, 'sha')}\u3002`,
+    `\u2605 \u56db\u5316\u53c2\u8003\uff1a${siHuaSummary(chart, palace)}`,
     `• 主题：${TOPIC_META[topic].title}`,
     `• 本宫：${palaceLabel(palace)}，主星 ${compactMainStars(palace)}`,
     `• 对宫：${palaceLabel(opposite)}，主星 ${compactMainStars(opposite)}`,
@@ -327,7 +340,7 @@ function structuredEvidence(chart: ZiweiChart, topic: Topic, palace?: Palace, op
   ];
 }
 
-function classicReferences(topic: Topic, palace?: Palace): string[] {
+function baseClassicReferences(topic: Topic, palace?: Palace): string[] {
   const palaceName = palace?.name ?? '本宫';
   const stars = compactMainStars(palace);
   return [
@@ -338,7 +351,23 @@ function classicReferences(topic: Topic, palace?: Palace): string[] {
   ];
 }
 
-function auxiliaryDiagnosis(palace?: Palace): string[] {
+function classicReferences(topic: Topic, palace?: Palace): string[] {
+  const base = baseClassicReferences(topic, palace);
+  const stars = starsOf(palace, 'major');
+  const starNotes = stars.map(star => {
+    const description = STAR_DESCRIPTIONS[star.name];
+    return description
+      ? `\u2605 ${star.name}\uff1a${description.nature}\uff0c\u53c2\u8003\u5176\u4e94\u884c\u5c5e${description.element}\u4e0e\u5bf9\u5e94\u9886\u57df\u3002`
+      : `\u2605 ${star.name}\uff1a\u4ee5\u672c\u76d8\u5b9e\u9645\u5bab\u4f4d\u548c\u4e09\u65b9\u56db\u6b63\u4f5c\u4e3a\u53c2\u8003\uff0c\u4e0d\u5355\u72ec\u5b9a\u65ad\u3002`;
+  });
+  return [
+    ...base,
+    ...starNotes,
+    '\u2605 \u4ee5\u4e0a\u51fa\u5904\u7528\u4e8e\u4f20\u7edf\u6587\u5316\u53c2\u8003\uff0c\u9700\u540c\u65f6\u68c0\u67e5\u5e99\u65fa\u3001\u56db\u5316\u548c\u5927\u9650\u5f15\u52a8\uff0c\u4e0d\u5c06\u5355\u6761\u53e3\u8bc0\u89c6\u4e3a\u5b8c\u6574\u7ed3\u8bba\u3002',
+  ];
+}
+
+function baseAuxiliaryDiagnosis(palace?: Palace): string[] {
   const lucky = starsOf(palace, 'lucky').map(star => `${star.name}${star.siHua ? `化${star.siHua}` : ''}`);
   const sha = starsOf(palace, 'sha').map(star => `${star.name}${star.siHua ? `化${star.siHua}` : ''}`);
   const misc = starsOf(palace)
@@ -350,6 +379,24 @@ function auxiliaryDiagnosis(palace?: Palace): string[] {
     lucky.length ? `✦ 吉曜：${lucky.join('、')}，代表事情有顺手处，适合顺势放大。` : '✦ 吉曜：不算突出，做事更要依赖流程、耐心和现实资源。',
     sha.length ? `◆ 煞曜：${sha.join('、')}，代表阻力、冲动或反复，需要提前设置边界。` : '◆ 煞曜：阻力不算尖锐，重点在长期执行而非短期硬冲。',
     misc.length ? `▸ 其他辅曜：${misc.join('、')}，会影响细节节奏和人事互动。` : '▸ 其他辅曜：以主星、对宫和大限作为主要判断依据。',
+  ];
+}
+
+function auxiliaryDiagnosis(palace?: Palace): string[] {
+  const base = baseAuxiliaryDiagnosis(palace);
+  const major = starsOf(palace, 'major');
+  const supporting = starsOf(palace).filter(star => star.type !== 'major').slice(0, 8);
+  const combinations = major.flatMap(main => supporting.map(aux =>
+    `\u25c6 \u7ec4\u5408\u300c${main.name}+${aux.name}\u300d\uff1a${main.name}\u4e3b${STAR_DESCRIPTIONS[main.name]?.keywords ?? '\u8be5\u9886\u57df'}\uff0c${aux.name}\u5f71\u54cd\u63a8\u8fdb\u8282\u594f\uff0c\u9700\u7ed3\u5408\u5e99\u65fa\u548c\u56db\u5316\u5224\u65ad\u3002`,
+  ));
+  const sihua = palace?.stars.filter(star => star.siHua).map(star =>
+    `\u25c6 \u56db\u5316\u7ec4\u5408\uff1a${star.name}\u5316${star.siHua}\uff0c\u843d\u5728${palace.name}\uff0c\u4f18\u5148\u89c2\u5bdf\u5176\u5bf9\u5e94\u4e8b\u9879\u7684\u52a8\u6001\u53d8\u5316\u3002`,
+  ) ?? [];
+  return [
+    ...base,
+    ...(combinations.length ? combinations : ['\u25c6 \u4e3b\u8f85\u661f\u7ec4\u5408\uff1a\u672c\u5bab\u6682\u65e0\u8db3\u591f\u7684\u8f85\u661f\u7ec4\u5408\u6570\u636e\uff0c\u4ee5\u5bf9\u5bab\u3001\u4e09\u65b9\u56db\u6b63\u548c\u5927\u9650\u4e3a\u4e3b\u3002']),
+    ...sihua,
+    '\u25c6 \u7efc\u5408\u63d0\u9192\uff1a\u8f85\u715e\u4e0d\u5355\u72ec\u51b3\u5b9a\u5409\u51f6\uff0c\u9700\u4e0e\u4e3b\u661f\u3001\u5bf9\u5bab\u548c\u5f53\u524d\u65f6\u95f4\u5c42\u4e00\u8d77\u53c2\u770b\u3002',
   ];
 }
 
@@ -367,6 +414,7 @@ function buildStructuredReport(chart: ZiweiChart, topic: Topic, palace?: Palace)
   const meta = TOPIC_META[topic];
   const ming = mingPalace(chart);
   const opposite = oppositePalace(chart, palace);
+  const knowledge = getEntryForLocalTopic(primaryMajorStarName(palace), topic);
   const supportStars = [
     ...starsOf(palace, 'lucky').slice(0, 4).map(star => star.name),
     ...starsOf(palace, 'sha').slice(0, 4).map(star => star.name),
@@ -378,19 +426,20 @@ function buildStructuredReport(chart: ZiweiChart, topic: Topic, palace?: Palace)
     `> ✦ ${starCountText(palace)} ›`,
     `> ✦ AI 生成 · 仅供参考`,
     ``,
-    topicOpening(meta, palace, opposite),
+    knowledge ? `${knowledge.dingdiao}${knowledge.lundian}` : topicOpening(meta, palace, opposite),
     `**\u73b0\u5b9e\u5efa\u8bae**`,
-    meta.advice,
+    knowledge?.advice ?? meta.advice,
     ``,
     `**一句话定调**`,
-    oneLineVerdict(meta, palace),
+    knowledge?.summary ?? oneLineVerdict(meta, palace),
     ``,
     `**核心论断**`,
     `${palaceLabel(palace)}是这次判断的核心宫位，主星为${compactMainStars(palace)}；命宫主星为${compactMainStars(ming)}，说明你的底层反应方式会直接影响${meta.title}的兑现质量。`,
-    `${meta.deduction}真正要看的不是“好坏一句话”，而是这组星曜能否被稳定使用，以及遇到压力时会不会转成消耗。`,
+    knowledge?.lundian ?? `${meta.deduction}真正要看的不是“好坏一句话”，而是这组星曜能否被稳定使用，以及遇到压力时会不会转成消耗。`,
     ``,
     `**命盘推演**`,
     `本宫主星：${compactMainStars(palace)}`,
+    knowledge?.yiju ?? '',
     starKnowledge(palace),
     supportStars.length ? `本宫辅煞重点：${supportStars.join('、')}。这些星曜决定事情推进时是顺、是急、是反复，还是需要借人借势。` : '本宫辅煞不算突出，重点看主星、对宫、三方四正和大限。',
     ``,
@@ -410,11 +459,11 @@ function buildStructuredReport(chart: ZiweiChart, topic: Topic, palace?: Palace)
     ``,
     ...foldBlock('命盘依据', structuredEvidence(chart, topic, palace, opposite), false),
     ``,
-    ...foldBlock('经典出处', classicReferences(topic, palace), true),
+    ...foldBlock('经典出处', [knowledge?.classic, ...classicReferences(topic, palace)].filter((item): item is string => Boolean(item)), true),
     ``,
     `**风险提醒**`,
     `> 紫微斗数讲究阴阳互见，下方为基于本盘特征的中性提醒，知所警惕方能转危为安。`,
-    `◆ ${meta.risk}`,
+    `◆ ${knowledge?.risk ?? meta.risk}`,
     `◆ ${safetyLine(meta)}`,
     ``,
     ...foldBlock(`主辅组合精细论断（${palace?.name ?? meta.title}实际辅煞）`, auxiliaryDiagnosis(palace), true),

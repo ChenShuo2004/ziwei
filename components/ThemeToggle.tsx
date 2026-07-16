@@ -19,7 +19,7 @@ export default function ThemeToggle({ className = '', locale = 'zh' }: { classNa
       aria-pressed={isDark}
       onClick={toggle}
     >
-      {isDark ? labels.light : labels.dark}
+      {isDark ? labels.dark : labels.light}
     </button>
   );
 }

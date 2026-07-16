@@ -59,7 +59,7 @@ export default function SiteHeader({ active = 'none', locale = 'zh' }: SiteHeade
             EN
           </Link>
         </span>
-        <ThemeToggle />
+        <ThemeToggle locale={locale} />
       </nav>
     </header>
   );

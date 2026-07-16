@@ -2,17 +2,19 @@
  * SEO 知识页 — 数据 helper
  *
  * 14 主星 × 13 topic = 182 个独立 SEO URL
- * 每页都是 STAR_DB 中对应字段的 4 段 markers（一句话定调/核心论断/命盘依据/经典出处）
+ * 每页都来自结构化知识库（一句话定调/核心论断/命盘依据/现实建议/风险提醒/经典参考）
  */
 
-import { STAR_DB } from '@/lib/ziwei/db-analysis';
 import type { TopicKey } from '@/lib/ziwei/db-analysis';
 import { TOPIC_PALACE_NAME, TOPIC_LABEL } from '@/lib/ziwei/db-analysis';
+import {
+  getKnowledgeEntry,
+  KNOWLEDGE_STARS,
+  renderKnowledgeEntry,
+  type StarKnowledgeEntry,
+} from '@/lib/ziwei/knowledge-base';
 
-export const ALL_STARS = [
-  '紫微', '天机', '太阳', '武曲', '天同', '廉贞', '天府',
-  '太阴', '贪狼', '巨门', '天相', '天梁', '七杀', '破军',
-];
+export const ALL_STARS = KNOWLEDGE_STARS;
 
 // 主星名 ↔ 拼音 slug 映射（URL 用 slug，避免中文 URL 在 Vercel/CDN 上的边界问题）
 export const STAR_TO_SLUG: Record<string, string> = {
@@ -41,56 +43,26 @@ export const ALL_TOPICS: TopicKey[] = [
   'family', 'children', 'move', 'friends', 'home', 'spirit', 'parents',
 ];
 
-interface StarContent {
-  mingGong: string;
-  personality: string;
-  xiongDi?: string;
-  fuQi: string;
-  ziNv?: string;
-  caiBo: string;
-  jiE: string;
-  qianYi?: string;
-  jiaoYou?: string;
-  guanLu: string;
-  tianZhai?: string;
-  fuDe?: string;
-  fuMu?: string;
-}
-
-const TOPIC_TO_FIELD: Record<TopicKey, keyof StarContent> = {
-  overview:    'mingGong',
-  personality: 'personality',
-  love:        'fuQi',
-  career:      'guanLu',
-  wealth:      'caiBo',
-  health:      'jiE',
-  family:      'xiongDi' as keyof StarContent,
-  children:    'ziNv' as keyof StarContent,
-  move:        'qianYi' as keyof StarContent,
-  friends:     'jiaoYou' as keyof StarContent,
-  home:        'tianZhai' as keyof StarContent,
-  spirit:      'fuDe' as keyof StarContent,
-  parents:     'fuMu' as keyof StarContent,
-};
-
 interface ParsedContent {
   dingdiao: string;
   lundian: string;
   yiju: string;
+  advice: string;
+  risk: string;
   chuchu: string;
   raw: string;
   hasMarkers: boolean;
 }
 
 function parseStarContent(content: string): ParsedContent {
-  const out: ParsedContent = { dingdiao: '', lundian: '', yiju: '', chuchu: '', raw: content, hasMarkers: false };
+  const out: ParsedContent = { dingdiao: '', lundian: '', yiju: '', advice: '', risk: '', chuchu: '', raw: content, hasMarkers: false };
   if (!content) return out;
   if (!content.includes('**【一句话定调】**') && !content.includes('**【核心论断】**')) {
     out.lundian = content;
     return out;
   }
   out.hasMarkers = true;
-  const re = /\*\*【([^】]+)】\*\*/g;
+  const re = /\*\*【(.+?)】\*\*/g;
   const parts: { name: string; markerEnd: number; start: number }[] = [];
   let m: RegExpExecArray | null;
   while ((m = re.exec(content)) !== null) {
@@ -103,7 +75,9 @@ function parseStarContent(content: string): ParsedContent {
     if (p.name === '一句话定调') out.dingdiao = text;
     else if (p.name === '核心论断') out.lundian = text;
     else if (p.name === '命盘依据') out.yiju = text;
-    else if (p.name === '经典出处') out.chuchu = text;
+    else if (p.name === '现实建议') out.advice = text;
+    else if (p.name === '风险提醒') out.risk = text;
+    else if (p.name === '经典出处' || p.name === '经典参考') out.chuchu = text;
   }
   return out;
 }
@@ -114,20 +88,21 @@ export interface KnowledgeData {
   topicLabel: string;
   palaceName: string;
   parsed: ParsedContent;
+  entry: StarKnowledgeEntry | null;
   exists: boolean;
 }
 
 export function getKnowledge(star: string, topic: TopicKey): KnowledgeData {
-  const profile = STAR_DB[star] as StarContent | undefined;
-  const field = TOPIC_TO_FIELD[topic];
-  const content = profile && field ? (profile[field] as string | undefined) ?? '' : '';
+  const entry = getKnowledgeEntry(star, topic);
+  const content = entry ? renderKnowledgeEntry(entry) : '';
   return {
     star,
     topic,
-    topicLabel: TOPIC_LABEL[topic],
-    palaceName: TOPIC_PALACE_NAME[topic],
+    topicLabel: entry?.topicLabel ?? TOPIC_LABEL[topic],
+    palaceName: entry?.palaceName ?? TOPIC_PALACE_NAME[topic],
     parsed: parseStarContent(content),
-    exists: Boolean(content),
+    entry,
+    exists: Boolean(entry),
   };
 }
 

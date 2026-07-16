@@ -1,7 +1,9 @@
 import { buildChartInterpretation, streamText, type Topic } from '@/lib/ziwei/local-analysis';
 import type { ZiweiChart } from '@/lib/ziwei/types';
+import { recordQuestion } from '@/lib/admin-stats';
 
 export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
 
 interface InterpretBody {
   chart?: ZiweiChart;
@@ -26,11 +28,24 @@ export async function POST(request: Request) {
     locale: body.locale,
   });
 
+  const headers: Record<string, string> = {
+    'Cache-Control': 'no-cache, no-transform',
+    'Content-Type': 'text/event-stream; charset=utf-8',
+    'X-AI-Provider': 'local-knowledge',
+  };
+
+  try {
+    const stats = await recordQuestion(request, 'chart');
+    if (stats.setCookie) {
+      headers['Set-Cookie'] = stats.setCookie;
+    }
+  } catch (error) {
+    console.warn('Failed to record chart question stats:', error);
+  }
+
   return new Response(streamText(localAnswer), {
     headers: {
-      'Cache-Control': 'no-cache, no-transform',
-      'Content-Type': 'text/event-stream; charset=utf-8',
-      'X-AI-Provider': 'local-knowledge',
+      ...headers,
     },
   });
 }

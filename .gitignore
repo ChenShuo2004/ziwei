@@ -10,5 +10,6 @@ dist/
 .local-run/
 .verification/
 release-data/
+data/*.json
 
 .vercel

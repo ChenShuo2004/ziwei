@@ -5179,6 +5179,50 @@ body {
     linear-gradient(90deg, rgba(2, 8, 23, 0.62) 0%, rgba(2, 8, 23, 0.08) 64%);
 }
 
+[data-theme="dark"] .desktop-kicker,
+[data-theme="dark"] .desktop-meta,
+[data-theme="dark"] .desktop-meta em {
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .desktop-rail {
+  color: #dbeafe;
+}
+
+[data-theme="dark"] .desktop-rail a.is-active {
+  color: #38bdf8;
+  text-shadow: 0 0 18px rgba(56, 189, 248, .22);
+}
+
+[data-theme="dark"] .desktop-rail a span {
+  color: #38bdf8;
+}
+
+[data-theme="dark"] .desktop-rail a.is-active::before {
+  background: linear-gradient(90deg, #38bdf8, rgba(56, 189, 248, .32));
+}
+
+[data-theme="dark"] .desktop-rail a.is-active::after {
+  background: #38bdf8;
+  border-color: #e0f2fe;
+  box-shadow: 0 0 0 7px rgba(56, 189, 248, .16), 0 0 18px rgba(56, 189, 248, .42);
+}
+
+[data-theme="dark"] .desktop-stage .module-card .copy,
+[data-theme="dark"] .desktop-stage .module-card .copy .eyebrow,
+[data-theme="dark"] .desktop-stage .module-card .copy strong,
+[data-theme="dark"] .desktop-stage .module-card .copy .description {
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .desktop-stage .module-card .copy .eyebrow {
+  color: #bae6fd;
+}
+
+[data-theme="dark"] .desktop-stage .module-card .copy strong {
+  text-shadow: 0 2px 18px rgba(2, 8, 23, .72);
+}
+
 [data-theme="dark"] .module-cta,
 [data-theme="dark"] .beam-button {
   border-color: rgba(34, 211, 238, 0.46);

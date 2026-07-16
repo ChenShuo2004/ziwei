@@ -39,6 +39,12 @@ const TOPICS = [
 type TopicKey = (typeof TOPICS)[number]['key'];
 type PanelMode = 'analysis' | 'chat';
 
+interface InterpretMeta {
+  topic?: TopicKey;
+  period?: string | null;
+  palaceBranch?: number | null;
+}
+
 const TOPIC_PROMPTS: Record<TopicKey, string> = {
   overview: '请生成命格总览，包含命盘标签、主标题、命格总览、命盘推演、三方四正联动、风险提醒、针对你的命盘、现实建议。',
   wealth: '请分析财运，重点包含现金流、财富来源、财帛宫依据、田宅积累、破财风险和现实财务建议。',
@@ -69,6 +75,22 @@ const PALACE_ROLES: Record<string, string> = {
   福德宫: '精神享受、内在状态',
   父母宫: '父母关系、文书助力',
 };
+
+function topicForPalaceName(name: string): TopicKey | undefined {
+  if (name.includes('兄弟')) return 'siblings';
+  if (name.includes('子女')) return 'children';
+  if (name.includes('夫妻')) return 'love';
+  if (name.includes('财帛')) return 'wealth';
+  if (name.includes('疾厄')) return 'health';
+  if (name.includes('迁移')) return 'travel';
+  if (name.includes('交友') || name.includes('仆役')) return 'network';
+  if (name.includes('官禄')) return 'career';
+  if (name.includes('田宅')) return 'property';
+  if (name.includes('福德')) return 'fortune';
+  if (name.includes('父母')) return 'parents';
+  if (name.includes('命')) return 'overview';
+  return undefined;
+}
 
 const RADAR_AXES = ['综合', '事业', '财运', '感情', '性格', '健康'] as const;
 
@@ -446,7 +468,7 @@ export default function InsightPanel({ chart, selectedPalace, timeContext, onExp
   useEffect(() => {
     if (autoLoaded.current) return;
     autoLoaded.current = true;
-    sendMessage(TOPIC_PROMPTS.overview, { hidden: true, reset: true, title: '命格总览' });
+    sendMessage(TOPIC_PROMPTS.overview, { hidden: true, reset: true, title: '命格总览', topic: 'overview', period: null });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -454,11 +476,13 @@ export default function InsightPanel({ chart, selectedPalace, timeContext, onExp
     lastPalaceBranch.current = selectedPalace.branch;
     const stars = selectedPalace.stars.filter(star => star.type === 'major').map(star => star.name).join('、') || '空宫';
     const role = PALACE_ROLES[selectedPalace.name] ?? '该宫位相关主题';
+    const palaceTopic = topicForPalaceName(selectedPalace.name);
+    if (palaceTopic) setActiveTopic(palaceTopic);
     setActiveTitle(selectedPalace.name);
     setMode('analysis');
     sendMessage(
       `请重点分析${selectedPalace.name}，主管${role}。该宫主星为${stars}。请按宫位定位、本宫主星、对宫与三方、风险提醒、现实建议输出。`,
-      { hidden: true, reset: true, title: `${selectedPalace.name}解读` },
+      { hidden: true, reset: true, title: `${selectedPalace.name}解读`, topic: palaceTopic, period: null, palaceBranch: selectedPalace.branch },
     );
   }, [selectedPalace]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -479,13 +503,13 @@ export default function InsightPanel({ chart, selectedPalace, timeContext, onExp
     setActiveTitle(`${label}\u5206\u6790`);
     sendMessage(
       `\u8bf7\u5206\u6790${timeContext.year}\u5e74${timeContext.month}\u6708${timeContext.day}\u65e5\u5b50\u65f6\u7684${label}\u8fd0\u52bf\uff0c\u7ed3\u5408\u5f53\u524d\u547d\u76d8\u3001\u56db\u5316\u3001\u4e09\u65b9\u56db\u6b63\u548c\u77e5\u8bc6\u5e93\u8fdb\u884c\u5206\u6790\uff0c\u660e\u786e\u8fd9\u4e00\u65f6\u95f4\u5c42\u7684\u4e3b\u9898\u3001\u98ce\u9669\u548c\u73b0\u5b9e\u5efa\u8bae\u3002`,
-      { hidden: true, reset: true, title: `${label}\u5206\u6790` },
+      { hidden: true, reset: true, title: `${label}\u5206\u6790`, topic: activeTopic, period: label },
     );
   }, [timeContext]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const streamResponse = async (
     apiMessages: { role: 'user' | 'assistant'; content: string }[],
-    options: { title: string; requestId: number; signal: AbortSignal },
+    options: { title: string; requestId: number; signal: AbortSignal; meta?: InterpretMeta },
   ) => {
     let assistantText = '';
     setMessages(prev => [...prev, { role: 'assistant', content: '', title: options.title }]);
@@ -494,7 +518,7 @@ export default function InsightPanel({ chart, selectedPalace, timeContext, onExp
       const res = await fetch('/api/interpret', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chart, messages: apiMessages }),
+        body: JSON.stringify({ chart, messages: apiMessages, ...options.meta }),
         signal: options.signal,
       });
       if (!res.ok || !res.body) throw new Error('AI request failed');
@@ -550,7 +574,7 @@ export default function InsightPanel({ chart, selectedPalace, timeContext, onExp
 
   const sendMessage = (
     text: string,
-    options: { hidden?: boolean; reset?: boolean; title?: string } = {},
+    options: { hidden?: boolean; reset?: boolean; title?: string } & InterpretMeta = {},
   ) => {
     if (!text.trim()) return;
 
@@ -571,6 +595,11 @@ export default function InsightPanel({ chart, selectedPalace, timeContext, onExp
       title: options.title ?? '追问解读',
       requestId,
       signal: controller.signal,
+      meta: {
+        topic: options.topic,
+        period: options.period,
+        palaceBranch: options.palaceBranch,
+      },
     });
   };
 
@@ -666,6 +695,8 @@ export default function InsightPanel({ chart, selectedPalace, timeContext, onExp
       hidden: true,
       reset: true,
       title: topic.label,
+      topic: topicKey,
+      period: null,
     });
   };
 

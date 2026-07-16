@@ -2,7 +2,7 @@ import type { Palace, Star, ZiweiChart } from './types';
 import { BRANCHES, STAR_DESCRIPTIONS, STEMS } from './constants';
 import { HEMING_SCORE_CRITERIA, SIHUA_IN_FUQI_GU, STAR_IN_FUQI_GU } from './heming-knowledge';
 
-type Topic =
+export type Topic =
   | 'overview'
   | 'wealth'
   | 'career'
@@ -537,16 +537,27 @@ function detectTopic(text: string): Topic {
   return 'overview';
 }
 
-export function buildChartInterpretation(chart: ZiweiChart, prompt = ''): string {
-  const focused = focusedPalaceFromText(chart, prompt);
-  const report = focused ? buildFocusedPalaceReport(chart, focused) : buildTopicReport(chart, detectTopic(prompt));
-  const period = detectTimePeriod(prompt);
+interface InterpretationOptions {
+  topic?: Topic;
+  period?: string | null;
+  palaceBranch?: number | null;
+}
+
+export function buildChartInterpretation(chart: ZiweiChart, prompt = '', options: InterpretationOptions = {}): string {
+  const focused = typeof options.palaceBranch === 'number'
+    ? palaceByBranch(chart, options.palaceBranch)
+    : focusedPalaceFromText(chart, prompt);
+  const topic = options.topic ?? detectTopic(prompt);
+  const report = focused ? buildFocusedPalaceReport(chart, focused) : buildTopicReport(chart, topic);
+  const period = options.period ?? detectTimePeriod(prompt);
   if (!period) return report;
   return report.replace(/^# ([^\n]+)/, `# ${period} · $1\n> 当前报告已切换到${period}层，结合本命盘结构、四化路径与知识库规则判断。`);
 }
 
 function detectTimePeriod(prompt: string): string | null {
-  const normalized = prompt.replace(/\s+/g, '');
+  const normalized = prompt
+    .split('当前命盘摘要：')[0]
+    .replace(/\s+/g, '');
   if (normalized.includes('\u6d41\u65f6')) return '\u6d41\u65f6';
   if (normalized.includes('\u6d41\u65e5')) return '\u6d41\u65e5';
   if (normalized.includes('\u6d41\u6708')) return '\u6d41\u6708';

@@ -5759,6 +5759,13 @@ body {
   color: #17191c;
 }
 
+[data-theme="dark"] .mysteries-page {
+  background:
+    linear-gradient(180deg, #0f2742 0, #0b1428 360px),
+    #0b1428;
+  color: #dbeafe;
+}
+
 .mysteries-hero {
   width: min(980px, calc(100% - 48px));
   margin: 0 auto;
@@ -5775,12 +5782,21 @@ body {
   line-height: 1.08;
 }
 
+[data-theme="dark"] .mysteries-hero h1 {
+  color: #bae6fd;
+  text-shadow: 0 0 24px rgba(56, 189, 248, .14);
+}
+
 .mysteries-hero p {
   max-width: 760px;
   margin: 18px auto 0;
   color: #667085;
   font-size: 16px;
   line-height: 1.9;
+}
+
+[data-theme="dark"] .mysteries-hero p {
+  color: #93c5fd;
 }
 
 .mysteries-workbench {

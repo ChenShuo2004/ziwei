@@ -33,7 +33,11 @@ export default function SiteHeader({ active = 'none', locale = 'zh' }: SiteHeade
         aria-label="ziwei 首页"
         aria-current={active === 'home' ? 'page' : undefined}
       >
-        <span>ziwei</span>
+        <span className="brand-mark" aria-hidden="true" />
+        <span className="brand-copy">
+          <strong>WARMTH</strong>
+          <small>有温度阅览室</small>
+        </span>
       </Link>
 
       <nav className="top-links" aria-label="顶部快捷入口">
@@ -47,11 +51,11 @@ export default function SiteHeader({ active = 'none', locale = 'zh' }: SiteHeade
           {labels.mysteries}
         </Link>
         <span className="language-switch" aria-label="语言切换">
-          <Link className={locale === 'zh' ? 'is-active interactive-ring' : 'interactive-ring'} href="/" aria-current={locale === 'zh' ? 'page' : undefined}>
+          <Link className={locale === 'zh' ? 'is-active' : undefined} href="/">
             中
           </Link>
           <span>/</span>
-          <Link className={locale === 'en' ? 'is-active interactive-ring' : 'interactive-ring'} href="/?lang=en" aria-current={locale === 'en' ? 'page' : undefined}>
+          <Link className={locale === 'en' ? 'is-active' : undefined} href="/?lang=en">
             EN
           </Link>
         </span>

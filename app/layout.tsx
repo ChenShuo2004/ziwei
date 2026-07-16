@@ -5,9 +5,9 @@ import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 
 export const metadata: Metadata = {
-  title: 'ziwei — 紫微斗数文化研究平台',
-  description: 'ziwei 提供紫微斗数在线排盘、AI 命盘解读、合盘分析、命理学双子与天地人三纪文化研究入口。',
-  keywords: 'ziwei, 紫微斗数, 紫微斗数排盘, AI命盘解读, 合盘, 命理学双子, 天纪, 地纪, 人纪',
+  title: 'WARMTH 有温度阅览室 · 紫微斗数文化研究平台',
+  description: 'WARMTH 有温度阅览室，提供紫微斗数在线排盘、命盘解读、合盘分析与传统文化研究入口。',
+  keywords: 'WARMTH, 有温度阅览室, 紫微斗数, 紫微斗数排盘, 命盘解读, 合盘分析',
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3001'),
   alternates: {
     canonical: '/',
@@ -17,10 +17,10 @@ export const metadata: Metadata = {
     apple: '/favicon.svg',
   },
   openGraph: {
-    title: 'ziwei — 紫微斗数文化研究平台',
+    title: 'WARMTH 有温度阅览室 · 紫微斗数文化研究平台',
     description: '紫微斗数在线排盘 · AI 命盘解读 · 合盘 · 命理学双子 · 天地人三纪文化研究入口。',
     url: '/',
-    siteName: 'ziwei',
+    siteName: 'WARMTH 有温度阅览室',
     locale: 'zh_CN',
     type: 'website',
   },

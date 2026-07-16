@@ -271,7 +271,10 @@ export default function ChartPage() {
       <section className="pro-chart-shell">
         <div className="pro-chart-toolbar" aria-label="命盘工具栏">
           <div className="pro-chart-toolbar-left">
-            <Link className="pro-chart-brand" href="/">ziwei</Link>
+            <Link className="pro-chart-brand" href="/" aria-label="WARMTH 有温度阅览室">
+              <span className="pro-brand-mark" aria-hidden="true" />
+              <span>WARMTH</span>
+            </Link>
             <button type="button" className="pro-back-button" onClick={() => window.location.assign('/chart')}>
               <span>‹</span> 返回
             </button>

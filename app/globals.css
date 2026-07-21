@@ -3592,6 +3592,286 @@ body {
   }
 }
 
+/* Mobile app polish: chart workspace, dense controls, and small-screen forms */
+@media (max-width: 720px) {
+  html,
+  body {
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+
+  .white-chart-page {
+    overflow-x: hidden;
+  }
+
+  .white-chart-page .white-board-panel,
+  .white-chart-page .white-insight-panel {
+    position: static;
+    top: auto;
+    max-height: none;
+    min-height: 0;
+    overflow: visible;
+  }
+
+  .white-result-grid {
+    width: 100%;
+    gap: 12px;
+  }
+
+  .white-result-grid > * {
+    min-width: 0;
+  }
+
+  .white-board-panel,
+  .white-insight-panel {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .pro-chart-toolbar {
+    position: sticky;
+    top: 0;
+    max-width: 100vw;
+    padding: 8px 12px;
+    overflow: hidden;
+  }
+
+  .pro-chart-brand {
+    min-height: 30px;
+    font-size: 15px;
+  }
+
+  .pro-brand-mark {
+    width: 24px;
+    height: 24px;
+    background-size: 56px 56px;
+    background-position: center -12px;
+  }
+
+  .pro-mode-tabs,
+  .pro-chart-toolbar-actions,
+  .chart-time-options,
+  .insight-topic-grid {
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .pro-mode-tabs::-webkit-scrollbar,
+  .pro-chart-toolbar-actions::-webkit-scrollbar,
+  .chart-time-options::-webkit-scrollbar,
+  .insight-topic-grid::-webkit-scrollbar {
+    display: none;
+  }
+
+  .pro-back-button,
+  .pro-mode-tabs button,
+  .pro-chart-toolbar-actions button {
+    min-height: 36px;
+    padding-inline: 12px;
+  }
+
+  .pro-mode-tabs {
+    width: 100%;
+    padding-bottom: 1px;
+  }
+
+  .pro-chart-toolbar-actions {
+    gap: 6px;
+    margin-inline: -12px;
+    padding-inline: 12px;
+  }
+
+  .pro-chart-notice {
+    align-items: flex-start;
+    flex-direction: column;
+    border-radius: 12px;
+    line-height: 1.55;
+  }
+
+  .pro-chart-notice button {
+    align-self: flex-end;
+    min-height: 32px;
+  }
+
+  .chart-board {
+    width: 100% !important;
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .chart-board.is-compact .chart-board-grid {
+    width: 100%;
+    min-width: 0;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    border-radius: 12px;
+    box-shadow: 0 8px 26px rgba(17, 24, 39, 0.08) !important;
+  }
+
+  .chart-board.is-compact .chart-board-grid > div {
+    min-width: 0;
+  }
+
+  .chart-board.is-compact .palace-cell {
+    min-width: 0;
+    overflow: hidden;
+    min-height: clamp(72px, 21vw, 86px) !important;
+    padding: 5px 4px !important;
+  }
+
+  .chart-board.is-compact .palace-cell-major {
+    font-size: clamp(11px, 3.4vw, 14px) !important;
+    line-height: 1.1;
+  }
+
+  .chart-board.is-compact .palace-cell-minor,
+  .chart-board.is-compact .palace-cell-stem {
+    font-size: clamp(8px, 2.5vw, 10px) !important;
+  }
+
+  .chart-board.is-compact .palace-cell-name,
+  .chart-board.is-compact .palace-cell-major,
+  .chart-board.is-compact .palace-cell-minor {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .chart-board-center {
+    padding: 8px 4px !important;
+    gap: 5px !important;
+  }
+
+  .chart-board-center .text-5xl {
+    font-size: 30px !important;
+  }
+
+  .chart-time-controls {
+    margin-top: 12px;
+    padding: 10px;
+    border-radius: 12px;
+  }
+
+  .chart-time-section-title {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 1px;
+  }
+
+  .chart-time-option {
+    flex-basis: 58px;
+    min-height: 44px;
+  }
+
+  .insight-topic-bar,
+  .insight-mode-bar {
+    margin-inline: -12px;
+    padding-inline: 12px;
+  }
+
+  .insight-topic-grid.is-pro-grid {
+    display: flex;
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 420px) {
+  .white-hero h1,
+  .chart-start-page .white-hero h1 {
+    font-size: 34px;
+  }
+
+  .white-kicker,
+  .chart-start-page .white-kicker {
+    letter-spacing: 0.2em;
+  }
+
+  .white-form-wrap,
+  .chart-start-form {
+    padding-inline: 12px;
+  }
+
+  .white-form-card,
+  .chart-start-page .white-form-card {
+    padding-inline: 16px;
+  }
+
+  .white-grid-3,
+  .chart-start-page .white-grid-3 {
+    grid-template-columns: 1fr;
+  }
+
+  .chart-start-page .white-calendar-toggle {
+    width: 100%;
+  }
+
+  .chart-start-page .white-calendar-toggle button {
+    flex: 1 1 0;
+  }
+
+  .white-form-title,
+  .white-section-title {
+    gap: 8px;
+  }
+
+  .white-form-title strong,
+  .white-section-title strong {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    text-align: center;
+    white-space: normal;
+  }
+
+  .white-summary {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .pro-chart-toolbar {
+    padding-inline: 10px;
+  }
+
+  .pro-chart-toolbar-actions {
+    margin-inline: -10px;
+    padding-inline: 10px;
+  }
+
+  .pro-chart-brand span:last-child {
+    display: none;
+  }
+
+  .pro-mode-tabs button,
+  .pro-chart-toolbar-actions button {
+    font-size: 11px;
+  }
+
+  .white-result-grid {
+    padding-inline: 10px;
+  }
+
+  .white-board-panel,
+  .white-insight-panel {
+    padding: 10px;
+    border-radius: 12px;
+  }
+
+  .chart-board.is-compact .palace-cell {
+    min-height: clamp(66px, 20vw, 74px) !important;
+  }
+}
+
+@supports (padding: max(0px)) {
+  @media (max-width: 720px) {
+    .white-form-card > .white-submit {
+      bottom: max(14px, env(safe-area-inset-bottom));
+    }
+
+    .white-result-grid,
+    .chart-start-form {
+      padding-bottom: max(56px, calc(32px + env(safe-area-inset-bottom)));
+    }
+  }
+}
+
 /* Unified button interaction system */
 :root {
   --btn-ease: cubic-bezier(0.22, 1, 0.36, 1);

@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import ThemeToggle from '@/components/ThemeToggle';
 import { useLocale } from '@/components/LocaleProvider';
 
@@ -18,24 +19,32 @@ const NAV_LABELS: Record<Locale, Record<Exclude<ActiveNav, 'home' | 'none'>, str
 };
 
 export default function SiteHeader({ active = 'none', locale = 'zh' }: SiteHeaderProps) {
+  const router = useRouter();
   const { locale: contextLocale, setLocale } = useLocale();
   const activeLocale = locale === 'zh' && contextLocale !== 'zh' ? contextLocale : locale;
   const labels = NAV_LABELS[activeLocale];
+  const backLabel = activeLocale === 'en' ? 'Back' : '返回';
+
+  const handleBack = () => {
+    if (window.history.length > 1) {
+      router.back();
+      return;
+    }
+
+    router.push('/');
+  };
 
   return (
     <header className="ziwei-header" aria-label={activeLocale === 'en' ? 'Main navigation' : '主导航'}>
-      <Link
-        className="brand interactive-ring"
-        href="/"
-        aria-label={activeLocale === 'en' ? 'WARMTH home' : 'WARMTH 首页'}
-        aria-current={active === 'home' ? 'page' : undefined}
+      <button
+        className="back-button interactive-ring"
+        type="button"
+        aria-label={backLabel}
+        onClick={handleBack}
       >
-        <span className="brand-mark" aria-hidden="true" />
-        <span className="brand-copy">
-          <strong>WARMTH</strong>
-          <small>{activeLocale === 'en' ? 'A Warm Reading Room' : '有温度阅览室'}</small>
-        </span>
-      </Link>
+        <span aria-hidden="true">‹</span>
+        <span>{backLabel}</span>
+      </button>
 
       <nav className="top-links" aria-label={activeLocale === 'en' ? 'Quick links' : '顶部快捷入口'}>
         <Link className="interactive-ring" href="/chart" aria-current={active === 'chart' ? 'page' : undefined}>

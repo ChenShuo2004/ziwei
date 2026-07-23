@@ -551,6 +551,36 @@ body {
   white-space: nowrap;
 }
 
+.back-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 16px 0 12px;
+  border: 1px solid rgba(17, 24, 39, .14);
+  border-radius: 999px;
+  background: rgba(255, 255, 255, .84);
+  color: #111827;
+  cursor: pointer;
+  font: inherit;
+  font-size: 16px;
+  font-weight: 800;
+  line-height: 1;
+  box-shadow: 0 10px 30px rgba(17, 24, 39, .08);
+}
+
+.back-button span:first-child {
+  font-size: 28px;
+  font-weight: 400;
+  line-height: .8;
+  transform: translateY(-1px);
+}
+
+.back-button:hover {
+  background: #fff;
+  border-color: rgba(17, 24, 39, .28);
+}
+
 .top-links {
   display: flex;
   align-items: center;

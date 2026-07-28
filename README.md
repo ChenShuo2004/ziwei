@@ -10,6 +10,10 @@
   <a href="https://x.com/ChenshuoAI">关注作者</a>
 </p>
 
+<p align="center">
+  <img src="./assets/product-preview.png" alt="紫微斗数排盘产品预览" width="100%" />
+</p>
+
 ## 在线体验
 
 - 主站：[metisziwei.com](https://metisziwei.com)

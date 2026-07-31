@@ -306,6 +306,42 @@ function compactMainStars(palace?: Palace): string {
   return starNames(palace, 'major').replace(/\s+/g, '');
 }
 
+function overviewStarNames(palace?: Palace): string[] {
+  return starsOf(palace, 'major').map(star => star.name);
+}
+
+function overviewNarrative(chart: ZiweiChart, ming?: Palace): {
+  opening: string;
+  strengths: string;
+  relationship: string;
+  growth: string;
+} {
+  const names = overviewStarNames(ming);
+  const has = (name: string) => names.includes(name);
+  const dimStars = starsOf(ming, 'major').filter(star => star.brightness === 'dim').map(star => star.name);
+  const shaNames = starsOf(ming, 'sha').map(star => star.name);
+  const currentDx = chart.daXians[chart.currentDaXianIndex];
+  const stageText = currentDx ? `当前${currentDx.startAge}–${currentDx.endAge}岁大限，把这股能量放大在${currentDx.palaceName}。` : '';
+
+  if (has('廉贞') && has('贪狼')) {
+    return {
+      opening: '你是充满个人魅力的复合型人格，才艺多元，外表有吸引力，内心有强烈的欲望和追求，是一个让人印象深刻却又难以完全看透的人。最突出的天赋是多才多艺和强烈的感染力，进入陌生环境也容易快速建立存在感。',
+      strengths: '清正自律、有才艺也有魄力；你能把审美、表达、人际和行动力合在一起，适合在复杂环境里打开局面。只是这股劲容易绷太紧，得学着收放。',
+      relationship: '魅力足、桃花旺，容易被有趣、有才华或强烈的人吸引；关系里更要守住分寸，情绪起伏时别让感情跟着乱。',
+      growth: `${dimStars.length ? `${dimStars.join('、')}落陷，先天能量不稳，` : ''}原则感容易变成跟自己死磕、钻牛角尖；${shaNames.length ? `命宫又见${shaNames.join('、')}，压力大时更容易走极端。` : ''}松开手、肯认错，才走得宽。${stageText}`,
+    };
+  }
+
+  const starText = names.length ? names.join('、') : '空宫';
+  const profile = names.map(name => STAR_DESCRIPTIONS[name]?.keywords).filter(Boolean).join('、');
+  return {
+    opening: `${starText}坐命，底层气质集中在${profile || '观察、适应与现实选择'}。这不是单一标签，而是你在关系、事业和压力场景里反复出现的处理方式。${stageText}`,
+    strengths: `${starText}带来的优势是能把${profile || '自身经验'}转化为具体行动；当目标清晰、边界明确时，通常比临场凭感觉更容易形成稳定成果。`,
+    relationship: `关系里容易把${profile || '自己的判断'}带进互动：合适的人会欣赏你的特点，不合适的关系则容易放大误解和消耗，越重要的事越要提前说清楚。`,
+    growth: `${dimStars.length ? `${dimStars.join('、')}落陷，` : ''}成长重点不是压住自己的本能，而是给它加上节奏、边界和复盘机制。${shaNames.length ? `命宫见${shaNames.join('、')}，遇到压力时尤其要避免冲动决策。` : ''}`,
+  };
+}
+
 function primaryMajorStarName(palace?: Palace): string | undefined {
   return starsOf(palace, 'major')[0]?.name ?? palace?.borrowedStars?.[0];
 }
@@ -419,6 +455,45 @@ function buildStructuredReport(chart: ZiweiChart, topic: Topic, palace?: Palace)
     ...starsOf(palace, 'lucky').slice(0, 4).map(star => star.name),
     ...starsOf(palace, 'sha').slice(0, 4).map(star => star.name),
   ];
+  const overview = topic === 'overview' ? overviewNarrative(chart, ming) : null;
+
+  if (overview) {
+    const patternLines = detectPatterns(chart).slice(0, 5).map(pattern =>
+      `◆ ${pattern.name}：${pattern.description}`,
+    );
+    return [
+      '# 命格总览',
+      `> ${overview.opening}`,
+      '',
+      '**核心优势**',
+      overview.strengths,
+      '',
+      '**关系模式**',
+      overview.relationship,
+      '',
+      '**成长课题**',
+      overview.growth,
+      '',
+      patternLines.length ? `✦ ${patternLines.length} 个古书格局` : '',
+      ...patternLines,
+      '',
+      `**命宫主星 · ${compactMainStars(ming)}**`,
+      `${starKnowledge(ming)}。${TOPIC_META.overview.overview}`,
+      '',
+      '**命盘推演**',
+      `本宫主星：${compactMainStars(ming)}。${TOPIC_META.overview.deduction}`,
+      sanFangSummary(chart),
+      daXianSummary(chart),
+      '',
+      '**四化与风险提醒**',
+      siHuaSummary(chart, ming),
+      `◆ ${TOPIC_META.overview.risk}`,
+      `◆ ${safetyLine(TOPIC_META.overview)}`,
+      '',
+      '**现实建议**',
+      TOPIC_META.overview.advice,
+    ].filter(Boolean).join('\n');
+  }
 
   return [
     `# ${topicReportTitle(meta, topic)}`,

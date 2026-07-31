@@ -2,13 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
-import {
-  ArrowsOutSimple,
-  ChartBar,
-  DownloadSimple,
-  Star,
-  UsersThree,
-} from '@phosphor-icons/react';
 import type { Palace, ZiweiChart } from '@/lib/ziwei/types';
 import { detectPatterns } from '@/lib/ziwei/patterns';
 import { useLocale } from '@/components/LocaleProvider';
@@ -20,6 +13,7 @@ interface Message {
   content: string;
   hidden?: boolean;
   title?: string;
+  topic?: TopicKey;
 }
 
 interface InsightPanelProps {
@@ -53,6 +47,16 @@ const TOPIC_LABELS_EN: Record<string, string> = {
 
 type TopicKey = (typeof TOPICS)[number]['key'];
 type PanelMode = 'analysis' | 'chat';
+
+interface TopicPresentation {
+  label: string;
+  palaceKeyword: string;
+  axes: Array<{ label: string; palaceKeyword: string; adjustment?: number }>;
+  cardTitles: [string, string, string];
+  focus: string;
+  relationship: string;
+  action: string;
+}
 
 interface InterpretMeta {
   topic?: TopicKey;
@@ -107,14 +111,216 @@ function topicForPalaceName(name: string): TopicKey | undefined {
   return undefined;
 }
 
-const RADAR_AXES = [
-  { label: '事业', detail: '武曲 · 七杀' },
-  { label: '财运', detail: '紫微 · 破军' },
-  { label: '感情', detail: '天府' },
-  { label: '性格', detail: '廉贞 · 贪狼' },
-  { label: '健康', detail: '天机' },
-  { label: '综合', detail: '' },
-] as const;
+const TOPIC_PRESENTATIONS: Record<TopicKey, TopicPresentation> = {
+  overview: {
+    label: '命格总览',
+    palaceKeyword: '命',
+    axes: [
+      { label: '综合', palaceKeyword: '命' },
+      { label: '事业', palaceKeyword: '官禄' },
+      { label: '财运', palaceKeyword: '财帛' },
+      { label: '感情', palaceKeyword: '夫妻' },
+      { label: '性格', palaceKeyword: '福德' },
+      { label: '健康', palaceKeyword: '疾厄' },
+    ],
+    cardTitles: ['核心优势', '关系模式', '成长课题'],
+    focus: '把命宫优势放进长期目标，比追求短期判断更有价值。',
+    relationship: '关系里最重要的是把期待、边界和现实安排说清楚。',
+    action: '把阶段重点收敛到一到两个可执行计划。',
+  },
+  wealth: {
+    label: '财运',
+    palaceKeyword: '财帛',
+    axes: [
+      { label: '进财', palaceKeyword: '财帛' },
+      { label: '事业变现', palaceKeyword: '官禄' },
+      { label: '资产沉淀', palaceKeyword: '田宅' },
+      { label: '外部财机', palaceKeyword: '迁移' },
+      { label: '合作财', palaceKeyword: '交友' },
+      { label: '守财', palaceKeyword: '福德' },
+    ],
+    cardTitles: ['财富来源', '资金模式', '守财课题'],
+    focus: '优先经营最稳定、最可重复的收入来源。',
+    relationship: '合作与资源交换要先明确账目、权责和退出条件。',
+    action: '把现金流安全垫和长期资产配置分开管理。',
+  },
+  career: {
+    label: '事业',
+    palaceKeyword: '官禄',
+    axes: [
+      { label: '执行', palaceKeyword: '官禄' },
+      { label: '领导', palaceKeyword: '命' },
+      { label: '收入', palaceKeyword: '财帛' },
+      { label: '机会', palaceKeyword: '迁移' },
+      { label: '协作', palaceKeyword: '交友' },
+      { label: '续航', palaceKeyword: '福德' },
+    ],
+    cardTitles: ['事业优势', '职场模式', '突破方向'],
+    focus: '把擅长的能力固化成可证明、可复用的专业价值。',
+    relationship: '职场合作宜把目标、权限和交付标准提前对齐。',
+    action: '用一个明确项目验证下一阶段的职业方向。',
+  },
+  love: {
+    label: '感情',
+    palaceKeyword: '夫妻',
+    axes: [
+      { label: '吸引力', palaceKeyword: '命' },
+      { label: '稳定度', palaceKeyword: '夫妻' },
+      { label: '沟通', palaceKeyword: '交友' },
+      { label: '安全感', palaceKeyword: '福德' },
+      { label: '家庭观', palaceKeyword: '田宅' },
+      { label: '共同成长', palaceKeyword: '官禄' },
+    ],
+    cardTitles: ['情感需求', '相处模式', '关系课题'],
+    focus: '先辨认自己的真实需要，再判断关系是否匹配。',
+    relationship: '稳定关系依赖持续沟通，而不是依靠猜测和试探。',
+    action: '在情绪稳定时讨论边界、承诺与长期安排。',
+  },
+  personality: {
+    label: '性格',
+    palaceKeyword: '命',
+    axes: [
+      { label: '行动力', palaceKeyword: '官禄' },
+      { label: '判断力', palaceKeyword: '命' },
+      { label: '表达力', palaceKeyword: '交友' },
+      { label: '感受力', palaceKeyword: '福德' },
+      { label: '适应力', palaceKeyword: '迁移' },
+      { label: '稳定度', palaceKeyword: '疾厄' },
+    ],
+    cardTitles: ['天生优势', '行为模式', '成长盲区'],
+    focus: '把天生气质转化为稳定能力，是性格优势真正落地的关键。',
+    relationship: '理解自己在压力下的反应，能减少沟通中的误伤。',
+    action: '保留行动力，同时为重要决定增加冷静期。',
+  },
+  health: {
+    label: '健康',
+    palaceKeyword: '疾厄',
+    axes: [
+      { label: '体能', palaceKeyword: '疾厄' },
+      { label: '恢复', palaceKeyword: '福德' },
+      { label: '作息', palaceKeyword: '田宅' },
+      { label: '压力', palaceKeyword: '官禄', adjustment: -4 },
+      { label: '情绪', palaceKeyword: '夫妻' },
+      { label: '环境', palaceKeyword: '迁移' },
+    ],
+    cardTitles: ['身体底盘', '压力模式', '日常养护'],
+    focus: '关注长期习惯和身体反馈，不用单次状态替代专业判断。',
+    relationship: '工作压力与情绪波动可能互相放大，需要主动留出恢复空间。',
+    action: '优先稳定睡眠、饮食、运动和定期检查。',
+  },
+  siblings: {
+    label: '兄弟合伙',
+    palaceKeyword: '兄弟',
+    axes: [
+      { label: '互助', palaceKeyword: '兄弟' },
+      { label: '信任', palaceKeyword: '交友' },
+      { label: '分工', palaceKeyword: '官禄' },
+      { label: '利益', palaceKeyword: '财帛' },
+      { label: '沟通', palaceKeyword: '命' },
+      { label: '长期性', palaceKeyword: '福德' },
+    ],
+    cardTitles: ['互助资源', '合作模式', '利益边界'],
+    focus: '适合把彼此资源和能力优势说清楚后再合作。',
+    relationship: '情分可以建立信任，但不能代替规则和分工。',
+    action: '涉及资金、股权和责任时务必书面确认。',
+  },
+  children: {
+    label: '子女',
+    palaceKeyword: '子女',
+    axes: [
+      { label: '缘分', palaceKeyword: '子女' },
+      { label: '沟通', palaceKeyword: '交友' },
+      { label: '耐心', palaceKeyword: '福德' },
+      { label: '教育观', palaceKeyword: '父母' },
+      { label: '家庭支持', palaceKeyword: '田宅' },
+      { label: '带领力', palaceKeyword: '官禄' },
+    ],
+    cardTitles: ['缘分模式', '教育沟通', '长期陪伴'],
+    focus: '子女宫也反映带人和培养下属的方式。',
+    relationship: '沟通重点在稳定陪伴和因材施教，而不是单向要求。',
+    action: '把期待拆成适龄、具体、可持续的小目标。',
+  },
+  travel: {
+    label: '迁移外出',
+    palaceKeyword: '迁移',
+    axes: [
+      { label: '异地机会', palaceKeyword: '迁移' },
+      { label: '适应力', palaceKeyword: '命' },
+      { label: '事业拓展', palaceKeyword: '官禄' },
+      { label: '外部财运', palaceKeyword: '财帛' },
+      { label: '贵人', palaceKeyword: '交友' },
+      { label: '安定感', palaceKeyword: '田宅' },
+    ],
+    cardTitles: ['外部机会', '异地模式', '出行提醒'],
+    focus: '外部环境适合用来放大已有能力，而不是替代基本功。',
+    relationship: '异地合作更依赖信息透明和稳定联系。',
+    action: '重要迁移先验证工作、现金流和生活支持系统。',
+  },
+  network: {
+    label: '人际贵人',
+    palaceKeyword: '交友',
+    axes: [
+      { label: '贵人运', palaceKeyword: '交友' },
+      { label: '表达', palaceKeyword: '命' },
+      { label: '合作', palaceKeyword: '官禄' },
+      { label: '资源', palaceKeyword: '财帛' },
+      { label: '边界', palaceKeyword: '兄弟' },
+      { label: '外部人脉', palaceKeyword: '迁移' },
+    ],
+    cardTitles: ['贵人类型', '社交模式', '边界提醒'],
+    focus: '真正的贵人通常来自长期价值交换，而不是一次性帮助。',
+    relationship: '人际关系越复杂，越需要把边界和承诺说清楚。',
+    action: '减少低质量应酬，重点经营少数高信任关系。',
+  },
+  property: {
+    label: '田宅',
+    palaceKeyword: '田宅',
+    axes: [
+      { label: '置业', palaceKeyword: '田宅' },
+      { label: '积累', palaceKeyword: '财帛' },
+      { label: '现金流', palaceKeyword: '官禄' },
+      { label: '家庭支持', palaceKeyword: '父母' },
+      { label: '居住感', palaceKeyword: '福德' },
+      { label: '迁动', palaceKeyword: '迁移' },
+    ],
+    cardTitles: ['资产倾向', '家庭空间', '置业课题'],
+    focus: '田宅主题宜同时看资产价值和真实居住需求。',
+    relationship: '家庭共同资产要提前明确出资、产权和使用安排。',
+    action: '置业决策优先守住现金流，不被短期情绪推动。',
+  },
+  fortune: {
+    label: '福德',
+    palaceKeyword: '福德',
+    axes: [
+      { label: '满足感', palaceKeyword: '福德' },
+      { label: '恢复力', palaceKeyword: '疾厄' },
+      { label: '兴趣', palaceKeyword: '命' },
+      { label: '关系滋养', palaceKeyword: '夫妻' },
+      { label: '生活品质', palaceKeyword: '田宅' },
+      { label: '自由度', palaceKeyword: '迁移' },
+    ],
+    cardTitles: ['内在需求', '压力出口', '福气积累'],
+    focus: '福德关注的是长期满足感，而不只是短期享受。',
+    relationship: '稳定的关系和生活节奏会直接影响精神恢复。',
+    action: '建立不依赖外部评价的兴趣、休息和独处方式。',
+  },
+  parents: {
+    label: '父母长辈',
+    palaceKeyword: '父母',
+    axes: [
+      { label: '长辈缘', palaceKeyword: '父母' },
+      { label: '沟通', palaceKeyword: '命' },
+      { label: '家庭支持', palaceKeyword: '田宅' },
+      { label: '学习文书', palaceKeyword: '官禄' },
+      { label: '情感距离', palaceKeyword: '福德' },
+      { label: '责任边界', palaceKeyword: '兄弟' },
+    ],
+    cardTitles: ['长辈资源', '沟通模式', '责任边界'],
+    focus: '长辈资源既包含现实帮助，也包含经验、文书和价值观影响。',
+    relationship: '尊重和边界可以同时存在，避免把关心变成控制。',
+    action: '把照顾责任、财务安排和个人选择提前沟通。',
+  },
+};
 
 const CHAT_EXAMPLES = [
   '今年适合换工作吗？',
@@ -157,6 +363,13 @@ function palaceByName(chart: ZiweiChart, keyword: string) {
   return chart.palaces.find(palace => palace.name.includes(keyword));
 }
 
+function majorStars(palace?: Palace) {
+  const names = palace?.stars.filter(star => star.type === 'major').map(star => star.name) ?? [];
+  if (names.length) return names.join('、');
+  if (palace?.borrowedStars?.length) return `空宫借${palace.borrowedStars.join('、')}`;
+  return '空宫';
+}
+
 function scorePalace(palace?: Palace) {
   if (!palace) return 58;
   let score = 58;
@@ -170,65 +383,60 @@ function scorePalace(palace?: Palace) {
   return Math.max(32, Math.min(92, score));
 }
 
-function useOverview(chart: ZiweiChart) {
+function useTopicSummary(chart: ZiweiChart, topic: TopicKey) {
   return useMemo(() => {
-    const ming = chart.palaces.find(palace => palace.branch === chart.mingGongBranch);
-    const career = palaceByName(chart, '官禄');
-    const wealth = palaceByName(chart, '财帛');
-    const love = palaceByName(chart, '夫妻');
-    const health = palaceByName(chart, '疾厄');
-    const fortune = palaceByName(chart, '福德');
+    const presentation = TOPIC_PRESENTATIONS[topic];
+    const primaryPalace = palaceByName(chart, presentation.palaceKeyword)
+      ?? chart.palaces.find(palace => palace.branch === chart.mingGongBranch);
     const currentDx = chart.daXians[chart.currentDaXianIndex];
     const siHuaCount = chart.palaces.reduce((count, palace) => count + palace.stars.filter(star => star.siHua).length, 0);
-    const compositeScore = Math.round((scorePalace(ming) + scorePalace(career) + scorePalace(wealth)) / 3);
-    const scores = [
-      scorePalace(career),
-      scorePalace(wealth),
-      scorePalace(love),
-      scorePalace(ming),
-      Math.round((scorePalace(health) + scorePalace(fortune)) / 2),
-      compositeScore,
-    ];
+    const scores = presentation.axes.map(axis => Math.max(
+      28,
+      Math.min(94, scorePalace(palaceByName(chart, axis.palaceKeyword)) + (axis.adjustment ?? 0)),
+    ));
+    const linkedPalaces = presentation.axes
+      .map(axis => palaceByName(chart, axis.palaceKeyword))
+      .filter((palace, index, all): palace is Palace => Boolean(palace) && all.findIndex(item => item?.name === palace?.name) === index)
+      .slice(0, 3);
 
     return {
-      ming,
-      career,
-      wealth,
-      love,
-      health,
+      presentation,
+      primaryPalace,
       currentDx,
       siHuaCount,
       scores,
       cards: [
         {
-          title: '核心优势',
-          body: '清正自律、有才艺也有魄力，只是这股劲容易绷太紧，得学着收放。',
+          title: presentation.cardTitles[0],
+          body: `${primaryPalace?.name ?? '命宫'}见${majorStars(primaryPalace)}。${presentation.focus}`,
         },
         {
-          title: '关系模式',
-          body: '魅力足、桃花旺，更要守住分寸，情绪起伏时别让感情跟着乱。',
+          title: presentation.cardTitles[1],
+          body: `${linkedPalaces.map(palace => palace.name.replace(/宫/g, '')).join('、') || '相关宫位'}共同参与判断。${presentation.relationship}`,
         },
         {
-          title: '成长课题',
-          body: '原则感容易变成跟自己死磕、钻牛角尖，松开手、肯认错才走得宽。',
+          title: presentation.cardTitles[2],
+          body: currentDx
+            ? `当前${currentDx.startAge}-${currentDx.endAge}岁大限落${currentDx.palaceName}。${presentation.action}`
+            : presentation.action,
         },
       ],
     };
-  }, [chart]);
+  }, [chart, topic]);
 }
 
-function RadarChart({ scores }: { scores: number[] }) {
+function RadarChart({ scores, axes, label }: { scores: number[]; axes: string[]; label: string }) {
   const center = 90;
   const radius = 62;
   const points = scores.map((score, index) => {
-    const angle = (Math.PI * 2 * index) / RADAR_AXES.length - Math.PI / 2;
+    const angle = (Math.PI * 2 * index) / axes.length - Math.PI / 2;
     const value = Math.max(0.2, Math.min(1, score / 100));
     return `${center + Math.cos(angle) * radius * value},${center + Math.sin(angle) * radius * value}`;
   }).join(' ');
 
   const grid = [0.33, 0.66, 1].map(scale =>
-    RADAR_AXES.map((_, index) => {
-      const angle = (Math.PI * 2 * index) / RADAR_AXES.length - Math.PI / 2;
+    axes.map((_, index) => {
+      const angle = (Math.PI * 2 * index) / axes.length - Math.PI / 2;
       return `${center + Math.cos(angle) * radius * scale},${center + Math.sin(angle) * radius * scale}`;
     }).join(' '),
   );
@@ -238,22 +446,17 @@ function RadarChart({ scores }: { scores: number[] }) {
       className={styles.radarSvg}
       viewBox="0 0 180 180"
       role="img"
-      aria-label="六维命盘参考图"
+      aria-label={`${label}六维参考图`}
       initial={{ opacity: 0, scale: 0.88, rotate: -4 }}
       animate={{ opacity: 1, scale: 1, rotate: 0 }}
       transition={{ duration: 0.58, ease: [0.22, 1, 0.36, 1] }}
     >
       {grid.map(item => <polygon key={item} points={item} className={styles.radarGrid} />)}
-      {RADAR_AXES.map((axis, index) => {
-        const angle = (Math.PI * 2 * index) / RADAR_AXES.length - Math.PI / 2;
+      {axes.map((axis, index) => {
+        const angle = (Math.PI * 2 * index) / axes.length - Math.PI / 2;
         const x = center + Math.cos(angle) * 78;
         const y = center + Math.sin(angle) * 78;
-        return (
-          <text key={axis.label} x={x} y={y} textAnchor="middle" dominantBaseline="middle" className={styles.radarLabel}>
-            <tspan x={x}>{axis.label}</tspan>
-            {axis.detail && <tspan x={x} dy="12" className={styles.radarSubLabel}>{axis.detail}</tspan>}
-          </text>
-        );
+        return <text key={axis} x={x} y={y} textAnchor="middle" dominantBaseline="middle" className={styles.radarLabel}>{axis}</text>;
       })}
       <motion.polygon
         points={points}
@@ -273,39 +476,41 @@ function RadarChart({ scores }: { scores: number[] }) {
   );
 }
 
-function OverviewPanel({ chart }: { chart: ZiweiChart }) {
-  const overview = useOverview(chart);
+function TopicSummaryPanel({ chart, topic }: { chart: ZiweiChart; topic: TopicKey }) {
+  const summary = useTopicSummary(chart, topic);
   return (
     <section className={styles.overviewPanel}>
-      <div className={styles.overviewSignature}>
-        <span>命宫主星 · 廉贞 · 贪狼（囚星）</span>
-        <small>紫府廉武相</small>
+      {topic === 'overview' && <PatternPopover chart={chart} />}
+      <div className={styles.overviewFacts}>
+        <span>{summary.presentation.label}主宫 · {summary.primaryPalace?.name ?? '命宫'} · {majorStars(summary.primaryPalace)}</span>
+        <span>{chart.wuxingJuName}</span>
+        {summary.currentDx && (
+          <span>大限 {summary.currentDx.startAge}-{summary.currentDx.endAge} · {summary.currentDx.palaceName}</span>
+        )}
+        <span>四化 {summary.siHuaCount} 项</span>
       </div>
-      <h1>清正自律，敢拼敢当</h1>
-      <p className={styles.overviewSubtitle}>紫府廉武相系，主稳重持守、富贵气象，宜厚积徐图而非冒进；廉贞、贪狼双星同宫，兼具二星之性</p>
       <div className={styles.overviewMain}>
-        <RadarChart scores={overview.scores} />
-        <p className={styles.overviewNote}>点维度标签可查看对应解读 · 六维强度依本盘星曜庙旺与格局推算，仅供参考</p>
+        <RadarChart
+          scores={summary.scores}
+          axes={summary.presentation.axes.map(axis => axis.label)}
+          label={summary.presentation.label}
+        />
         <div className={styles.overviewCards}>
-          {overview.cards.map((card, index) => (
+          {summary.cards.map(card => (
             <article key={card.title}>
-              <strong>
-                {index === 0 && <Star size={16} weight="regular" aria-hidden="true" />}
-                {index === 1 && <UsersThree size={16} weight="regular" aria-hidden="true" />}
-                {index === 2 && <ChartBar size={16} weight="regular" aria-hidden="true" />}
-                {card.title}
-              </strong>
+              <strong>{card.title}</strong>
               <p>{card.body}</p>
             </article>
           ))}
         </div>
       </div>
+      <p className={styles.overviewNote}>{summary.presentation.label}六维强度为本地规则粗略估算，仅作阅读参考。</p>
     </section>
   );
 }
 
 function PatternPopover({ chart }: { chart: ZiweiChart }) {
-  const patterns = detectPatterns(chart).slice(0, 5);
+  const patterns = detectPatterns(chart).slice(0, 3);
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -360,19 +565,6 @@ function PatternPopover({ chart }: { chart: ZiweiChart }) {
   );
 }
 
-function InlineText({ value }: { value: string }) {
-  const parts = value.split(/(\*\*.+?\*\*)/g);
-  return (
-    <>
-      {parts.map((part, index) => (
-        part.startsWith('**') && part.endsWith('**')
-          ? <strong key={`${part}-${index}`}>{part.slice(2, -2)}</strong>
-          : <span key={`${part}-${index}`}>{part}</span>
-      ))}
-    </>
-  );
-}
-
 function ReportContent({ text, streaming }: { text: string; streaming?: boolean }) {
   const lines = text.split('\n');
   const elements: JSX.Element[] = [];
@@ -384,7 +576,7 @@ function ReportContent({ text, streaming }: { text: string; streaming?: boolean 
     listItems = [];
     elements.push(
       <ul key={`list-${elements.length}`} className={styles.reportList}>
-        {items.map((item, index) => <li key={`${item}-${index}`}><InlineText value={item} /></li>)}
+        {items.map((item, index) => <li key={`${item}-${index}`}>{item}</li>)}
       </ul>,
     );
   };
@@ -395,10 +587,7 @@ function ReportContent({ text, streaming }: { text: string; streaming?: boolean 
       <details key={`fold-${elements.length}`} className={styles.reportFold} open={open}>
         <summary>
           <span>{title}</span>
-          <small>
-            <span className={styles.foldOpenLabel}>▼ 展开</span>
-            <span className={styles.foldCloseLabel}>▲ 收起</span>
-          </small>
+          <small>{open ? '收起' : '展开'}</small>
         </summary>
         <div className={styles.reportFoldBody}>
           <ReportContent text={bodyLines.join('\n')} />
@@ -450,9 +639,9 @@ function ReportContent({ text, streaming }: { text: string; streaming?: boolean 
     } else if (sectionMatch) {
       elements.push(<h3 key={index} className={styles.reportSectionTitle}>{sectionMatch[1]}</h3>);
     } else if (/^[◆✦▌▸]/.test(line)) {
-      elements.push(<p key={index} className={styles.reportMarkedLine}><InlineText value={line} /></p>);
+      elements.push(<p key={index} className={styles.reportMarkedLine}>{line}</p>);
     } else {
-      elements.push(<p key={index} className={styles.reportParagraph}><InlineText value={line} /></p>);
+      elements.push(<p key={index} className={styles.reportParagraph}>{line}</p>);
     }
   }
   flushList();
@@ -524,20 +713,11 @@ function AssistantMessage({
   msg: Message;
   streaming: boolean;
 }) {
-  const isOverview = msg.title === '命格总览';
+  const topic = msg.topic ?? TOPICS.find(item => item.label === msg.title)?.key;
 
   return (
     <motion.article initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className={styles.answerReport}>
-      {isOverview && <OverviewPanel chart={chart} />}
-      {isOverview && (
-        <>
-          <div className={styles.verificationRow}>
-            <span><b>✓ 已逐条核对</b>　廉贞 · 命格总览</span>
-            <small>定调 已核对　论断 已核对　古籍 已核对　出处 已核对</small>
-          </div>
-          <PatternPopover chart={chart} />
-        </>
-      )}
+      {topic && <TopicSummaryPanel chart={chart} topic={topic} />}
       <ReportContent text={msg.content} streaming={streaming} />
     </motion.article>
   );
@@ -618,7 +798,12 @@ export default function InsightPanel({ chart, selectedPalace, timeContext, onExp
     options: { title: string; requestId: number; signal: AbortSignal; meta?: InterpretMeta },
   ) => {
     let assistantText = '';
-    setMessages(prev => [...prev, { role: 'assistant', content: '', title: options.title }]);
+    setMessages(prev => [...prev, {
+      role: 'assistant',
+      content: '',
+      title: options.title,
+      topic: options.meta?.topic,
+    }]);
 
     try {
       const res = await fetch('/api/interpret', {
@@ -651,7 +836,12 @@ export default function InsightPanel({ chart, selectedPalace, timeContext, onExp
             setMessages(prev => {
               if (options.requestId !== requestIdRef.current) return prev;
               const updated = [...prev];
-              updated[updated.length - 1] = { role: 'assistant', content: assistantText, title: options.title };
+              updated[updated.length - 1] = {
+                role: 'assistant',
+                content: assistantText,
+                title: options.title,
+                topic: options.meta?.topic,
+              };
               return updated;
             });
           } catch {
@@ -667,6 +857,7 @@ export default function InsightPanel({ chart, selectedPalace, timeContext, onExp
           role: 'assistant',
           content: fallbackAnswer(options.title, chart),
           title: options.title,
+          topic: options.meta?.topic,
         };
         return updated;
       });
@@ -833,22 +1024,8 @@ export default function InsightPanel({ chart, selectedPalace, timeContext, onExp
   return (
     <div className="flex flex-col h-full rounded-xl overflow-hidden card-glass">
       <div className="insight-mode-bar">
-        <div className="insight-mode-tabs">
-          <button type="button" className={mode === 'analysis' ? 'is-active' : ''} onClick={() => setMode('analysis')}>
-            命盘分析
-          </button>
-          <button type="button" className={mode === 'chat' ? 'is-active' : ''} onClick={() => setMode('chat')}>
-            AI 对话
-          </button>
-        </div>
-        <button
-          type="button"
-          className="insight-icon-button insight-expand-button"
-          onClick={() => scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })}
-          aria-label="展开分析区"
-          title="展开分析区"
-        >
-          <ArrowsOutSimple size={17} aria-hidden="true" />
+        <button type="button" className={mode === 'analysis' ? 'is-active' : ''} onClick={() => setMode('analysis')}>
+          命盘分析
         </button>
         <button
           type="button"
@@ -857,7 +1034,9 @@ export default function InsightPanel({ chart, selectedPalace, timeContext, onExp
           aria-label="导出全盘报告 PDF"
           title="导出全盘报告 PDF"
         >
-          <DownloadSimple size={17} aria-hidden="true" />
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3v11m0 0 4-4m-4 4-4-4M5 19h14" />
+          </svg>
         </button>
       </div>
 
@@ -882,8 +1061,7 @@ export default function InsightPanel({ chart, selectedPalace, timeContext, onExp
       </div>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0 insight-scroll" aria-live="polite" aria-busy={loading}>
-        {mode === 'analysis' ? (
-          <>
+        <>
             <div className="insight-intro-row">
               <TopicIntro title={activeTitle} />
               <button
@@ -911,16 +1089,7 @@ export default function InsightPanel({ chart, selectedPalace, timeContext, onExp
                 return <AssistantMessage key={index} chart={chart} msg={msg} streaming={loading && isLast} />;
               })}
             </AnimatePresence>
-          </>
-        ) : (
-          <div className={styles.chatEmptyState}>
-            <strong>直接问 AI</strong>
-            <p>围绕当前命盘问一个具体问题，AI 会结合命盘、宫位、四化和当前运限回答。</p>
-            <div className={styles.chatExamples}>
-              {CHAT_EXAMPLES.map(question => <button key={question} type="button">{question}</button>)}
-            </div>
-          </div>
-        )}
+        </>
       </div>
 
     </div>

@@ -1,31 +1,55 @@
 # Design QA
 
-## Visual target
+## Comparison target
 
-- Reference: `C:\Users\ADMINI~1\AppData\Local\Temp\codex-clipboard-79b7f6aa-d2f2-4428-bb7f-8781f5468c18.png`
-- Implementation: `artifacts/design-qa/final-1864x876.png`
-- Stacked comparison: `artifacts/design-qa/comparison-stacked.png`
-- Viewport: `1864 × 876`, DPR `1`
-- Route: `/chart?y=1992&m=11&d=18&u=0&p=北京市&c=北京&lo=116.4&g=m`
+- Visual source of truth: the product's original `WARMTH` overview state, captured at `artifacts/design-qa/overview-original-ui-desktop.png`.
+- Information-architecture reference supplied by the user: `C:/Users/ADMINI~1/AppData/Local/Temp/codex-clipboard-ab107d6f-f69a-4cd3-8a83-2ce80cffc954.png`.
+- Desktop implementation: `artifacts/design-qa/topic-original-ui-desktop.png`.
+- Mobile implementation: `artifacts/design-qa/topic-original-ui-mobile-header.png` and `artifacts/design-qa/topic-original-ui-mobile.png`.
+- Combined comparison input: `artifacts/design-qa/overview-vs-topic-original-ui.png`.
 
-## Checks
+## Capture normalization
 
-| Area | Result | Notes |
-| --- | --- | --- |
-| Top toolbar | Passed | Back navigation, six time dimensions, upgrade, school, export, history and feedback align with the reference. |
-| Desktop split | Passed | Left pane is 500px; right content begins at x=516 after the inner gutter. Both panes scroll independently. |
-| Chart board | Passed | Board begins at y=53, measures 470 × 656, and uses the dense red/blue vertical star layout. |
-| Overview header | Passed | Signature, title and subtitle match the supplied content and vertical positions. |
-| Radar overview | Passed | Six axes, star subtitles, note and three diagnosis cards match the reference hierarchy. |
-| Long report | Passed | Verification row, five-pattern trigger, report sections, evidence, classics and auxiliary diagnosis are present. |
-| Fold interactions | Passed | Evidence, classics and auxiliary diagnosis open and close correctly with synchronized labels. |
-| Runtime | Passed | TypeScript and ESLint complete with no errors; browser shows no current runtime error. |
+- Desktop source and implementation: 1440 × 900 CSS px, 1440 × 900 image px, device scale factor 1, light theme, same chart and time state.
+- Mobile implementation: 390 × 844 CSS px, 390 × 844 image px, device scale factor 1, light theme.
+- Combined input: 1440 × 1800 px; overview is stacked above the topic implementation without rescaling.
 
-## Residual differences
+## State and interactions tested
 
-- Minor font rasterization differences remain because the reference browser and local browser render Chinese glyphs slightly differently.
-- The generated chart uses the project’s structured star data, so a few auxiliary-star brightness marks can differ by one character from the screenshot while preserving the same layout and density.
+- Loaded the same 1992-11-18 Beijing chart in the in-app browser.
+- Clicked all 13 topic tabs and verified that each renders its own six-axis chart and three topic cards.
+- Verified the horizontal topic navigation remains usable at 390 px.
+- Verified desktop and mobile layouts without introducing a new workspace switch or new action buttons.
+- Browser console checked: no runtime errors; only the React development-mode informational message.
 
-## Final result
+## Full-view comparison evidence
 
-Passed.
+`artifacts/design-qa/overview-vs-topic-original-ui.png` shows the original overview and the new wealth topic at the same viewport. The topic keeps the original WARMTH shell, toolbar, chart proportions, cream/gold accents, pill facts, radar treatment, card radius, typography, and existing controls. Only the information inside the topic summary changes.
+
+## Focused-region evidence
+
+- `artifacts/design-qa/topic-original-ui-mobile-header.png` verifies the original analysis button, export button, topic strip, title, fact pills, and radar remain aligned at 390 px.
+- `artifacts/design-qa/topic-original-ui-mobile.png` verifies the radar and three cards collapse to one readable column without horizontal clipping.
+
+## Findings
+
+- No actionable P0/P1/P2 findings remain.
+- Typography: the topic summary reuses the product's existing font stack, weights, hierarchy, and line-height.
+- Spacing and layout: desktop preserves the original two-column workbench; mobile uses the existing stacked responsive layout and horizontal topic strip.
+- Colors and tokens: no external screenshot colors or surfaces were copied; the original navy, cream, gold, gray, border, radius, and shadow tokens remain.
+- Image quality: this screen has no required photographic or branded raster assets; the existing chart and radar rendering remain unchanged in style.
+- Copy and content: all topic labels are original; each topic now has its own axis labels, fact pills, three card titles, and topic-specific guidance.
+- Controls and icons: no new action buttons were added. Existing navigation, history, feedback, export, topic, chart, and time controls are preserved.
+
+## Comparison history
+
+1. User review identified a P1 direction mismatch: the earlier implementation copied the external reference's visual system and added controls outside the product's original UI.
+2. Fix: restored the chart workspace, board, topic navigation, buttons, and responsive styles to the pre-replica WARMTH implementation. Removed the newly proposed mobile workspace switch.
+3. Post-fix evidence: `artifacts/design-qa/overview-vs-topic-original-ui.png`, `artifacts/design-qa/topic-original-ui-mobile-header.png`, and `artifacts/design-qa/topic-original-ui-mobile.png`.
+4. Post-fix result: visual language and controls match the original product while the richer topic information structure remains.
+
+## Follow-up polish
+
+- P3: very long axis labels can be shortened further if future topics add longer copy.
+
+final result: passed

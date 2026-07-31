@@ -150,24 +150,6 @@ function majorStars(palace?: Palace) {
   return '空宫';
 }
 
-function overviewCardCopy(ming?: Palace, love?: Palace, currentDx?: { startAge: number; endAge: number; palaceName: string }) {
-  const names = ming?.stars.filter(star => star.type === 'major').map(star => star.name) ?? [];
-  const has = (name: string) => names.includes(name);
-  const dim = ming?.stars.filter(star => star.type === 'major' && star.brightness === 'dim').map(star => star.name) ?? [];
-  if (has('廉贞') && has('贪狼')) {
-    return [
-      { title: '核心优势', body: '清正自律、有才艺也有魄力，只是这股劲容易绷太紧，得学着收放。' },
-      { title: '关系模式', body: '魅力足、桃花旺，更要守住分寸，情绪起伏时别让感情跟着乱。' },
-      { title: '成长课题', body: `${dim.length ? `${dim.join('、')}落陷，` : ''}原则感容易变成跟自己死磕、钻牛角尖，松开手、肯认错才走得宽。` },
-    ];
-  }
-  return [
-    { title: '核心优势', body: `${majorStars(ming)}坐命，优势在于把自己的特质转成稳定行动，适合围绕长期目标持续积累。` },
-    { title: '关系模式', body: `夫妻宫见${majorStars(love)}，关系里最重要的是把期待、边界和现实安排说清楚。` },
-    { title: '成长课题', body: currentDx ? `当前${currentDx.startAge}-${currentDx.endAge}岁大限落${currentDx.palaceName}，适合把阶段重点收敛到可执行计划。` : '当前适合把阶段重点收敛到可执行计划。' },
-  ];
-}
-
 function scorePalace(palace?: Palace) {
   if (!palace) return 58;
   let score = 58;
@@ -209,7 +191,22 @@ function useOverview(chart: ZiweiChart) {
       currentDx,
       siHuaCount,
       scores,
-      cards: overviewCardCopy(ming, love, currentDx),
+      cards: [
+        {
+          title: '核心优势',
+          body: `${majorStars(ming)}坐命，先把稳定优势放到长期目标里，比追求短期判断更有价值。`,
+        },
+        {
+          title: '关系模式',
+          body: `夫妻宫见${majorStars(love)}，关系里最重要的是把期待、边界和现实安排说清楚。`,
+        },
+        {
+          title: '成长课题',
+          body: currentDx
+            ? `当前${currentDx.startAge}-${currentDx.endAge}岁大限落${currentDx.palaceName}，适合把阶段重点收敛到可执行计划。`
+            : '当前适合把阶段重点收敛到可执行计划。',
+        },
+      ],
     };
   }, [chart]);
 }

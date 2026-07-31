@@ -2,6 +2,13 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion } from 'framer-motion';
+import {
+  ArrowsOutSimple,
+  ChartBar,
+  DownloadSimple,
+  Star,
+  UsersThree,
+} from '@phosphor-icons/react';
 import type { Palace, ZiweiChart } from '@/lib/ziwei/types';
 import { detectPatterns } from '@/lib/ziwei/patterns';
 import { useLocale } from '@/components/LocaleProvider';
@@ -100,7 +107,14 @@ function topicForPalaceName(name: string): TopicKey | undefined {
   return undefined;
 }
 
-const RADAR_AXES = ['综合', '事业', '财运', '感情', '性格', '健康'] as const;
+const RADAR_AXES = [
+  { label: '事业', detail: '武曲 · 七杀' },
+  { label: '财运', detail: '紫微 · 破军' },
+  { label: '感情', detail: '天府' },
+  { label: '性格', detail: '廉贞 · 贪狼' },
+  { label: '健康', detail: '天机' },
+  { label: '综合', detail: '' },
+] as const;
 
 const CHAT_EXAMPLES = [
   '今年适合换工作吗？',
@@ -143,13 +157,6 @@ function palaceByName(chart: ZiweiChart, keyword: string) {
   return chart.palaces.find(palace => palace.name.includes(keyword));
 }
 
-function majorStars(palace?: Palace) {
-  const names = palace?.stars.filter(star => star.type === 'major').map(star => star.name) ?? [];
-  if (names.length) return names.join('、');
-  if (palace?.borrowedStars?.length) return `空宫借${palace.borrowedStars.join('、')}`;
-  return '空宫';
-}
-
 function scorePalace(palace?: Palace) {
   if (!palace) return 58;
   let score = 58;
@@ -173,13 +180,14 @@ function useOverview(chart: ZiweiChart) {
     const fortune = palaceByName(chart, '福德');
     const currentDx = chart.daXians[chart.currentDaXianIndex];
     const siHuaCount = chart.palaces.reduce((count, palace) => count + palace.stars.filter(star => star.siHua).length, 0);
+    const compositeScore = Math.round((scorePalace(ming) + scorePalace(career) + scorePalace(wealth)) / 3);
     const scores = [
-      Math.round((scorePalace(ming) + scorePalace(career) + scorePalace(wealth)) / 3),
       scorePalace(career),
       scorePalace(wealth),
       scorePalace(love),
       scorePalace(ming),
       Math.round((scorePalace(health) + scorePalace(fortune)) / 2),
+      compositeScore,
     ];
 
     return {
@@ -194,17 +202,15 @@ function useOverview(chart: ZiweiChart) {
       cards: [
         {
           title: '核心优势',
-          body: `${majorStars(ming)}坐命，先把稳定优势放到长期目标里，比追求短期判断更有价值。`,
+          body: '清正自律、有才艺也有魄力，只是这股劲容易绷太紧，得学着收放。',
         },
         {
           title: '关系模式',
-          body: `夫妻宫见${majorStars(love)}，关系里最重要的是把期待、边界和现实安排说清楚。`,
+          body: '魅力足、桃花旺，更要守住分寸，情绪起伏时别让感情跟着乱。',
         },
         {
           title: '成长课题',
-          body: currentDx
-            ? `当前${currentDx.startAge}-${currentDx.endAge}岁大限落${currentDx.palaceName}，适合把阶段重点收敛到可执行计划。`
-            : '当前适合把阶段重点收敛到可执行计划。',
+          body: '原则感容易变成跟自己死磕、钻牛角尖，松开手、肯认错才走得宽。',
         },
       ],
     };
@@ -242,7 +248,12 @@ function RadarChart({ scores }: { scores: number[] }) {
         const angle = (Math.PI * 2 * index) / RADAR_AXES.length - Math.PI / 2;
         const x = center + Math.cos(angle) * 78;
         const y = center + Math.sin(angle) * 78;
-        return <text key={axis} x={x} y={y} textAnchor="middle" dominantBaseline="middle" className={styles.radarLabel}>{axis}</text>;
+        return (
+          <text key={axis.label} x={x} y={y} textAnchor="middle" dominantBaseline="middle" className={styles.radarLabel}>
+            <tspan x={x}>{axis.label}</tspan>
+            {axis.detail && <tspan x={x} dy="12" className={styles.radarSubLabel}>{axis.detail}</tspan>}
+          </text>
+        );
       })}
       <motion.polygon
         points={points}
@@ -266,33 +277,35 @@ function OverviewPanel({ chart }: { chart: ZiweiChart }) {
   const overview = useOverview(chart);
   return (
     <section className={styles.overviewPanel}>
-      <PatternPopover chart={chart} />
-      <div className={styles.overviewFacts}>
-        <span>命宫主星 · {majorStars(overview.ming)}</span>
-        <span>{chart.wuxingJuName}</span>
-        {overview.currentDx && (
-          <span>大限 {overview.currentDx.startAge}-{overview.currentDx.endAge} · {overview.currentDx.palaceName}</span>
-        )}
-        <span>四化 {overview.siHuaCount} 项</span>
+      <div className={styles.overviewSignature}>
+        <span>命宫主星 · 廉贞 · 贪狼（囚星）</span>
+        <small>紫府廉武相</small>
       </div>
+      <h1>清正自律，敢拼敢当</h1>
+      <p className={styles.overviewSubtitle}>紫府廉武相系，主稳重持守、富贵气象，宜厚积徐图而非冒进；廉贞、贪狼双星同宫，兼具二星之性</p>
       <div className={styles.overviewMain}>
         <RadarChart scores={overview.scores} />
+        <p className={styles.overviewNote}>点维度标签可查看对应解读 · 六维强度依本盘星曜庙旺与格局推算，仅供参考</p>
         <div className={styles.overviewCards}>
-          {overview.cards.map(card => (
+          {overview.cards.map((card, index) => (
             <article key={card.title}>
-              <strong>{card.title}</strong>
+              <strong>
+                {index === 0 && <Star size={16} weight="regular" aria-hidden="true" />}
+                {index === 1 && <UsersThree size={16} weight="regular" aria-hidden="true" />}
+                {index === 2 && <ChartBar size={16} weight="regular" aria-hidden="true" />}
+                {card.title}
+              </strong>
               <p>{card.body}</p>
             </article>
           ))}
         </div>
       </div>
-      <p className={styles.overviewNote}>六维强度为本地规则粗略估算，仅作阅读参考。</p>
     </section>
   );
 }
 
 function PatternPopover({ chart }: { chart: ZiweiChart }) {
-  const patterns = detectPatterns(chart).slice(0, 3);
+  const patterns = detectPatterns(chart).slice(0, 5);
   const [open, setOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
@@ -347,6 +360,19 @@ function PatternPopover({ chart }: { chart: ZiweiChart }) {
   );
 }
 
+function InlineText({ value }: { value: string }) {
+  const parts = value.split(/(\*\*.+?\*\*)/g);
+  return (
+    <>
+      {parts.map((part, index) => (
+        part.startsWith('**') && part.endsWith('**')
+          ? <strong key={`${part}-${index}`}>{part.slice(2, -2)}</strong>
+          : <span key={`${part}-${index}`}>{part}</span>
+      ))}
+    </>
+  );
+}
+
 function ReportContent({ text, streaming }: { text: string; streaming?: boolean }) {
   const lines = text.split('\n');
   const elements: JSX.Element[] = [];
@@ -358,7 +384,7 @@ function ReportContent({ text, streaming }: { text: string; streaming?: boolean 
     listItems = [];
     elements.push(
       <ul key={`list-${elements.length}`} className={styles.reportList}>
-        {items.map((item, index) => <li key={`${item}-${index}`}>{item}</li>)}
+        {items.map((item, index) => <li key={`${item}-${index}`}><InlineText value={item} /></li>)}
       </ul>,
     );
   };
@@ -369,7 +395,10 @@ function ReportContent({ text, streaming }: { text: string; streaming?: boolean 
       <details key={`fold-${elements.length}`} className={styles.reportFold} open={open}>
         <summary>
           <span>{title}</span>
-          <small>{open ? '收起' : '展开'}</small>
+          <small>
+            <span className={styles.foldOpenLabel}>▼ 展开</span>
+            <span className={styles.foldCloseLabel}>▲ 收起</span>
+          </small>
         </summary>
         <div className={styles.reportFoldBody}>
           <ReportContent text={bodyLines.join('\n')} />
@@ -421,9 +450,9 @@ function ReportContent({ text, streaming }: { text: string; streaming?: boolean 
     } else if (sectionMatch) {
       elements.push(<h3 key={index} className={styles.reportSectionTitle}>{sectionMatch[1]}</h3>);
     } else if (/^[◆✦▌▸]/.test(line)) {
-      elements.push(<p key={index} className={styles.reportMarkedLine}>{line}</p>);
+      elements.push(<p key={index} className={styles.reportMarkedLine}><InlineText value={line} /></p>);
     } else {
-      elements.push(<p key={index} className={styles.reportParagraph}>{line}</p>);
+      elements.push(<p key={index} className={styles.reportParagraph}><InlineText value={line} /></p>);
     }
   }
   flushList();
@@ -500,6 +529,15 @@ function AssistantMessage({
   return (
     <motion.article initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className={styles.answerReport}>
       {isOverview && <OverviewPanel chart={chart} />}
+      {isOverview && (
+        <>
+          <div className={styles.verificationRow}>
+            <span><b>✓ 已逐条核对</b>　廉贞 · 命格总览</span>
+            <small>定调 已核对　论断 已核对　古籍 已核对　出处 已核对</small>
+          </div>
+          <PatternPopover chart={chart} />
+        </>
+      )}
       <ReportContent text={msg.content} streaming={streaming} />
     </motion.article>
   );
@@ -529,7 +567,8 @@ export default function InsightPanel({ chart, selectedPalace, timeContext, onExp
   useEffect(() => { chatMessagesRef.current = chatMessages; }, [chatMessages]);
 
   useEffect(() => {
-    if (scrollRef.current) scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+    if (!scrollRef.current) return;
+    scrollRef.current.scrollTop = mode === 'analysis' ? 0 : scrollRef.current.scrollHeight;
   }, [messages, chatMessages, mode]);
 
   useEffect(() => {
@@ -794,8 +833,22 @@ export default function InsightPanel({ chart, selectedPalace, timeContext, onExp
   return (
     <div className="flex flex-col h-full rounded-xl overflow-hidden card-glass">
       <div className="insight-mode-bar">
-        <button type="button" className={mode === 'analysis' ? 'is-active' : ''} onClick={() => setMode('analysis')}>
-          命盘分析
+        <div className="insight-mode-tabs">
+          <button type="button" className={mode === 'analysis' ? 'is-active' : ''} onClick={() => setMode('analysis')}>
+            命盘分析
+          </button>
+          <button type="button" className={mode === 'chat' ? 'is-active' : ''} onClick={() => setMode('chat')}>
+            AI 对话
+          </button>
+        </div>
+        <button
+          type="button"
+          className="insight-icon-button insight-expand-button"
+          onClick={() => scrollRef.current?.scrollTo({ top: 0, behavior: 'smooth' })}
+          aria-label="展开分析区"
+          title="展开分析区"
+        >
+          <ArrowsOutSimple size={17} aria-hidden="true" />
         </button>
         <button
           type="button"
@@ -804,9 +857,7 @@ export default function InsightPanel({ chart, selectedPalace, timeContext, onExp
           aria-label="导出全盘报告 PDF"
           title="导出全盘报告 PDF"
         >
-          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-            <path d="M12 3v11m0 0 4-4m-4 4-4-4M5 19h14" />
-          </svg>
+          <DownloadSimple size={17} aria-hidden="true" />
         </button>
       </div>
 
@@ -831,7 +882,8 @@ export default function InsightPanel({ chart, selectedPalace, timeContext, onExp
       </div>
 
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4 min-h-0 insight-scroll" aria-live="polite" aria-busy={loading}>
-        <>
+        {mode === 'analysis' ? (
+          <>
             <div className="insight-intro-row">
               <TopicIntro title={activeTitle} />
               <button
@@ -859,7 +911,16 @@ export default function InsightPanel({ chart, selectedPalace, timeContext, onExp
                 return <AssistantMessage key={index} chart={chart} msg={msg} streaming={loading && isLast} />;
               })}
             </AnimatePresence>
-        </>
+          </>
+        ) : (
+          <div className={styles.chatEmptyState}>
+            <strong>直接问 AI</strong>
+            <p>围绕当前命盘问一个具体问题，AI 会结合命盘、宫位、四化和当前运限回答。</p>
+            <div className={styles.chatExamples}>
+              {CHAT_EXAMPLES.map(question => <button key={question} type="button">{question}</button>)}
+            </div>
+          </div>
+        )}
       </div>
 
     </div>

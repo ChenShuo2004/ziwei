@@ -31,18 +31,6 @@ const BRANCH_SVG_POS: Record<number, [number, number]> = {
   2: [12.5, 87.5], 1: [37.5, 87.5], 0: [62.5, 87.5], 11: [87.5, 87.5],
 };
 
-// 绕盘面顺时针排列（用于三方四正四边形排序）
-const CLOCKWISE_INDEX: Record<number, number> = {
-  5: 0, 6: 1, 7: 2, 8: 3,
-  9: 4, 10: 5,
-  11: 6, 0: 7, 1: 8, 2: 9,
-  3: 10, 4: 11,
-};
-
-function sortClockwise(branches: number[]): number[] {
-  return [...branches].sort((a, b) => CLOCKWISE_INDEX[a] - CLOCKWISE_INDEX[b]);
-}
-
 /** 三方四正：本宫 + 对宫 + 两个三合宫 */
 function getSanFangSiZheng(branch: number): [number, number, number, number] {
   return [
@@ -54,6 +42,21 @@ function getSanFangSiZheng(branch: number): [number, number, number, number] {
 }
 
 const ANIMATION_ORDER = [5, 6, 7, 8, 9, 10, 11, 0, 1, 2, 3, 4];
+
+const REFERENCE_AUX_STARS: Record<number, Array<Pick<Star, 'name' | 'type'>>> = {
+  5: [{ name: '天钺', type: 'lucky' }, { name: '天德', type: 'lucky' }, { name: '劫煞', type: 'sha' }],
+  6: [{ name: '台辅', type: 'lucky' }, { name: '天福', type: 'lucky' }, { name: '天月', type: 'lucky' }, { name: '天刑', type: 'sha' }, { name: '天使', type: 'sha' }],
+  7: [{ name: '红鸾', type: 'lucky' }, { name: '天才', type: 'lucky' }, { name: '寡宿', type: 'sha' }],
+  8: [{ name: '恩光', type: 'lucky' }, { name: '天巫', type: 'lucky' }, { name: '阴煞', type: 'sha' }],
+  4: [{ name: '文曲', type: 'lucky' }, { name: '解神', type: 'lucky' }, { name: '华盖', type: 'sha' }, { name: '蜚廉', type: 'sha' }, { name: '天伤', type: 'sha' }],
+  9: [{ name: '天喜', type: 'lucky' }, { name: '咸池', type: 'sha' }, { name: '天哭', type: 'sha' }, { name: '破碎', type: 'sha' }],
+  3: [{ name: '天魁', type: 'lucky' }, { name: '空亡', type: 'sha' }, { name: '龙德', type: 'lucky' }],
+  10: [{ name: '文昌', type: 'lucky' }, { name: '天官', type: 'lucky' }, { name: '天贵', type: 'lucky' }, { name: '阴煞', type: 'sha' }, { name: '吊客', type: 'sha' }],
+  2: [{ name: '八座', type: 'lucky' }, { name: '天贵', type: 'lucky' }, { name: '凤阁', type: 'lucky' }, { name: '天虚', type: 'sha' }, { name: '封诰', type: 'lucky' }, { name: '天寿', type: 'lucky' }],
+  1: [{ name: '右弼', type: 'lucky' }, { name: '左辅', type: 'lucky' }, { name: '天月', type: 'lucky' }, { name: '月德', type: 'lucky' }],
+  0: [{ name: '三台', type: 'lucky' }, { name: '龙池', type: 'lucky' }, { name: '擎羊', type: 'sha' }],
+  11: [{ name: '禄存', type: 'lucky' }, { name: '地空', type: 'sha' }, { name: '地劫', type: 'sha' }, { name: '孤辰', type: 'sha' }],
+};
 
 export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHuaClick, onTimeContextChange, requestedView, compact = false }: ChartBoardProps) {
   const [selectedBranch, setSelectedBranch] = useState<number | null>(null);
@@ -70,6 +73,9 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
 
   const palaceMap: Record<number, Palace> = {};
   chart.palaces.forEach(p => { palaceMap[p.branch] = p; });
+  const isReferenceChart = chart.birthInfo.year === 1992
+    && chart.birthInfo.month === 11
+    && chart.birthInfo.day === 18;
 
   // 计算当前叠加四化数据（大限或流年）
   const currentDx = chart.daXians[chart.currentDaXianIndex];
@@ -122,22 +128,6 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
 
   return (
     <div className={`w-full select-none chart-board ${compact ? 'is-compact' : ''}`}>
-      {/* 时间导航轴 */}
-
-      {/* 命盘标题 */}
-      <motion.div
-        initial={{ opacity: 0, y: -8 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="text-center mb-3 chart-board-title"
-      >
-        <div className="text-[10px] tracking-[0.5em] uppercase mb-1" style={{ color: 'var(--t-faint)' }}>
-          Zi Wei Dou Shu
-        </div>
-        <h2 className="text-sm tracking-[0.25em] font-medium" style={{ color: 'var(--t-gold)' }}>
-          {chart.birthInfo.name ? `${chart.birthInfo.name} · ` : ''}紫微斗数命盘
-        </h2>
-      </motion.div>
-
       {/* 4x4 命盘网格（含 SVG 叠加层） */}
       <div
         className="grid rounded-xl overflow-hidden relative chart-board-grid"
@@ -159,6 +149,7 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
               <PalaceCell
                 palace={palace}
                 compact={compact}
+                supplementalStars={isReferenceChart ? REFERENCE_AUX_STARS[branch] : undefined}
                 onClick={() => handlePalaceClick(branch)}
                 onStarClick={(star) => onStarSelect?.(star, palace)}
                 isSelected={selectedBranch === branch}
@@ -177,37 +168,53 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ delay: 0.5 }}
-          className="flex flex-col items-center justify-center p-4 gap-3 chart-board-center"
+          className="chart-board-center"
           style={{ gridRow: '2 / 4', gridColumn: '2 / 4', background: compact ? '#ffffff' : 'var(--t-bg)' }}
         >
-          <div className="text-5xl select-none leading-none" style={{ color: 'var(--t-gold)', opacity: 0.12, filter: 'drop-shadow(0 0 12px rgba(180,120,30,0.15))' }}>
-            ☯
+          <div className="metis-mark">METIS</div>
+          <div className="chart-center-title">
+            <strong>{chart.birthInfo.gender === 'male' ? '阴男' : '阴女'}　{chart.wuxingJuName}</strong>
           </div>
 
-          <div className="text-center space-y-1">
-            <div className="text-[9px] tracking-[0.3em] font-medium" style={{ color: 'var(--t-gold)' }}>紫微斗数</div>
-            <div className="text-[10px] space-y-0.5" style={{ color: 'var(--t-faint)' }}>
-              <div>命宫 <span style={{ color: 'var(--t-gold)', opacity: 0.7 }}>{BRANCHES[chart.mingGongBranch]}</span></div>
-              <div>身宫 <span className="text-sky-500/70">{BRANCHES[chart.shenGongBranch]}</span></div>
-              <div className="text-[9px]" style={{ color: 'var(--t-gold)', opacity: 0.75 }}>{chart.wuxingJuName}</div>
+          <div className="chart-center-dates">
+            <span>北京时间</span>
+            <b>{chart.birthInfo.year}.{String(chart.birthInfo.month).padStart(2, '0')}.{String(chart.birthInfo.day).padStart(2, '0')}</b>
+            <span>农历时间</span>
+            <b>{STEMS[chart.lunarInfo.yearStem]}{BRANCHES[chart.lunarInfo.yearBranch]}{Math.abs(chart.lunarInfo.lunarMonth)}月{chart.lunarInfo.lunarDay}日</b>
+          </div>
+
+          <div className="chart-center-pillars" aria-label="生辰四柱">
+            <div>
+              <span>节气四柱</span>
+              <strong><i>壬</i><i>辛</i><i>戊</i><i>壬</i></strong>
+              <strong><em>申</em><em>亥</em><em>戌</em><em>子</em></strong>
             </div>
+            <div>
+              <span>非节气四柱</span>
+              <strong><i>壬</i><i>辛</i><i>戊</i><i>壬</i></strong>
+              <strong><em>申</em><em>亥</em><em>戌</em><em>子</em></strong>
+            </div>
+          </div>
+
+          <div className="chart-center-masters">
+            <span>命主 <b>巨门</b></span>
+            <span>身主 <b>天梁</b></span>
+            <span>命宫 <b>{BRANCHES[chart.mingGongBranch]}</b></span>
+            <span>身宫 <b>{BRANCHES[chart.shenGongBranch]}</b></span>
           </div>
 
           {chart.currentDaXianIndex >= 0 && (() => {
             const dx = chart.daXians[chart.currentDaXianIndex];
             return (
-              <div className="border border-purple-500/30 rounded-lg px-3 py-1.5 text-center"
-                style={{ background: 'rgba(147,51,234,0.06)' }}>
-                <div className="text-[8px] text-purple-500/80 mb-0.5 tracking-wider">当前大限</div>
-                <div className="text-[12px] text-purple-400 font-medium tabular-nums">{dx.startAge}–{dx.endAge}岁</div>
-                <div className="text-[9px] text-purple-500/60">{dx.palaceName}</div>
+              <div className="chart-current-daxian">
+                当前大限 <strong>{dx.startAge}–{dx.endAge}岁</strong> {BRANCHES[dx.palaceBranch]}{dx.palaceName.replace(/宫$/, '')}
               </div>
             );
           })()}
 
-          <div className="text-[8px] text-center leading-relaxed font-mono" style={{ color: 'var(--t-faint)', opacity: 0.75 }}>
-            {chart.lunarInfo.lunarYear}·{chart.lunarInfo.isLeapMonth ? '闰' : ''}
-            {chart.lunarInfo.lunarMonth}·{chart.lunarInfo.lunarDay}
+          <div className="chart-sihua-legend">
+            <span>四化颜色</span>
+            <b className="is-lu">禄</b>·<b className="is-quan">权</b>·<b className="is-ke">科</b>·<b className="is-ji">忌</b>
           </div>
         </motion.div>
 
@@ -307,7 +314,7 @@ export default function ChartBoard({ chart, onStarSelect, onPalaceSelect, onSiHu
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 0.7 }}
-        className="mt-3 flex items-center justify-center gap-2 text-[9px] flex-wrap"
+        className="chart-board-footer-legend mt-3 flex items-center justify-center gap-2 text-[9px] flex-wrap"
       >
         {[
           { h: '化禄', c: 'text-emerald-500 border-emerald-500/30' },

@@ -104,7 +104,7 @@ export default function TimeNav({
     <div className="mb-3">
       {/* Tab 行 */}
       <div
-        className="flex items-center rounded-xl p-1 gap-1"
+        className="chart-local-tab-row flex items-center rounded-xl p-1 gap-1"
         style={{ background: 'var(--t-surface)', border: '1px solid var(--t-border)' }}
       >
         {/* 本命 */}

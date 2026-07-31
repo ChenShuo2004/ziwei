@@ -1,7 +1,13 @@
 'use client';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
-import Link from 'next/link';
+import {
+  ChatCircle,
+  ClockCounterClockwise,
+  CrownSimple,
+  DownloadSimple,
+  SlidersHorizontal,
+} from '@phosphor-icons/react';
 import BirthForm from '@/components/BirthForm';
 import ChartBoard from '@/components/ChartBoard';
 import type { TimeContext, TimeView } from '@/components/TimeNav';
@@ -281,12 +287,8 @@ export default function ChartPage() {
       <section className="pro-chart-shell">
         <div className="pro-chart-toolbar" aria-label="命盘工具栏">
           <div className="pro-chart-toolbar-left">
-            <Link className="pro-chart-brand" href="/" aria-label="WARMTH 有温度阅览室">
-              <span className="pro-brand-mark" aria-hidden="true" />
-              <span>WARMTH</span>
-            </Link>
             <button type="button" className="pro-back-button" onClick={() => window.location.assign('/chart')}>
-              <span>‹</span> {text('back', locale)}
+              <span aria-hidden="true">‹</span> {text('back', locale)}
             </button>
             <div className="pro-mode-tabs" aria-label={text('chartDimension', locale)}>
               {modeItems.map(item => (
@@ -302,6 +304,14 @@ export default function ChartPage() {
             </div>
           </div>
           <div className="pro-chart-toolbar-actions">
+            <button
+              type="button"
+              className="pro-upgrade-button"
+              onClick={() => setNotice('专业版能力正在开放中。')}
+            >
+              <CrownSimple size={15} weight="bold" aria-hidden="true" />
+              升级专业版
+            </button>
             <div className="pro-school-picker">
               <button
                 type="button"
@@ -310,7 +320,8 @@ export default function ChartPage() {
                 aria-expanded={schoolOpen}
                 onClick={() => setSchoolOpen(open => !open)}
               >
-                {locale === 'en' ? 'Method' : '流派'} <span aria-hidden="true">⌄</span>
+                <SlidersHorizontal size={15} aria-hidden="true" />
+                {locale === 'en' ? 'Method' : '流派'}
               </button>
               {schoolOpen && (
                 <div className="pro-school-menu" role="listbox" aria-label="流派选择">
@@ -335,9 +346,18 @@ export default function ChartPage() {
                 </div>
               )}
             </div>
-            <button type="button" onClick={() => setNotice(locale === 'en' ? 'Method switching is being connected. The default Zi Wei system is currently active.' : '流派切换正在接入中，当前采用默认紫微斗数体系。')}>{locale === 'en' ? 'Method' : '流派'}</button>
-            <button type="button" onClick={() => setNotice(locale === 'en' ? 'Chart history will be stored locally in a future update.' : '历史命盘会优先保存在本机，下一步接入本地历史列表。')}>{locale === 'en' ? 'History' : '历史'}</button>
-            <button type="button" onClick={() => setNotice(locale === 'en' ? 'Feedback forms will be connected in a future update.' : '反馈入口会接入表单，当前可先记录到功能待办。')}>{locale === 'en' ? 'Feedback' : '反馈'}</button>
+            <button type="button" onClick={handleExportReport}>
+              <DownloadSimple size={15} aria-hidden="true" />
+              {locale === 'en' ? 'Export' : '导出'}
+            </button>
+            <button type="button" onClick={() => setNotice(locale === 'en' ? 'Chart history will be stored locally in a future update.' : '历史命盘会优先保存在本机，下一步接入本地历史列表。')}>
+              <ClockCounterClockwise size={15} aria-hidden="true" />
+              {locale === 'en' ? 'History' : '历史'}
+            </button>
+            <button type="button" onClick={() => setNotice(locale === 'en' ? 'Feedback forms will be connected in a future update.' : '反馈入口会接入表单，当前可先记录到功能待办。')}>
+              <ChatCircle size={15} aria-hidden="true" />
+              {locale === 'en' ? 'Feedback' : '反馈'}
+            </button>
           </div>
         </div>
 

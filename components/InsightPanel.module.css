@@ -316,6 +316,15 @@
   display: none;
 }
 
+.reportFold:focus-within {
+  border-color: #cfd5dd;
+  outline: none;
+}
+
+.reportFold summary:focus {
+  outline: none;
+}
+
 .reportFold summary small {
   flex: 0 0 auto;
   color: #6b7280;
@@ -633,4 +642,255 @@
 
 :global([data-theme="dark"]) .radarGrid {
   stroke: rgba(148, 163, 184, 0.25);
+}
+
+/* Screenshot-matched desktop report */
+.answerReport {
+  padding: 0 0 44px;
+}
+
+.overviewPanel {
+  margin: 0 0 26px;
+  padding: 0 0 26px;
+}
+
+.overviewSignature {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 1px 0 9px;
+  color: #5157ee;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.overviewSignature small {
+  padding: 5px 10px;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  background: #fafafa;
+  color: #666;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.overviewPanel h1 {
+  margin: 0 0 7px;
+  color: #171717;
+  font-size: 27px;
+  font-weight: 900;
+  line-height: 1.25;
+}
+
+.overviewSubtitle {
+  margin: 0;
+  color: #646464;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.overviewMain {
+  gap: 2px;
+}
+
+.radarSvg {
+  width: min(100%, 375px);
+  margin: 12px 0 -2px;
+}
+
+.radarLine {
+  stroke-width: 2;
+}
+
+.radarLabel {
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.radarSubLabel {
+  fill: #777;
+  font-size: 6.5px;
+  font-weight: 500;
+}
+
+.overviewNote {
+  margin: 26px 0 14px;
+  font-size: 12px;
+}
+
+.overviewCards {
+  gap: 12px;
+}
+
+.overviewCards article {
+  min-height: 116px;
+  padding: 18px 18px;
+  border-radius: 13px;
+  background: #fff;
+}
+
+.overviewCards strong {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 9px;
+  font-size: 15px;
+}
+
+.overviewCards strong svg {
+  flex: 0 0 auto;
+  color: #5757ed;
+}
+
+.overviewCards p {
+  color: #5d5d5d;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.verificationRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 0 0 17px;
+  padding: 0 0 10px;
+  border-bottom: 1px solid #ebebeb;
+  color: #777;
+  font-size: 12px;
+}
+
+.verificationRow b {
+  color: #5157ee;
+  font-weight: 700;
+}
+
+.verificationRow small {
+  color: #999;
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+.patternPopover {
+  margin-bottom: 20px;
+}
+
+.patternTrigger {
+  min-height: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #666;
+  font-size: 13px;
+}
+
+.patternTrigger:hover,
+.patternTrigger[aria-expanded="true"] {
+  border-color: transparent;
+  background: transparent;
+  color: #343434;
+}
+
+.reportTitle {
+  margin: 0 0 26px;
+  font-size: 22px;
+  line-height: 1.3;
+}
+
+.reportLead,
+.reportParagraph {
+  color: #555;
+  font-size: 16px;
+  line-height: 2.05;
+}
+
+.reportLead {
+  margin-bottom: 20px;
+  font-weight: 400;
+}
+
+.reportParagraph {
+  margin-bottom: 16px;
+}
+
+.reportParagraph strong,
+.reportMarkedLine strong,
+.reportList strong {
+  color: #222;
+  font-weight: 800;
+}
+
+.reportSectionTitle {
+  margin: 29px 0 20px;
+  padding: 0 0 18px;
+  border-top: 0;
+  border-bottom: 1px solid #e8ebef;
+  font-size: 19px;
+}
+
+.reportMarkedLine {
+  margin-bottom: 7px;
+  color: #444;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.reportList {
+  gap: 5px;
+  margin-bottom: 15px;
+}
+
+.reportList li {
+  color: #555;
+  font-size: 15px;
+  line-height: 1.9;
+}
+
+.reportList li::before {
+  width: 3px;
+  height: 3px;
+  background: #555;
+}
+
+.reportFold {
+  margin: 18px 0;
+  border-radius: 0;
+  background: #fafafa;
+}
+
+.reportFold summary {
+  min-height: 42px;
+  padding: 0 10px;
+  font-size: 18px;
+}
+
+.reportFoldBody {
+  padding: 10px 8px 18px;
+}
+
+.reportFoldBody .reportList li {
+  line-height: 2.35;
+}
+
+.foldCloseLabel {
+  display: none;
+}
+
+.reportFold[open] .foldOpenLabel {
+  display: none;
+}
+
+.reportFold[open] .foldCloseLabel {
+  display: inline;
+}
+
+@media (max-width: 900px) {
+  .verificationRow {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .overviewPanel h1 {
+    font-size: 24px;
+  }
 }

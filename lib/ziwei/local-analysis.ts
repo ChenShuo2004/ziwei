@@ -31,6 +31,14 @@ interface TopicMeta {
   safety?: string;
 }
 
+interface TopicDepth {
+  questions: [string, string, string];
+  relatedPalaceKeywords: string[];
+  strength: string;
+  challenge: string;
+  actions: [string, string, string];
+}
+
 const TOPIC_META: Record<Topic, TopicMeta> = {
   overview: {
     title: '命格总览',
@@ -168,6 +176,100 @@ const TOPIC_META: Record<Topic, TopicMeta> = {
   },
 };
 
+const TOPIC_DEPTH: Record<Topic, TopicDepth> = {
+  overview: {
+    questions: ['你的底层驱动力是什么', '优势最容易在哪些现实领域兑现', '压力来临时哪种惯性最容易拖后腿'],
+    relatedPalaceKeywords: ['命', '官禄', '财帛', '迁移'],
+    strength: '命宫决定你如何启动，官禄与财帛决定能力如何被市场承接，迁移宫则决定外部平台能不能放大成果。',
+    challenge: '最需要防的不是能力不足，而是优势使用过量：果断可能变成冒进，敏感可能变成内耗，追求可能变成失控。',
+    actions: ['先确定未来一年的唯一主线', '再为情绪、现金流和关系设置底线', '最后用每月复盘校正方向，而不是频繁推翻重来'],
+  },
+  wealth: {
+    questions: ['钱主要从哪里来', '赚到的钱为什么能留下或流失', '当前阶段更适合扩张还是守成'],
+    relatedPalaceKeywords: ['财帛', '官禄', '田宅', '福德'],
+    strength: '财帛宫负责赚钱方式，官禄宫负责职业变现，田宅宫负责沉淀，福德宫则会影响消费冲动和风险耐受。',
+    challenge: '财运最怕把收入能力误当成资产能力：会赚钱不等于能守住，短期机会也不等于适合长期投入。',
+    actions: ['先把固定支出、负债和现金储备列清楚', '再区分主业收入、机会收入和资产收益', '任何大额投入都预先写好止损与退出条件'],
+  },
+  career: {
+    questions: ['你适合承担什么职业角色', '什么环境最能放大你的能力', '下一次突破来自职位、作品还是平台'],
+    relatedPalaceKeywords: ['官禄', '命', '财帛', '迁移'],
+    strength: '官禄宫决定做事方式，命宫决定个人驱动力，财帛宫验证市场价值，迁移宫则决定平台和外部机会。',
+    challenge: '事业最怕同时追逐太多可能性，导致每条路径都没有形成可证明、可复用、可积累的成果。',
+    actions: ['选定一个主赛道并明确衡量指标', '沉淀能公开展示的作品、案例或客户结果', '设定三到六个月验证期后再决定是否转向'],
+  },
+  love: {
+    questions: ['你真正需要怎样的亲密关系', '冲突出现时双方如何反应', '现实条件能否承接情感期待'],
+    relatedPalaceKeywords: ['夫妻', '命', '福德', '田宅'],
+    strength: '夫妻宫看关系结构，命宫看表达方式，福德宫看安全感，田宅宫看生活与家庭安排能否稳定落地。',
+    challenge: '感情最怕用吸引力代替稳定度、用忍耐代替沟通，最后让小问题累积成信任和现实安排上的结构性冲突。',
+    actions: ['先把需求和底线说清楚', '再核对金钱观、生活节奏与长期计划', '重要决定只在情绪稳定、信息充分时做'],
+  },
+  personality: {
+    questions: ['你遇事的第一反应是什么', '优势在什么场景会反转成盲区', '怎样把天赋训练成稳定能力'],
+    relatedPalaceKeywords: ['命', '福德', '官禄', '迁移'],
+    strength: '命宫给出外显气质，福德宫反映内在感受，官禄宫显示做事习惯，迁移宫则揭示陌生环境里的真实反应。',
+    challenge: '性格分析最容易犯的错，是把反复出现的防御反应当成不可改变的自我，从而错过调整行为策略的机会。',
+    actions: ['记录自己在压力下最常见的触发点', '把优势拆成可练习的具体能力', '重大决定增加冷静期和外部反馈'],
+  },
+  health: {
+    questions: ['身体最容易在哪种压力下失衡', '恢复能量主要依靠什么', '哪些生活习惯需要优先修正'],
+    relatedPalaceKeywords: ['疾厄', '福德', '官禄', '田宅'],
+    strength: '疾厄宫看体质与压力反应，福德宫看精神恢复，官禄宫看消耗来源，田宅宫则对应长期生活环境与作息。',
+    challenge: '健康主题最怕长期硬撑，把疲劳、睡眠紊乱或情绪压力当作意志问题，错过及时调整和专业检查。',
+    actions: ['先稳定睡眠、饮食与基础运动', '记录持续出现的身体信号和压力来源', '有明确症状时优先体检并咨询医生'],
+  },
+  siblings: {
+    questions: ['彼此能提供什么真实资源', '合作中谁负责什么', '利益冲突出现时如何退出'],
+    relatedPalaceKeywords: ['兄弟', '交友', '财帛', '官禄'],
+    strength: '兄弟宫看同辈互助，交友宫看外部伙伴，财帛宫看利益分配，官禄宫看分工与执行。',
+    challenge: '兄弟合伙最怕情分先行、规则缺席，前期不好意思谈钱谈责，后期却在投入、决策权和收益上积累不满。',
+    actions: ['先写清角色、投入与交付', '再确定财务、决策和信息透明机制', '提前约定退出、回购和争议处理方式'],
+  },
+  children: {
+    questions: ['你倾向怎样培养和带领别人', '期待是否符合对方阶段', '如何在规则和空间之间平衡'],
+    relatedPalaceKeywords: ['子女', '父母', '官禄', '福德'],
+    strength: '子女宫看培养关系，父母宫影响教育观，官禄宫反映管理方式，福德宫则决定耐心和情绪承接力。',
+    challenge: '子女主题最怕把自己的焦虑变成对方的任务，用控制换取短期结果，却削弱长期信任和自主性。',
+    actions: ['把期待改写成清晰、适龄的小目标', '稳定反馈而不是只在出错时沟通', '给成长空间，同时保留必要边界'],
+  },
+  travel: {
+    questions: ['异地与外部环境能带来什么', '你能否承接变化成本', '机会最终能不能转成事业和收入'],
+    relatedPalaceKeywords: ['迁移', '命', '官禄', '财帛'],
+    strength: '迁移宫看外部机会，命宫看适应能力，官禄宫看事业承接，财帛宫验证机会能否转成实际收益。',
+    challenge: '迁移外出最怕把变化本身当成答案；没有明确目标、资源和回撤方案，外部机会很容易变成持续奔波。',
+    actions: ['明确这次外出的唯一目标', '核算时间、资金和关系成本', '先做小规模验证，再决定搬迁或长期投入'],
+  },
+  network: {
+    questions: ['真正能帮到你的贵人是谁', '哪些关系正在持续消耗你', '合作边界应该设在哪里'],
+    relatedPalaceKeywords: ['交友', '迁移', '官禄', '福德'],
+    strength: '交友宫看圈层质量，迁移宫看外部连接，官禄宫看合作价值，福德宫则反映一段关系是否长期消耗。',
+    challenge: '人际主题最怕把热闹误当资源，把一次帮助误当长期承诺，在边界不清的关系里承担过多责任。',
+    actions: ['把朋友、客户、伙伴和贵人分开管理', '优先维护少数高信任、高互补关系', '对金钱、资源和承诺保持清晰边界'],
+  },
+  property: {
+    questions: ['现阶段更需要居住稳定还是资产增值', '现金流能否承受长期成本', '家庭意见和产权如何安排'],
+    relatedPalaceKeywords: ['田宅', '财帛', '福德', '父母'],
+    strength: '田宅宫看居住与沉淀，财帛宫看现金流，福德宫看空间带来的稳定感，父母宫则可能带来家庭资源与意见。',
+    challenge: '田宅主题最怕把理想生活和投资收益混为一谈，在现金流、产权或家庭边界没有谈清时做出重资产决定。',
+    actions: ['先区分自住需求与投资需求', '测算首付、月供、维护和机会成本', '涉及共同资产时书面确认出资与产权'],
+  },
+  fortune: {
+    questions: ['什么事情真正让你恢复能量', '努力与休息是否形成健康节奏', '内在满足是否过度依赖外部评价'],
+    relatedPalaceKeywords: ['福德', '疾厄', '命', '夫妻'],
+    strength: '福德宫看精神底盘，疾厄宫看压力落到身体的方式，命宫看自我驱动，夫妻宫则影响情感安全感。',
+    challenge: '福德主题最怕外在持续运转、内在长期紧绷，把所有价值押在结果和评价上，最终影响判断与关系质量。',
+    actions: ['固定不以产出为目标的休息时间', '建立能长期坚持的兴趣和独处方式', '减少持续消耗却没有回报的承诺'],
+  },
+  parents: {
+    questions: ['长辈能提供什么支持与经验', '哪些期待正在影响你的选择', '如何兼顾尊重、责任与个人边界'],
+    relatedPalaceKeywords: ['父母', '官禄', '命', '田宅'],
+    strength: '父母宫看长辈、制度与文书资源，官禄宫看职场权威，命宫看自主选择，田宅宫则连接家庭责任。',
+    challenge: '父母长辈主题最怕把尊重等同服从，把关心变成控制，或在责任没有说清时长期积累内疚与冲突。',
+    actions: ['先区分建议、期待和实际责任', '重要安排用事实、时间和预算沟通', '保持尊重，同时明确最终选择与承担方式'],
+  },
+};
+
 function palaceByName(chart: ZiweiChart, keyword: string): Palace | undefined {
   return chart.palaces.find(palace => palace.name.includes(keyword));
 }
@@ -261,6 +363,48 @@ function sanFangSummary(chart: ZiweiChart): string {
   const career = palaceByName(chart, '官禄');
   const travel = palaceByName(chart, '迁移');
   return `财帛宫主星为${starNames(wealth, 'major')}，官禄宫主星为${starNames(career, 'major')}，迁移宫主星为${starNames(travel, 'major')}。这组三方决定能力如何变成收入、事业和外部机会。`;
+}
+
+function topicRelatedPalaces(chart: ZiweiChart, topic: Topic): Palace[] {
+  const seen = new Set<string>();
+  return TOPIC_DEPTH[topic].relatedPalaceKeywords
+    .map(keyword => palaceByName(chart, keyword))
+    .filter((palace): palace is Palace => {
+      if (!palace || seen.has(palace.name)) return false;
+      seen.add(palace.name);
+      return true;
+    });
+}
+
+function topicLinkageLines(chart: ZiweiChart, topic: Topic, focus?: Palace): string[] {
+  const related = topicRelatedPalaces(chart, topic);
+  const lines = related.map((palace, index) => {
+    const relation = palace.name === focus?.name ? '主题主宫' : index === 0 ? '核心宫位' : '关联宫位';
+    return `▌ **${relation}・${palace.name}**：${compactMainStars(palace)}`;
+  });
+  return lines.length
+    ? lines
+    : [`▌ **主题主宫・${focus?.name ?? '对应宫位'}**：${compactMainStars(focus)}`];
+}
+
+function topicPalaceState(palace?: Palace): string {
+  const lucky = starsOf(palace, 'lucky').map(star => star.name);
+  const sha = starsOf(palace, 'sha').map(star => star.name);
+  const siHua = starsOf(palace).filter(star => star.siHua).map(star => `${star.name}化${star.siHua}`);
+  return [
+    lucky.length ? `吉曜见${lucky.join('、')}` : '吉曜不算突出',
+    sha.length ? `煞曜见${sha.join('、')}` : '煞曜不算尖锐',
+    siHua.length ? `四化见${siHua.join('、')}` : '本宫未见直接四化',
+  ].join('；');
+}
+
+function topicActionLines(topic: Topic): string[] {
+  const [first, second, third] = TOPIC_DEPTH[topic].actions;
+  return [
+    `• **第一优先**：${first}`,
+    `• **第二优先**：${second}`,
+    `• **暂缓或设限**：${third}`,
+  ];
 }
 
 function daXianSummary(chart: ZiweiChart): string {
@@ -552,6 +696,7 @@ function buildStructuredReport(chart: ZiweiChart, topic: Topic, palace?: Palace)
   }
 
   const meta = TOPIC_META[topic];
+  const depth = TOPIC_DEPTH[topic];
   const ming = mingPalace(chart);
   const opposite = oppositePalace(chart, palace);
   const knowledge = getEntryForLocalTopic(primaryMajorStarName(palace), topic);
@@ -567,49 +712,97 @@ function buildStructuredReport(chart: ZiweiChart, topic: Topic, palace?: Palace)
     `> ✦ AI 生成 · 仅供参考`,
     ``,
     knowledge ? `${knowledge.dingdiao}${knowledge.lundian}` : topicOpening(meta, palace, opposite),
-    `**\u73b0\u5b9e\u5efa\u8bae**`,
-    knowledge?.advice ?? meta.advice,
+    ``,
+    `${meta.overview}${meta.personal}这次分析不只回答“好不好”，而是要看清你的优势从哪里启动、通过什么路径落地，以及在哪个环节最容易失衡。`,
     ``,
     `**一句话定调**`,
+    ``,
     knowledge?.summary ?? oneLineVerdict(meta, palace),
     ``,
-    `**核心论断**`,
+    `**你最需要先看懂的三件事**`,
+    ``,
+    ...depth.questions.map(question => `• ${question}`),
+    ``,
+    `**核心诊断**`,
+    ``,
     `${palaceLabel(palace)}是这次判断的核心宫位，主星为${compactMainStars(palace)}；命宫主星为${compactMainStars(ming)}，说明你的底层反应方式会直接影响${meta.title}的兑现质量。`,
+    ``,
     knowledge?.lundian ?? `${meta.deduction}真正要看的不是“好坏一句话”，而是这组星曜能否被稳定使用，以及遇到压力时会不会转成消耗。`,
     ``,
+    `**优势如何兑现**`,
+    ``,
+    depth.strength,
+    ``,
+    `本宫状态为：${topicPalaceState(palace)}。优势能不能真正变成结果，要看主星能力是否有现实承接，也要看吉曜、煞曜和四化有没有把节奏推向同一个方向。`,
+    ``,
+    `**容易失衡的地方**`,
+    ``,
+    depth.challenge,
+    ``,
+    `◆ ${knowledge?.risk ?? meta.risk}`,
+    ``,
     `**命盘推演**`,
+    ``,
     `本宫主星：${compactMainStars(palace)}`,
+    ``,
     knowledge?.yiju ?? '',
     starKnowledge(palace),
+    ``,
     supportStars.length ? `本宫辅煞重点：${supportStars.join('、')}。这些星曜决定事情推进时是顺、是急、是反复，还是需要借人借势。` : '本宫辅煞不算突出，重点看主星、对宫、三方四正和大限。',
     ``,
     `**三方四正联动**`,
-    `▌ 本宫・${palace?.name ?? '对应宫位'}：${compactMainStars(palace)}`,
-    `▌ 对宫・${opposite?.name ?? '对宫'}：${compactMainStars(opposite)}`,
-    sanFangSummary(chart),
-    daXianSummary(chart),
-    `▸ 本盘合参：本宫定主题，对宫看外部牵动，三方会照看资源能不能真正落地。`,
     ``,
-    `**四化路径・你这盘**`,
+    ...topicLinkageLines(chart, topic, palace),
+    `▌ **对宫・${opposite?.name ?? '对宫'}**：${compactMainStars(opposite)}`,
+    ``,
+    topic === 'overview' ? sanFangSummary(chart) : meta.deduction,
+    ``,
+    `▸ **本盘合参**：${meta.title}以${palace?.name ?? '主题宫位'}为体、${opposite?.name ?? '对宫'}为用，关联宫位决定资源能否真正落地。`,
+    ``,
+    `**当前大限・阶段重点**`,
+    ``,
+    daXianSummary(chart),
+    ``,
+    `本命盘说明你“通常怎样”，大限说明这十年“什么事情更容易被放大”。两者同向时适合主动推进；两者冲突时，先处理节奏和风险，再追求结果。`,
+    ``,
+    `**四化路径分析・落到你这盘**`,
+    ``,
     ...structuredFourHua(chart, palace),
     ``,
     `**年干四化・关键宫位影响**`,
+    ``,
     siHuaSummary(chart, palace),
+    ``,
     `是否形成明显机会，要看四化落宫是否与你当前大限、流年重点同向。`,
+    ``,
+    `**针对你的命盘**`,
+    ``,
+    `✦ **${palace?.name ?? meta.title}・${compactMainStars(palace)}**`,
+    ``,
+    `${meta.personal}${knowledge?.advice ?? meta.advice}`,
+    ``,
+    `这部分不是通用星座式描述，而是把主题主宫、命宫反应、对宫牵动、关联宫位与当前大限放在同一条路径上判断。`,
+    ``,
+    `**行动优先级**`,
+    ``,
+    ...topicActionLines(topic),
     ``,
     ...foldBlock('命盘依据', structuredEvidence(chart, topic, palace, opposite), false),
     ``,
     ...foldBlock('经典出处', [knowledge?.classic, ...classicReferences(topic, palace)].filter((item): item is string => Boolean(item)), true),
     ``,
     `**风险提醒**`,
+    ``,
     `> 紫微斗数讲究阴阳互见，下方为基于本盘特征的中性提醒，知所警惕方能转危为安。`,
-    `◆ ${knowledge?.risk ?? meta.risk}`,
+    `◆ ${depth.challenge}`,
     `◆ ${safetyLine(meta)}`,
     ``,
     ...foldBlock(`主辅组合精细论断（${palace?.name ?? meta.title}实际辅煞）`, auxiliaryDiagnosis(palace), true),
     ``,
     `**现实建议**`,
-  ].filter((line, index, lines) => !(line === '**\u73b0\u5b9e\u5efa\u8bae**' && index === lines.lastIndexOf(line))).join('\n');
+    ``,
+    knowledge?.advice ?? meta.advice,
+  ].filter(Boolean).join('\n');
 }
 
 function buildTopicReport(chart: ZiweiChart, topic: Topic): string {

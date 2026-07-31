@@ -2,54 +2,66 @@
 
 ## Comparison target
 
-- Visual source of truth: the product's original `WARMTH` overview state, captured at `artifacts/design-qa/overview-original-ui-desktop.png`.
-- Information-architecture reference supplied by the user: `C:/Users/ADMINI~1/AppData/Local/Temp/codex-clipboard-ab107d6f-f69a-4cd3-8a83-2ce80cffc954.png`.
-- Desktop implementation: `artifacts/design-qa/topic-original-ui-desktop.png`.
-- Mobile implementation: `artifacts/design-qa/topic-original-ui-mobile-header.png` and `artifacts/design-qa/topic-original-ui-mobile.png`.
-- Combined comparison input: `artifacts/design-qa/overview-vs-topic-original-ui.png`.
+- User-provided navigation reference: `C:/Users/ADMINI~1/AppData/Local/Temp/codex-clipboard-4238525d-849a-4678-90e9-2cbdeae93266.png`.
+- Visual and structural source of truth: the product's existing `命格总览`, captured at `artifacts/design-qa/overview-original-ui-desktop.png`.
+- Desktop implementation: `artifacts/design-qa/career-rich-topic-desktop.png`.
+- Focused desktop body state: `artifacts/design-qa/career-rich-topic-body.png`.
+- Mobile implementation: `artifacts/design-qa/career-rich-topic-mobile.png`.
+- Combined source/implementation comparison: `artifacts/design-qa/overview-vs-career-rich-topic.png`.
 
 ## Capture normalization
 
-- Desktop source and implementation: 1440 × 900 CSS px, 1440 × 900 image px, device scale factor 1, light theme, same chart and time state.
-- Mobile implementation: 390 × 844 CSS px, 390 × 844 image px, device scale factor 1, light theme.
-- Combined input: 1440 × 1800 px; overview is stacked above the topic implementation without rescaling.
+- User crop: 926 × 58 image px; used only to confirm topic order and active-tab treatment.
+- Overview source and career implementation: 1440 × 900 CSS px, 1440 × 900 image px, device scale factor 1, light theme, same chart and time state.
+- Combined comparison: 1440 × 1800 image px; overview is stacked above career without rescaling.
+- Mobile implementation: 390 × 844 CSS px and image px, device scale factor 1.
 
 ## State and interactions tested
 
-- Loaded the same 1992-11-18 Beijing chart in the in-app browser.
-- Clicked all 13 topic tabs and verified that each renders its own six-axis chart and three topic cards.
-- Verified the horizontal topic navigation remains usable at 390 px.
-- Verified desktop and mobile layouts without introducing a new workspace switch or new action buttons.
-- Browser console checked: no runtime errors; only the React development-mode informational message.
+- Loaded the same 1992-11-18 Beijing chart in the Codex in-app browser.
+- Compared the original overview with the upgraded career topic.
+- Verified the final topic in the strip, `父母长辈`, renders its own diagnostic questions and action priorities.
+- Verified inline `**...**` emphasis renders as semantic bold text instead of raw Markdown.
+- Verified the existing topic navigation, report export, copy, chart, and time controls remain unchanged.
+- Checked the browser console: no errors.
 
 ## Full-view comparison evidence
 
-`artifacts/design-qa/overview-vs-topic-original-ui.png` shows the original overview and the new wealth topic at the same viewport. The topic keeps the original WARMTH shell, toolbar, chart proportions, cream/gold accents, pill facts, radar treatment, card radius, typography, and existing controls. Only the information inside the topic summary changes.
+`artifacts/design-qa/overview-vs-career-rich-topic.png` shows that career now follows the same overview hierarchy:
+
+1. Existing topic tab and title.
+2. Existing ancient-pattern entry.
+3. Four chart fact pills.
+4. Topic-specific six-axis radar.
+5. Three chart-specific conclusion cards.
+6. Long-form report using the same heading, paragraph, list, divider, and fold styles.
+
+The WARMTH shell, navigation, navy/cream/gold tokens, typography, borders, radii, and controls are unchanged.
 
 ## Focused-region evidence
 
-- `artifacts/design-qa/topic-original-ui-mobile-header.png` verifies the original analysis button, export button, topic strip, title, fact pills, and radar remain aligned at 390 px.
-- `artifacts/design-qa/topic-original-ui-mobile.png` verifies the radar and three cards collapse to one readable column without horizontal clipping.
+- `artifacts/design-qa/career-rich-topic-body.png` verifies the richer report hierarchy: opening diagnosis, one-line verdict, three key questions, core diagnosis, strength conversion, imbalance risk, chart deduction, linked palaces, current decade, transformations, personalized judgment, action priorities, evidence, classics, risks, and practical advice.
+- `artifacts/design-qa/career-rich-topic-mobile.png` verifies the existing mobile navigation and topic summary remain readable at 390 px without adding controls.
 
 ## Findings
 
 - No actionable P0/P1/P2 findings remain.
-- Typography: the topic summary reuses the product's existing font stack, weights, hierarchy, and line-height.
-- Spacing and layout: desktop preserves the original two-column workbench; mobile uses the existing stacked responsive layout and horizontal topic strip.
-- Colors and tokens: no external screenshot colors or surfaces were copied; the original navy, cream, gold, gray, border, radius, and shadow tokens remain.
-- Image quality: this screen has no required photographic or branded raster assets; the existing chart and radar rendering remain unchanged in style.
-- Copy and content: all topic labels are original; each topic now has its own axis labels, fact pills, three card titles, and topic-specific guidance.
-- Controls and icons: no new action buttons were added. Existing navigation, history, feedback, export, topic, chart, and time controls are preserved.
+- Typography: the existing WARMTH font stack, heading scale, body line-height, and weight hierarchy are preserved; inline emphasis now renders correctly.
+- Spacing and layout: topics reuse the same overview rhythm and responsive card collapse. No horizontal overflow or overlapping content was observed.
+- Colors and tokens: no new visual system was introduced. Existing navy, cream, gold, neutral borders, and card surfaces remain unchanged.
+- Image quality: there are no new raster assets; the existing chart and radar rendering remain sharp and consistent.
+- Copy and content: every topic now has three topic questions, a dedicated palace linkage path, topic-specific opportunity/risk analysis, and three ordered actions.
+- Controls and icons: no new navigation or action buttons were added. The existing ancient-pattern control is reused consistently.
 
 ## Comparison history
 
-1. User review identified a P1 direction mismatch: the earlier implementation copied the external reference's visual system and added controls outside the product's original UI.
-2. Fix: restored the chart workspace, board, topic navigation, buttons, and responsive styles to the pre-replica WARMTH implementation. Removed the newly proposed mobile workspace switch.
-3. Post-fix evidence: `artifacts/design-qa/overview-vs-topic-original-ui.png`, `artifacts/design-qa/topic-original-ui-mobile-header.png`, and `artifacts/design-qa/topic-original-ui-mobile.png`.
-4. Post-fix result: visual language and controls match the original product while the richer topic information structure remains.
+1. Initial P1: the 12 non-overview topics used a generic short report, so their information density and chapter hierarchy were visibly weaker than `命格总览`.
+2. Fix: added an exhaustive topic-depth configuration for all 13 topics, upgraded the shared report builder to the full overview hierarchy, enriched cards with actual transformations and lucky/malefic stars, and rendered inline emphasis correctly.
+3. Post-fix evidence: `artifacts/design-qa/overview-vs-career-rich-topic.png`, `artifacts/design-qa/career-rich-topic-body.png`, and `artifacts/design-qa/career-rich-topic-mobile.png`.
+4. Post-fix result: the topic pages retain distinct content while matching the overview's information density and presentation system.
 
 ## Follow-up polish
 
-- P3: very long axis labels can be shortened further if future topics add longer copy.
+- P3: future topic-specific classical citations can be expanded as the verified knowledge base grows.
 
 final result: passed

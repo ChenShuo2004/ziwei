@@ -398,6 +398,14 @@ function useTopicSummary(chart: ZiweiChart, topic: TopicKey) {
       .map(axis => palaceByName(chart, axis.palaceKeyword))
       .filter((palace, index, all): palace is Palace => Boolean(palace) && all.findIndex(item => item?.name === palace?.name) === index)
       .slice(0, 3);
+    const luckyStars = primaryPalace?.stars.filter(star => star.type === 'lucky').map(star => star.name) ?? [];
+    const shaStars = primaryPalace?.stars.filter(star => star.type === 'sha').map(star => star.name) ?? [];
+    const siHuaStars = primaryPalace?.stars.filter(star => star.siHua).map(star => `${star.name}化${star.siHua}`) ?? [];
+    const palaceState = [
+      siHuaStars.length ? `四化见${siHuaStars.join('、')}` : '',
+      luckyStars.length ? `吉曜见${luckyStars.join('、')}` : '',
+      shaStars.length ? `煞曜见${shaStars.join('、')}` : '',
+    ].filter(Boolean).join('；') || '本宫以主星与三方四正为主要判断依据';
 
     return {
       presentation,
@@ -412,12 +420,12 @@ function useTopicSummary(chart: ZiweiChart, topic: TopicKey) {
         },
         {
           title: presentation.cardTitles[1],
-          body: `${linkedPalaces.map(palace => palace.name.replace(/宫/g, '')).join('、') || '相关宫位'}共同参与判断。${presentation.relationship}`,
+          body: `${linkedPalaces.map(palace => palace.name.replace(/宫/g, '')).join('、') || '相关宫位'}共同参与判断；${palaceState}。${presentation.relationship}`,
         },
         {
           title: presentation.cardTitles[2],
           body: currentDx
-            ? `当前${currentDx.startAge}-${currentDx.endAge}岁大限落${currentDx.palaceName}。${presentation.action}`
+            ? `当前${currentDx.startAge}-${currentDx.endAge}岁大限落${currentDx.palaceName}，全盘共见${siHuaCount}项四化。${presentation.action}`
             : presentation.action,
         },
       ],
@@ -480,7 +488,7 @@ function TopicSummaryPanel({ chart, topic }: { chart: ZiweiChart; topic: TopicKe
   const summary = useTopicSummary(chart, topic);
   return (
     <section className={styles.overviewPanel}>
-      {topic === 'overview' && <PatternPopover chart={chart} />}
+      <PatternPopover chart={chart} />
       <div className={styles.overviewFacts}>
         <span>{summary.presentation.label}主宫 · {summary.primaryPalace?.name ?? '命宫'} · {majorStars(summary.primaryPalace)}</span>
         <span>{chart.wuxingJuName}</span>
@@ -565,6 +573,15 @@ function PatternPopover({ chart }: { chart: ZiweiChart }) {
   );
 }
 
+function renderInlineText(text: string) {
+  return text.split(/(\*\*.+?\*\*)/g).filter(Boolean).map((part, index) => {
+    const match = part.match(/^\*\*(.+)\*\*$/);
+    return match
+      ? <strong key={`${match[1]}-${index}`}>{match[1]}</strong>
+      : part;
+  });
+}
+
 function ReportContent({ text, streaming }: { text: string; streaming?: boolean }) {
   const lines = text.split('\n');
   const elements: JSX.Element[] = [];
@@ -576,7 +593,7 @@ function ReportContent({ text, streaming }: { text: string; streaming?: boolean 
     listItems = [];
     elements.push(
       <ul key={`list-${elements.length}`} className={styles.reportList}>
-        {items.map((item, index) => <li key={`${item}-${index}`}>{item}</li>)}
+        {items.map((item, index) => <li key={`${item}-${index}`}>{renderInlineText(item)}</li>)}
       </ul>,
     );
   };
@@ -633,15 +650,15 @@ function ReportContent({ text, streaming }: { text: string; streaming?: boolean 
     const sectionMatch = line.match(/^\*\*(.+?)\*\*$/);
 
     if (titleMatch) {
-      elements.push(<h2 key={index} className={styles.reportTitle}>{titleMatch[1]}</h2>);
+      elements.push(<h2 key={index} className={styles.reportTitle}>{renderInlineText(titleMatch[1])}</h2>);
     } else if (quoteMatch) {
-      elements.push(<p key={index} className={styles.reportLead}>{quoteMatch[1]}</p>);
+      elements.push(<p key={index} className={styles.reportLead}>{renderInlineText(quoteMatch[1])}</p>);
     } else if (sectionMatch) {
       elements.push(<h3 key={index} className={styles.reportSectionTitle}>{sectionMatch[1]}</h3>);
     } else if (/^[◆✦▌▸]/.test(line)) {
-      elements.push(<p key={index} className={styles.reportMarkedLine}>{line}</p>);
+      elements.push(<p key={index} className={styles.reportMarkedLine}>{renderInlineText(line)}</p>);
     } else {
-      elements.push(<p key={index} className={styles.reportParagraph}>{line}</p>);
+      elements.push(<p key={index} className={styles.reportParagraph}>{renderInlineText(line)}</p>);
     }
   }
   flushList();
